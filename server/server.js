@@ -6,7 +6,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
 
     app.use(express.static("public"));
     app.use(cookieParser());
-    for (let i in middleware){
+    for (let i in middleware) {
         console.log(middleware[i]);
         app.use(middleware[i]);
     }

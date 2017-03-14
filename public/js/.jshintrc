@@ -5,6 +5,7 @@
   "quotmark": "double",
   "undef": true,
   "browser": true,
+  "esnext": true,
   "globals": {
     "angular": true
   }
