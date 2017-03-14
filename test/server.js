@@ -41,7 +41,7 @@ describe("server", function() {
     var serverInstance;
     var dbCollections;
     let middleware = [];
-    this.timeout(10000);
+    this.timeout(20000);
     if (isDeveloping) {
         const compiler = webpack(config);
         middleware[0] = webpackMiddleware(compiler, {
