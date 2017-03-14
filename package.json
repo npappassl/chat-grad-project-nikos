@@ -1,22 +1,26 @@
 {
-  "name": "chat-grad-project",
+  "name": "chat-grad-project-nikos",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "grunt test"
+    "build": "webpack",
+    "test":  "grunt test",
+    "start": "node server"
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:joebandenburg/chat-grad-project.git"
+    "url": "git@github.com:npappassl/chat-grad-project.git-nikos"
   },
-  "author": "Joe Bandenburg <joe@bandenburg.com>",
+  "author": "Nikolaos Pappas <nikolaospappa@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/joebandenburg/chat-grad-project/issues"
+    "url": "https://github.com/joebandenburg/chat-grad-project-nikos/issues"
   },
-  "homepage": "https://github.com/joebandenburg/chat-grad-project",
+  "homepage": "https://github.com/joebandenburg/chat-grad-project-nikos",
   "devDependencies": {
+    "babel-plugin-react-transform": "^2.0.2",
+    "babel-preset-stage-0": "^6.22.0",
     "chai": "^3.0.0",
     "grunt": "^0.4.5",
     "grunt-contrib-jshint": "^0.11.2",
@@ -25,13 +29,37 @@
     "grunt-mocha-test": "^0.12.7",
     "istanbul": "^0.3.17",
     "mocha": "^2.2.5",
+    "react-transform-hmr": "^1.0.4",
     "sinon": "^1.15.4"
   },
   "dependencies": {
     "URIjs": "^1.15.1",
+    "babel-core": "^6.24.0",
+    "babel-loader": "^6.4.0",
+    "babel-polyfill": "^6.23.0",
+    "babel-preset-es2015": "^6.24.0",
+    "babel-preset-react": "^6.23.0",
+    "babel-register": "^6.24.0",
     "cookie-parser": "^1.3.5",
+    "cross-env": "^3.2.3",
+    "css-loader": "^0.27.3",
     "express": "^4.13.0",
     "mongodb": "^2.0.35",
-    "request": "^2.58.0"
+    "node-sass": "^4.5.0",
+    "react": "^15.4.2",
+    "react-addons-test-utils": "^15.4.2",
+    "react-dom": "^15.4.2",
+    "react-redux": "^5.0.3",
+    "redux": "^3.6.0",
+    "redux-logger": "^2.8.2",
+    "redux-promise": "^0.5.3",
+    "redux-thunk": "^2.2.0",
+    "request": "^2.58.0",
+    "sass-loader": "^6.0.3",
+    "style-loader": "^0.13.2",
+    "webpack": "^2.2.1",
+    "webpack-dev-middleware": "^1.10.1",
+    "webpack-dev-server": "^2.4.1",
+    "webpack-hot-middleware": "^2.17.1"
   }
 }
