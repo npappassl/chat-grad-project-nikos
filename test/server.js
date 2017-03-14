@@ -1,3 +1,4 @@
+"use strict";
 var server = require("../server/server");
 var request = require("request");
 var assert = require("chai").assert;
