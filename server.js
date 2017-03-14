@@ -1,3 +1,4 @@
+"use strict";
 const server = require("./server/server");
 const oAuthGithub = require("./server/oauth-github");
 const MongoClient = require("mongodb").MongoClient;
