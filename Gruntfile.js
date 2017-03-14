@@ -29,12 +29,12 @@ module.exports = function(grunt) {
             options: {
                 coverageFolder: artifactsLocation,
                 reportFormats: ["none"],
-                print: "none"
+                print: "detail"
             }
         },
         "istanbul_report": {
             test: {
-
+                src: ["test/**/*.js"]
             },
             options: {
                 coverageFolder: artifactsLocation
@@ -42,11 +42,11 @@ module.exports = function(grunt) {
         },
         "istanbul_check_coverage": {
             test: {
-
             },
             options: {
                 coverageFolder: artifactsLocation,
-                check: true
+                check: true,
+                quiet: false
             }
         }
     });

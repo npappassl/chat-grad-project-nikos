@@ -1,11 +1,15 @@
+"use strict";
 var express = require("express");
 var cookieParser = require("cookie-parser");
 
-module.exports = function(port, db, githubAuthoriser) {
+module.exports = function(port, db, githubAuthoriser, middleware) {
     var app = express();
 
     app.use(express.static("public"));
     app.use(cookieParser());
+    for (let i in middleware) {
+        app.use(middleware[i]);
+    }
 
     var users = db.collection("users");
     var sessions = {};

@@ -1,7 +1,16 @@
+"use strict";
 var server = require("../server/server");
 var request = require("request");
 var assert = require("chai").assert;
 var sinon = require("sinon");
+
+//------- I added this so that webpack is instantiated -------------------------
+const isDeveloping = process.env.NODE_ENV !== "production";
+const webpack = require("webpack");
+const webpackMiddleware = require("webpack-dev-middleware");
+const webpackHotMiddleware = require("webpack-hot-middleware");
+const config = require("../webpack.config.js");
+//------------------------------------------------------------------------------
 
 var testPort = 52684;
 var baseUrl = "http://localhost:" + testPort;
@@ -31,6 +40,24 @@ describe("server", function() {
     var githubAuthoriser;
     var serverInstance;
     var dbCollections;
+    let middleware = [];
+    this.timeout(20000);
+    if (isDeveloping) {
+        const compiler = webpack(config);
+        middleware[0] = webpackMiddleware(compiler, {
+            publicPath: config.output.publicPath,
+            contentBase: "src",
+            stats: {
+                colors: true,
+                hash: false,
+                timings: true,
+                chunks: false,
+                chunkModules: false,
+                modules: false
+            }
+        });
+        middleware[1] = webpackHotMiddleware(compiler);
+    }
     beforeEach(function() {
         cookieJar = request.jar();
         dbCollections = {
@@ -49,7 +76,7 @@ describe("server", function() {
             authorise: function() {},
             oAuthUri: "https://github.com/login/oauth/authorize?client_id=" + oauthClientId
         };
-        serverInstance = server(testPort, db, githubAuthoriser);
+        serverInstance = server(testPort, db, githubAuthoriser, middleware);
     });
     afterEach(function() {
         serverInstance.close();
