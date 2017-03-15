@@ -9,6 +9,10 @@ import createLogger from 'redux-logger';
 import allReducers from './reducers';
 import App from './components/App';
 
+
+import {sendAuthUriRequest} from "./actions/index"
+
+
 const logger = createLogger();
 const store = createStore(
     allReducers,
@@ -21,3 +25,5 @@ ReactDOM.render(
     </Provider>,
     document.getElementById('root')
 );
+
+store.dispatch(sendAuthUriRequest());

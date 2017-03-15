@@ -4,8 +4,9 @@ import UserList from '../containers/user-list';
 import UserDetails from '../containers/user-detail';
 import MessageTextArea from '../containers/message-text-area';
 
+import {sendAuthUriRequest} from "../actions/index";
+
 require('../../scss/style.scss');
-var self;
 class App extends Component {
     renderLogin() {
         return(<a href={this.props.loginUri}>Log In</a>);
@@ -32,7 +33,7 @@ class App extends Component {
         }
     }
 }
-function mapStateToProps(state, ownProps) {
+function mapStateToProps(state) {
     return {
         login: state.login,
         loginUri: state.loginUri
