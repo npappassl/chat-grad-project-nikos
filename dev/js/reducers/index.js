@@ -10,10 +10,10 @@ import loginUriReducer from './reducer-login-uri'
  * */
 
 const allReducers = combineReducers({
-    loginUri: loginUriReducer,
     users: UserReducer,
-    activeUser: ActiveUserReducer,
+    // activeUser: ActiveUserReducer,
     login: loginReducer,
+    loginUri: loginUriReducer,
     messages: Messages
 });
 

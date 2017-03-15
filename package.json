@@ -8,7 +8,7 @@
   },
   "main": "server.js",
   "scripts": {
-    "build": "webpack",
+    "build": "webpack -p",
     "test": "grunt test",
     "start": "node server"
   },
@@ -49,6 +49,7 @@
     "cross-env": "^3.2.3",
     "css-loader": "^0.27.3",
     "express": "^4.13.0",
+    "isomorphic-fetch": "^2.2.1",
     "mongodb": "^2.0.35",
     "node-sass": "^4.5.0",
     "react": "^15.4.2",

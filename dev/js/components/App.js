@@ -7,19 +7,8 @@ import MessageTextArea from '../containers/message-text-area';
 require('../../scss/style.scss');
 var self;
 class App extends Component {
-    constructor(props){
-        super(props);
-        self = this;
-        self.state = {
-            login: false
-        };
-    }
-    isLoggedIn() {
-        self.setState({login: true});
-        // this.setState();
-    }
     renderLogin() {
-        return(<a onClick={this.isLoggedIn}>Log In</a>);
+        return(<a href={this.props.loginUri}>Log In</a>);
     }
     renderNormal() {
         return (
@@ -36,18 +25,17 @@ class App extends Component {
         );
     }
     render() {
-        // this.isLoggedIn();
-        if(!this.state.login){
+        if(!this.props.login){
             return this.renderLogin();
         } else{
             return this.renderNormal();
         }
     }
 }
-// function mapStateToProps(state) {
-//     return {
-//         login: true,
-//         loginUri:state.loginUri
-//     };
-// }
-export default App;
+function mapStateToProps(state, ownProps) {
+    return {
+        login: state.login,
+        loginUri: state.loginUri
+    };
+}
+export default connect(mapStateToProps)(App);
