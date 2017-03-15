@@ -7,7 +7,7 @@ import MessageTextArea from '../containers/message-text-area';
 require('../../scss/style.scss');
 class App extends Component {
     constructor(props){
-        super(props)
+        super(props);
         this.state = {
             login: false
         };

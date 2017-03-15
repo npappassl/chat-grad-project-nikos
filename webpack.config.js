@@ -5,7 +5,7 @@ module.exports = {
     devServer: {
         inline: true,
         contentBase: './public',
-        port: 8080
+        port: 8080,
     },
     devtool: 'cheap-module-eval-source-map',
     entry: './dev/js/index.js',
@@ -15,7 +15,7 @@ module.exports = {
                 test: /\.js$/,
                 loader: 'babel-loader',
                 query: {
-                    presets: ["es2015", "react"]
+                    presets: ["es2015", "stage-0", "react"]
                 },
                 exclude: /node_modules/
             },
@@ -26,8 +26,8 @@ module.exports = {
         ]
     },
     output: {
-        path: '/',
         filename: 'bundle.min.js',
+        path: __dirname +'./build'
     },
     plugins: [
         new webpack.optimize.OccurrenceOrderPlugin()
