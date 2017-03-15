@@ -26,7 +26,7 @@ module.exports = {
         ]
     },
     output: {
-        filename: 'bundle.min.js',
+        filename: 'bundle.js',
         path:  path.resolve(__dirname, "build"),
         publicPath: "/",
     },
