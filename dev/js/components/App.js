@@ -5,15 +5,18 @@ import UserDetails from '../containers/user-detail';
 import MessageTextArea from '../containers/message-text-area';
 
 require('../../scss/style.scss');
+var self;
 class App extends Component {
     constructor(props){
         super(props);
-        this.state = {
+        self = this;
+        self.state = {
             login: false
         };
     }
     isLoggedIn() {
-        this.state.login=true;
+        self.setState({login: true});
+        // this.setState();
     }
     renderLogin() {
         return(<a onClick={this.isLoggedIn}>Log In</a>);
