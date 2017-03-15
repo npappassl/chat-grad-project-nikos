@@ -2,14 +2,14 @@
   "name": "chat-grad-project-nikos",
   "version": "1.0.0",
   "description": "This is a chat application",
-  "engines":{
-      "node":"^6.0.0",
-      "npm":"^3.0.0"
+  "engines": {
+    "node": "^6.0.0",
+    "npm": "^3.0.0"
   },
   "main": "server.js",
   "scripts": {
     "build": "webpack",
-    "test":  "grunt test",
+    "test": "grunt test",
     "start": "node server"
   },
   "repository": {
@@ -26,6 +26,7 @@
     "babel-plugin-react-transform": "^2.0.2",
     "babel-preset-stage-0": "^6.22.0",
     "chai": "^3.0.0",
+    "extract-text-webpack-plugin": "^2.1.0",
     "grunt": "^0.4.5",
     "grunt-contrib-jshint": "^0.11.2",
     "grunt-jscs": "^1.8.0",
