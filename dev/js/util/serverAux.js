@@ -15,5 +15,6 @@ function checkStatusOK(response) {
 }
 
 function parseJSON(response) {
+    console.log("parseJSON",response);
     return response.json();
 }

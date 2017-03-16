@@ -3,13 +3,19 @@ import {connect} from 'react-redux';
 import UserList from '../containers/user-list';
 import UserDetails from '../containers/user-detail';
 import MessageTextArea from '../containers/message-text-area';
-
-import {sendAuthUriRequest} from "../actions/index";
+import LoginScreen from "../containers/login-screen";
+import {sendAuthUriRequest, sendSesionRequest} from "../actions/index";
 
 require('../../scss/style.scss');
 class App extends Component {
+    getUri(){
+        sendAuthUriRequest(this.props.dispatch);
+        sendSesionRequest(this.props.dispatch);
+        // sendAuthUriRequest();
+    }
     renderLogin() {
-        return(<a href={this.props.loginUri}>Log In</a>);
+        this.getUri();
+        return (<LoginScreen loginUri={this.props.loginUri} />);
     }
     renderNormal() {
         return (
@@ -26,16 +32,16 @@ class App extends Component {
         );
     }
     render() {
-        if(!this.props.login){
-            return this.renderLogin();
-        } else{
+        if(this.props.session !== false && this.props.session !== "Unauthorized" ){
             return this.renderNormal();
+        } else{
+            return this.renderLogin();
         }
     }
 }
 function mapStateToProps(state) {
     return {
-        login: state.login,
+        session: state.session,
         loginUri: state.loginUri
     };
 }

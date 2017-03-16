@@ -1,5 +1,6 @@
 import serverAux from "../util/serverAux";
-import {GOT_URI, USER_SELECTED} from "./types";
+import {GOT_URI, USER_SELECTED, GOT_SESION} from "./types";
+import fetch from "isomorphic-fetch";
 
 export const selectUser = (user) => {
     console.log("You clicked on user: ", user.first);
@@ -9,34 +10,46 @@ export const selectUser = (user) => {
     }
 };
 
-export const getAuthenticationUri = (response) => {
-    console.log("the uri is: " + response);
+const setAuthenticationUriInProps = (response) => {
+    console.log("the uri is: " + response.split("\"")[3]);
     return {
         type: GOT_URI,
+        payload: response.split("\"")[3]
+    }
+};
+
+const setSessionInProps = (response) => {
+    console.log("the user is: " + response);
+    return {
+        type: GOT_SESION,
         payload: response
     }
 };
 
-function reqListener (response) {
-    console.log(this.responseText);
-    getAuthenticationUri(this.responseText.split("\"")[3]);
-}
-export const sendAuthUriRequest = function(){
-    console.log(a);
+
+export const sendSesionRequest = function(dispatch){
     var oReq = new XMLHttpRequest();
-    oReq.addEventListener("load", reqListener);
+    oReq.addEventListener("load", function(){
+        reqListener(oReq,dispatch,setSessionInProps);
+    });
+    oReq.open("GET", "api/user");
+    oReq.send();
+}
+
+export const sendAuthUriRequest = function(dispatch){
+    var oReq = new XMLHttpRequest();
+    oReq.addEventListener("load", function(){
+        reqListener(oReq,dispatch,setAuthenticationUriInProps);
+    });
     oReq.open("GET", "api/oauth/uri");
     oReq.send();
-    // fetch("/api/oauth/uri",{method:"GET"})
-    //     .then(function(response){
-    //         console.log(response);
-    //         getAuthenticationUri(response);
-    //         // response.resolve = function(response){
-    //         //     getAuthenticationUri(response.uri);
-    //         // }
-    //
-    //     // return response.uri;
-    // }).catch(function(err){
-    //     console.log(err);
-    // });
+}
+
+function reqListener (response,dispatch,next) {
+    console.log("reqListener",response.response);
+    dispatch((function(){
+            console.log("dispatching");
+            return next(response.response);
+        })()
+    );
 }
