@@ -27,7 +27,7 @@ module.exports = function(oauthClientId, oauthSecret) {
                 request({
                     url: "https://api.github.com/user",
                     headers: {
-                        "User-Agent": "chat-grad-project",
+                        "User-Agent": "chat-grad-project-nikos",
                         "Authorization": "token " + token
                     }
                 }, function(e2, r2, b2) {

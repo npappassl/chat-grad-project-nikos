@@ -8,13 +8,13 @@ import {sendAuthUriRequest, sendSesionRequest} from "../actions/index";
 
 require('../../scss/style.scss');
 class App extends Component {
-    getUri(){
-        sendAuthUriRequest(this.props.dispatch);
-        sendSesionRequest(this.props.dispatch);
-        // sendAuthUriRequest();
+    constructor(props){
+        super(props);
+        const dis = this.props.dispatch;
+        sendAuthUriRequest(dis);
+        sendSesionRequest(dis);
     }
     renderLogin() {
-        this.getUri();
         return (<LoginScreen loginUri={this.props.loginUri} />);
     }
     renderNormal() {
@@ -32,7 +32,7 @@ class App extends Component {
         );
     }
     render() {
-        if(this.props.session !== false && this.props.session !== "Unauthorized" ){
+        if(this.props.session !==false){
             return this.renderNormal();
         } else{
             return this.renderLogin();
@@ -42,7 +42,7 @@ class App extends Component {
 function mapStateToProps(state) {
     return {
         session: state.session,
-        loginUri: state.loginUri
+        loginUri: state.loginUri,
     };
 }
 export default connect(mapStateToProps)(App);

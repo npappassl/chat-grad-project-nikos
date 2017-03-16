@@ -1,3 +1,6 @@
-export const GOT_URI = "GOT_URI";
-export const GOT_SESION = "GOT_SESION";
-export const USER_SELECTED = "USER_SELECTED";
+export const  ATypes = {
+    GOT_URI: "GOT_URI",
+    GOT_SESION: "GOT_SESION",
+    USER_SELECTED: "USER_SELECTED",
+    GOT_USERS: "GOT_USERS" 
+}

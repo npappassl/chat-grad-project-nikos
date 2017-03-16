@@ -1,3 +1,5 @@
+"use strict";
+
 const status = {
     "ok":200,
     "created":201,
@@ -14,7 +16,11 @@ function checkStatusOK(response) {
     }
 }
 
-function parseJSON(response) {
-    console.log("parseJSON",response);
-    return response.json();
-}
+
+export const parseJSON = function(response,dispatch,next) {
+    if(response.status === 401||response.status === 404){
+        console.log("server gave", response.status, "\nmessage:",response.statusText);
+        return next(null);
+    }
+    return next(dispatch, response.response);
+};

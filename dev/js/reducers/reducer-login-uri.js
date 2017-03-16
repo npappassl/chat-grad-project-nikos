@@ -1,8 +1,8 @@
-import {GOT_URI} from "../actions/types";
+import {ATypes} from "../actions/types";
 
 export default function (state = null, action) {
     switch (action.type) {
-        case GOT_URI:
+        case ATypes.GOT_URI:
             return action.payload;
             break;
     }
