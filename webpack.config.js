@@ -4,7 +4,7 @@ var webpack = require('webpack');
 module.exports = {
     devServer: {
         inline: true,
-        contentBase: './public',
+        contentBase: './public/build',
         port: 8080,
     },
     devtool: 'cheap-module-eval-source-map',
