@@ -5,8 +5,8 @@ const MongoClient = require("mongodb").MongoClient;
 
 const port = process.env.PORT || 8080;
 const dbUri = process.env.DB_URI || "mongodb://nikos:210889@ds129030.mlab.com:29030/chat-grad-project-nikos";
-const oauthClientId = process.env.OAUTH_CLIENT_ID || "fa4a22095c46dfc1d832";
-const oauthSecret = process.env.OAUTH_SECRET || "4bbf1b48173c3cbc35917fad9f94ef2b584cbaa4";
+const oauthClientId = process.env.OAUTH_CLIENT_ID || "3fb6494ed4643edc1efb";
+const oauthSecret = process.env.OAUTH_SECRET || "fe94f0fa3144fd908048931cf69d3987348d7fb0";
 const isDeveloping = process.env.NODE_ENV !== "production";
 const webpack = require("webpack");
 const webpackMiddleware = require("webpack-dev-middleware");

@@ -13,7 +13,7 @@ const allReducers = combineReducers({
     users: UserReducer,
     // activeUser: ActiveUserReducer,
     session: loginReducer,
-    loginUri: loginUriReducer
+    loginUri: loginUriReducer,
 });
 
 export default allReducers

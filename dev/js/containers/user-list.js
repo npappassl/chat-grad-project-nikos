@@ -1,10 +1,13 @@
 import React, {Component} from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
-import {selectUser} from '../actions/index'
-
+import {selectUser,sendUsersRequest} from '../actions/index';
 
 class UserList extends Component {
+    // constructor(props){
+    //     super(props);
+    //     sendUsersRequest(dispatch);
+    // }
     eachUser(user) {
         return (
             <li
@@ -16,7 +19,11 @@ class UserList extends Component {
         );
     }
     renderList() {
-        return this.props.users.map(this.eachUser);
+        if(this.props.users){
+            return this.props.users.map(this.eachUser);
+        } else {
+            return;
+        }
     }
 
     render() {
