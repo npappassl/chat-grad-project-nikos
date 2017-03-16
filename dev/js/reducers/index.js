@@ -10,11 +10,10 @@ import loginUriReducer from './reducer-login-uri'
  * */
 
 const allReducers = combineReducers({
-    loginUri: loginUriReducer,
     users: UserReducer,
-    activeUser: ActiveUserReducer,
-    login: loginReducer,
-    messages: Messages
+    // activeUser: ActiveUserReducer,
+    session: loginReducer,
+    loginUri: loginUriReducer
 });
 
 export default allReducers

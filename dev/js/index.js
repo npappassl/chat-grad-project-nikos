@@ -9,11 +9,17 @@ import createLogger from 'redux-logger';
 import allReducers from './reducers';
 import App from './components/App';
 
+
+import {sendAuthUriRequest} from "./actions/index"
+
+
 const logger = createLogger();
 const store = createStore(
     allReducers,
     applyMiddleware(thunk, promise, logger)
 );
+
+patchStoreToAddLogging(store);
 
 ReactDOM.render(
     <Provider store={store}>
@@ -21,3 +27,13 @@ ReactDOM.render(
     </Provider>,
     document.getElementById('root')
 );
+
+function patchStoreToAddLogging(store) {
+  let next = store.dispatch;
+  store.dispatch = function dispatchAndLog(action) {
+    console.log('dispatching', action);
+    let result = next(action);
+    console.log('next state', store.getState());
+    return result
+  }
+}

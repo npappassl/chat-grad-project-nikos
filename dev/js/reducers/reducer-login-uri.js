@@ -1,15 +1,10 @@
-import serverAux from "../util/serverAux"
-import {connect} from 'react-redux';
+import {GOT_URI} from "../actions/types";
 
-export default function (state) {
-    fetch("/api/oauth/uri",{method:"GET"})
-        .then(serverAux.checkStatusOK)
-        .then(serverAux.parseJSON)
-        .then(function(response){
-            state.loginUri = response.uri;
-            return state;
-        }).catch(function(err){
-            console.log(err);
-        });
-        return null;
+export default function (state = null, action) {
+    switch (action.type) {
+        case GOT_URI:
+            return action.payload;
+            break;
+    }
+    return state;
 }

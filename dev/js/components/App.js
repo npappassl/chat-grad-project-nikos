@@ -3,23 +3,19 @@ import {connect} from 'react-redux';
 import UserList from '../containers/user-list';
 import UserDetails from '../containers/user-detail';
 import MessageTextArea from '../containers/message-text-area';
+import LoginScreen from "../containers/login-screen";
+import {sendAuthUriRequest, sendSesionRequest} from "../actions/index";
 
 require('../../scss/style.scss');
-var self;
 class App extends Component {
-    constructor(props){
-        super(props);
-        self = this;
-        self.state = {
-            login: false
-        };
-    }
-    isLoggedIn() {
-        self.setState({login: true});
-        // this.setState();
+    getUri(){
+        sendAuthUriRequest(this.props.dispatch);
+        sendSesionRequest(this.props.dispatch);
+        // sendAuthUriRequest();
     }
     renderLogin() {
-        return(<a onClick={this.isLoggedIn}>Log In</a>);
+        this.getUri();
+        return (<LoginScreen loginUri={this.props.loginUri} />);
     }
     renderNormal() {
         return (
@@ -36,18 +32,17 @@ class App extends Component {
         );
     }
     render() {
-        // this.isLoggedIn();
-        if(!this.state.login){
-            return this.renderLogin();
-        } else{
+        if(this.props.session !== false && this.props.session !== "Unauthorized" ){
             return this.renderNormal();
+        } else{
+            return this.renderLogin();
         }
     }
 }
-// function mapStateToProps(state) {
-//     return {
-//         login: true,
-//         loginUri:state.loginUri
-//     };
-// }
-export default App;
+function mapStateToProps(state) {
+    return {
+        session: state.session,
+        loginUri: state.loginUri
+    };
+}
+export default connect(mapStateToProps)(App);
