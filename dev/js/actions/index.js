@@ -2,9 +2,9 @@ import {parseJSON} from "../util/serverAux";
 import {ATypes} from "./types";
 // --------------------------- AUX ---------------------------------
 export const selectUser = (user) => {                              //
-    console.log("You clicked on user: ", user.first);               //
+    console.log("You clicked on user: ", user.id);               //
     return {
-        type: USER_SELECTED,
+        type: ATypes.USER_SELECTED,
         payload: user
     }
 };                                                                  //

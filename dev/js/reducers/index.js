@@ -11,7 +11,7 @@ import loginUriReducer from './reducer-login-uri'
 
 const allReducers = combineReducers({
     users: UserReducer,
-    // activeUser: ActiveUserReducer,
+    activeUser: ActiveUserReducer,
     session: loginReducer,
     loginUri: loginUriReducer,
 });

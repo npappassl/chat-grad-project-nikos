@@ -4,17 +4,17 @@ import {connect} from 'react-redux';
 import {selectUser,sendUsersRequest} from '../actions/index';
 
 class UserList extends Component {
-    // constructor(props){
-    //     super(props);
-    //     sendUsersRequest(dispatch);
-    // }
+    constructor(props){
+        super(props);
+        sendUsersRequest(this.props.dispatch);
+    }
     eachUser(user) {
         return (
             <li
                 key={user.id}
-                onClick={() => this.props.selectUser(user)}
+                onClick={() => selectUser(user)}
             >
-                <img width="32" src={user.thumbnail} />{user.first} {user.last}
+                <img width="32" src={user.avatarUrl} />{user.first} {user.last}
             </li>
         );
     }
@@ -47,9 +47,12 @@ function mapStateToProps(state) {
 // Get actions and pass them as props to to UserList
 //      > now UserList has this.props.selectUser
 function matchDispatchToProps(dispatch){
-    return bindActionCreators({selectUser: selectUser}, dispatch);
+    return bindActionCreators({selectUser: selectUser,
+                            sendUsersRequest: sendUsersRequest}, dispatch);
 }
 
 // We don't want to return the plain UserList (component) anymore, we want to return the smart Container
 //      > UserList is now aware of state and actions
-export default connect(mapStateToProps, matchDispatchToProps)(UserList);
+
+export default connect(mapStateToProps)(UserList);
+// export default connect(mapStateToProps, matchDispatchToProps)(UserList);
