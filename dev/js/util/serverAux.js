@@ -22,5 +22,6 @@ export const parseJSON = function(response,dispatch,next) {
         console.log("server gave", response.status, "\nmessage:",response.statusText);
         return next(null);
     }
+    if(next!==null)
     return next(dispatch, response.response);
 };

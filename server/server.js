@@ -1,17 +1,20 @@
 "use strict";
 var express = require("express");
 var cookieParser = require("cookie-parser");
+var bodyParser = require("body-parser");
 
 module.exports = function(port, db, githubAuthoriser, middleware) {
     var app = express();
 
     app.use(express.static("public"));
+    app.use(bodyParser.json());
     app.use(cookieParser());
     for (let i in middleware) {
         app.use(middleware[i]);
     }
 
     var users = db.collection("users");
+    var messages = db.collection("messages");
     var sessions = {};
 
     app.get("/oauth", function(req, res) {
@@ -89,8 +92,25 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             }
         });
     });
-    // app.post("/api/message/:id",function(req, res) {
-    //
-    // });
+    app.get("/api/messages", function(req, res) {
+        messages.find().toArray(function(err, docs) {
+            if (!err) {
+                res.json(docs.map(function(message) {
+                    return {
+                        to: message.userTo,
+                        from: message.userFrom,
+                        msg: message.msg
+                    };
+                }));
+            } else {
+                res.sendStatus(500);
+            }
+        });
+    });
+    app.post("/api/message", function(req, res) {
+        console.log(req.body);
+        messages.insertOne(req.body);
+        res.sendStatus(200);
+    });
     return app.listen(port);
 };

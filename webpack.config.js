@@ -2,11 +2,11 @@ var path = require('path');
 var webpack = require('webpack');
 
 module.exports = {
-    devServer: {
-        inline: true,
-        contentBase: './public/build',
-        port: 8080,
-    },
+    // devServer: {
+    //     inline: true,
+    //     contentBase: './public/build',
+    //     port: 8080,
+    // },
     devtool: 'cheap-module-eval-source-map',
     entry: './dev/js/index.js',
     module: {
