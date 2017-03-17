@@ -12,9 +12,9 @@ class UserDetail extends Component {
     componentWillUpdate(){
         sendMessagesRequest(this.props.dispatch);
     }
-    eachMsg(msg) {
+    eachMsg(msg,classNames) {
         return (
-            <li key={msg.msg} className="message"> {msg.msg} </li>
+            <li key={msg.msg} className={classNames}> {msg.msg} </li>
         );
     }
     renderMessages(id) {
@@ -23,8 +23,11 @@ class UserDetail extends Component {
             return this.props.messages.map((msg) => {
                 console.log(msg.from,this.props.session._id);
                 if(msg.from === this.props.session._id &&
-                    msg.to === this.props.user.id){
-                    return this.eachMsg(msg);
+                msg.to === this.props.user.id){
+                    return this.eachMsg(msg,"sent");
+                } else if(msg.to === this.props.session._id &&
+                msg.from === this.props.user.id){
+                    return this.eachMsg(msg,"recieved");
                 }
             });
         } else {
