@@ -19,7 +19,7 @@ if (isDeveloping) {
     const compiler = webpack(config);
     middleware[0] = webpackMiddleware(compiler, {
         publicPath: config.output.publicPath,
-        contentBase: config.devServer.contentBase,
+        // contentBase: config.devServer.contentBase,
         stats: {
             colors: true,
             hash: false,

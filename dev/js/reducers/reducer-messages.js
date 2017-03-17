@@ -1,12 +1,9 @@
-export default function(){
-    return [
-        {
-            id:1,
-            body:"this is the message"
-        },
-        {
-            id:2,
-            body:"this is the second message"
-        }
-    ]
+import {ATypes} from "../actions/types";
+export default function (state = [], action) {
+    switch (action.type) {
+        case ATypes.GOT_MESSAGES:
+            return action.payload;
+            break;
+    }
+    return state;
 }

@@ -1,7 +1,7 @@
 import {combineReducers} from 'redux';
 import UserReducer from './reducer-users';
 import ActiveUserReducer from './reducer-active-user';
-import Messages from './reducer-messages'
+import messagesReducer from './reducer-messages'
 import loginReducer from './reducer-login'
 import loginUriReducer from './reducer-login-uri'
 /*
@@ -11,9 +11,10 @@ import loginUriReducer from './reducer-login-uri'
 
 const allReducers = combineReducers({
     users: UserReducer,
-    // activeUser: ActiveUserReducer,
+    activeUser: ActiveUserReducer,
     session: loginReducer,
     loginUri: loginUriReducer,
+    messages: messagesReducer
 });
 
 export default allReducers
