@@ -8,26 +8,27 @@ import {sendMessagesRequest} from "../actions/index"
 class UserDetail extends Component {
     constructor(props){
         super(props);
-    }
-    componentWillUpdate(){
         sendMessagesRequest(this.props.dispatch);
+        setInterval( () =>{
+            sendMessagesRequest(this.props.dispatch);
+        } , 2000);
     }
-    eachMsg(msg,classNames) {
+    eachMsg(msg,i,classNames) {
         return (
-            <li key={msg.msg} className={classNames}> {msg.msg} </li>
+            <li key={i} className={classNames}> {msg.msg} </li>
         );
     }
-    renderMessages(id) {
+    renderMessages() {
         console.log("rendered messages");
         if(this.props.messages){
-            return this.props.messages.map((msg) => {
+            return this.props.messages.map((msg,i) => {
                 console.log(msg.from,this.props.session._id);
                 if(msg.from === this.props.session._id &&
                 msg.to === this.props.user.id){
-                    return this.eachMsg(msg,"sent");
+                    return this.eachMsg(msg,i,"sent");
                 } else if(msg.to === this.props.session._id &&
                 msg.from === this.props.user.id){
-                    return this.eachMsg(msg,"recieved");
+                    return this.eachMsg(msg,i,"recieved");
                 }
             });
         } else {
@@ -36,22 +37,23 @@ class UserDetail extends Component {
 
     }
     render() {
-        if (!this.props.user) {
+        const {user} = this.props;
+        if (!user) {
             return (<div></div>);
         }
         return (
             <div>
                 <div>
                     <span id="userThumbSpan">
-                        <img id="userThumb" height="64" src={this.props.user.thumbnail} />
+                        <img id="userThumb" height="64" src={user.thumbnail} />
                     </span>
                     <span id="userDetailSpan">
-                        <span id="userName">{this.props.user.id} {this.props.user.last}</span>
-                        <span id="userDescription">Description: {this.props.user.description}</span>
+                        <span id="userName">{user.id} {user.last}</span>
+                        <span id="userDescription">Description: {user.description}</span>
                     </span>
                 </div>
                 <ul id="messages">
-                    {this.renderMessages(this.props.user.id)}
+                    {this.renderMessages()}
                 </ul>
             </div>
         );

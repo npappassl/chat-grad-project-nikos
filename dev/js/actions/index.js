@@ -1,15 +1,13 @@
 import {parseJSON} from "../util/serverAux";
 import {ATypes} from "./types";
-// --------------------------- AUX ---------------------------------
+
 export const selectUser = (user) => {
     console.log("You clicked on user: ", user.id);
-    // setSelectedUserInProps(this.props.dispatch,user);         //
     return {
         type: ATypes.USER_SELECTED,
         payload: user
     }
-};                                                                  //
-// --------------------------- AUX ---------------------------------
+};
 
 export const sendMessagesRequest = function (dispatch){
     sendRequest("GET","api/messages",dispatch,setMessagesInProps);
@@ -35,9 +33,9 @@ const setInProps = (dispatch,type,payload) => {
 const setMessagesInProps = function(dispatch,response) {
     setInProps(dispatch,ATypes.GOT_MESSAGES,response);
 }
-const setSelectedUserInProps = function(dispatch,user){
-    setInProps(dispatch,ATypes.USER_SELECTED,user);
-}
+// const setSelectedUserInProps = function(dispatch,user){
+//     setInProps(dispatch,ATypes.USER_SELECTED,user);
+// }
 const setAuthenticationUriInProps = (dispatch,response) => {
     return setInProps(dispatch,ATypes.GOT_URI, response.uri);
 };
@@ -56,7 +54,6 @@ const sendRequest = function(method,url,dispatch,next,obj) {
             reqListener(oReq,dispatch,next);
         });
         if(obj && method === "POST"){
-            // oReq.body = obj;
             oReq.open(method, url,true);
             oReq.setRequestHeader("Content-type", "application/json");
             console.log(JSON.stringify(obj));

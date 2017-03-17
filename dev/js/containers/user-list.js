@@ -6,11 +6,8 @@ import {selectUser,sendUsersRequest} from '../actions/index';
 class UserList extends Component {
     constructor(props){
         super(props);
-    }
-    componentWillMount(){
-        let { dispatch } = this.props;
+        const { dispatch } = this.props;
         sendUsersRequest(dispatch);
-
     }
     eachUser(user,dispatch) {
         return (
@@ -24,7 +21,6 @@ class UserList extends Component {
     }
     renderList() {
         let { dispatch } = this.props
-        let boundActionCreators = bindActionCreators(selectUser,dispatch);
         if(this.props.users){
             return this.props.users.map((user) => {
                 return this.eachUser(user,dispatch);

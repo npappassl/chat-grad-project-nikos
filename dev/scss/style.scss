@@ -30,6 +30,12 @@ li{
 	height: 100%;
 	position: relative;
 }
+#rightVerticalLayout div{
+	width:100%;
+	max-height: 90%;
+	flex-direction: column;
+	display: inline-flex;
+}
 //  title header
 #userDetailSpan{
 	display: inline-block;
@@ -55,6 +61,9 @@ li{
 	width:30%;
 	max-width: 300px;
 	background-color: $userListBgColor;
+}
+#messages{
+	width: 90%;
 }
 // message text area
 #messageDiv{
@@ -86,4 +95,12 @@ li{
 	max-height: 25px;
 	width:80px;
 	color: white;
+}
+.sent{
+	text-align: right;
+	display: block;
+}
+.recieved{
+	text-align: left;
+	display: block;
 }
