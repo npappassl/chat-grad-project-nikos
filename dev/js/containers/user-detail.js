@@ -8,9 +8,9 @@ import {sendMessagesRequest} from "../actions/index"
 class UserDetail extends Component {
     constructor(props){
         super(props);
-    }
-    componentWillUpdate(){
-        sendMessagesRequest(this.props.dispatch);
+        setInterval( () =>{
+            sendMessagesRequest(this.props.dispatch);
+        } , 4000);
     }
     eachMsg(msg,classNames) {
         return (
