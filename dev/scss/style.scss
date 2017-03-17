@@ -32,6 +32,9 @@ li{
 }
 #rightVerticalLayout div{
 	width:100%;
+	max-height: 90%;
+	flex-direction: column;
+	display: inline-flex;
 }
 //  title header
 #userDetailSpan{
