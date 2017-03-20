@@ -1,6 +1,6 @@
 import {parseJSON} from "../util/serverAux";
 import {ATypes} from "./types";
-// import dispatcher from "dispatcher";
+import MessagesApi from "../api/messagesApi"
 
 export const selectUser = (user) => {
     console.log("You clicked on user: ", user.id);
@@ -9,7 +9,6 @@ export const selectUser = (user) => {
         payload: user
     }
 };
-
 export const sendMessagesRequest = function (dispatch){
     sendRequest("GET","api/messages",dispatch,setMessagesInProps);
 }
@@ -42,9 +41,6 @@ const setInPropsNoDisPatch = (type, payload) => {
 const setMessagesInProps = function(dispatch,response) {
     setInProps(dispatch,ATypes.GOT_MESSAGES,response);
 }
-// const setSelectedUserInProps = function(dispatch,user){
-//     setInProps(dispatch,ATypes.USER_SELECTED,user);
-// }
 const setAuthenticationUriInProps = (dispatch,response) => {
     return setInProps(dispatch,ATypes.GOT_URI, response.uri);
 };
@@ -75,22 +71,6 @@ const sendRequest = function(method,url,dispatch,next,obj) {
         console.log(err);
     }
 
-}
-const itemsFetchData = function (url,next) {
-    return (dispatch) => {
-        // dispatch(itemsIsLoading(true));
-        fetch(url)
-            .then((response) => {
-                if (!response.ok) {
-                    throw Error(response.statusText);
-                }
-                // dispatch(itemsIsLoading(false));
-                return response;
-            })
-            .then((response) => response.json())
-            .then((items) => dispatch(next(dispatch,items)));
-            // .catch(() => dispatch(itemsHasErrored(true)));
-    };
 }
 function reqListener(response,dispatch,next) {
     return parseJSON(response,dispatch,next);
