@@ -1,6 +1,8 @@
 import {parseJSON} from "../util/serverAux";
 import {ATypes} from "./types";
-import MessagesApi from "../api/messagesApi"
+import MessagesApi from "../api/messagesApi";
+import * as messageActions from "./messageActions";
+import * as loginActions from "./loginActions";
 
 export const selectUser = (user) => {
     console.log("You clicked on user: ", user.id);
@@ -9,19 +11,10 @@ export const selectUser = (user) => {
         payload: user
     }
 };
-export const sendMessagesRequest = function (dispatch){
-    sendRequest("GET","api/messages",dispatch,setMessagesInProps);
-}
 export const sendUsersRequest = function(dispatch){
     // return itemsFetchData("api/users",setUsersInProps);
     // return fetch("api/users",{method:"GET"});
     sendRequest("GET","api/users",dispatch,setUsersInProps);
-}
-export const sendAuthUriRequest = function(dispatch){
-    sendRequest("GET","api/oauth/uri",dispatch,setAuthenticationUriInProps);
-}
-export const sendSesionRequest = function(dispatch){
-    sendRequest("GET","api/user",dispatch,setSessionInProps);
 }
 export const sendMessageRequest = function(dispatch,obj){
     sendRequest("POST", "api/message",dispatch,null,obj);

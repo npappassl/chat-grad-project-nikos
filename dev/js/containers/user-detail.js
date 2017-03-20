@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import {sendMessagesRequest} from "../actions/index"
+import {bindActionCreators} from 'redux';
+import * as messageActions from "../actions/messageActions"
 /*
  * We need "if(!this.props.user)" because we set state to null by default
  * */
@@ -8,10 +9,12 @@ import {sendMessagesRequest} from "../actions/index"
 class UserDetail extends Component {
     constructor(props){
         super(props);
-        sendMessagesRequest(this.props.dispatch);
-        setInterval( () =>{
-            sendMessagesRequest(this.props.dispatch);
-        } , 2000);
+        // console.log(allActions);
+        this.props.actions.loadMessages();
+        // sendMessagesRequest(this.props.dispatch);
+        // setInterval( () =>{
+        //     sendMessagesRequest(this.props.dispatch);
+        // } , 2000);
     }
     eachMsg(msg,i,classNames) {
         return (
@@ -68,5 +71,10 @@ function mapStateToProps(state) {
         session: state.session
     };
 }
+function mapDispatchToProps(dispatch) {
+    return {
+      actions: bindActionCreators(messageActions, dispatch)
+    };
+}
 
-export default connect(mapStateToProps)(UserDetail);
+export default connect(mapStateToProps, mapDispatchToProps)(UserDetail);
