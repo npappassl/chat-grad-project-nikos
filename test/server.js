@@ -65,12 +65,18 @@ describe("server", function() {
                 find: sinon.stub(),
                 findOne: sinon.stub(),
                 insertOne: sinon.spy()
+            },
+            messages: {
+                find: sinon.stub(),
+                findOne: sinon.stub(),
+                insertOne: sinon.spy()
             }
         };
         db = {
             collection: sinon.stub()
         };
         db.collection.withArgs("users").returns(dbCollections.users);
+        db.collection.withArgs("messages").returns(dbCollections.messages);
 
         githubAuthoriser = {
             authorise: function() {},
@@ -284,6 +290,44 @@ describe("server", function() {
 
                 request({url: requestUrl, jar: cookieJar}, function(error, response) {
                     assert.equal(response.statusCode, 500);
+                    done();
+                });
+            });
+        });
+    });
+    describe("GET api/messages", function() {
+        var requestUrl = baseUrl + "/api/messages";
+
+        it("responds with status code 401 if user not authenticated", function(done) {
+            request(requestUrl, function(error, response) {
+                assert.equal(response.statusCode, 401);
+                done();
+            });
+        });
+        it("returns all the messages as an array", function(done) {
+            authenticateUser(testUser, testToken, function() {
+                request(requestUrl, function(error, response, body) {
+                    assert.equal(JSON.parse(body), []);
+                    done();
+                });
+            });
+        });
+    });
+    describe("POST api/message", function() {
+        var requestUrl = baseUrl + "/api/message";
+        it("responds with status code 401 if user not authenticated", function(done) {
+            request(requestUrl, function(error, response) {
+                assert.equal(response.statusCode, 401);
+                done();
+            });
+        });
+        it("responds with 200 if message posted", function(done) {
+            authenticateUser(testUser, testToken, function() {
+                request({url: requestUrl, jar: cookieJar,
+                    method: "POST", headers: {
+                        "Content-type": "application/json"
+                    }}, function(error, response, body) {
+                    assert.equal(response.statusCode, 200);
                     done();
                 });
             });
