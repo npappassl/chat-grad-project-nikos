@@ -20,14 +20,14 @@ class App extends Component {
     renderNormal() {
         return (
             <div id="layout">
-            <div id="UserList">
-            <h2>User List</h2>
-            <UserList />
-            </div>
-            <div id="rightVerticalLayout">
-            <UserDetails />
-            <MessageTextArea />
-            </div>
+                <div id="UserList">
+                    <h2>User List</h2>
+                    <UserList />
+                </div>
+                <div id="rightVerticalLayout">
+                    <UserDetails />
+                    <MessageTextArea />
+                </div>
             </div>
         );
     }

@@ -39,10 +39,10 @@ class UserDetail extends Component {
     render() {
         const {user} = this.props;
         if (!user) {
-            return (<div></div>);
+            return (<div id="userDetailWrap"></div>);
         }
         return (
-            <div>
+            <div id="userDetailWrap">
                 <div>
                     <span id="userThumbSpan">
                         <img id="userThumb" height="64" src={user.thumbnail} />
