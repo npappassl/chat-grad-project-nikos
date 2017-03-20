@@ -33,6 +33,12 @@ var testGithubUser = {
 };
 var testToken = "123123";
 var testExpiredToken = "987978";
+var testMessage = {
+    userTo: "nikos",
+    userFrom: "giannis",
+    msg: "this is a message"
+};
+var testMessages = [testMessage];
 
 describe("server", function() {
     var cookieJar;
@@ -297,7 +303,13 @@ describe("server", function() {
     });
     describe("GET api/messages", function() {
         var requestUrl = baseUrl + "/api/messages";
-
+        var allMsges;
+        beforeEach(function() {
+            allMsges = {
+                toArray: sinon.stub()
+            };
+            dbCollections.messages.find.returns(allMsges);
+        });
         it("responds with status code 401 if user not authenticated", function(done) {
             request(requestUrl, function(error, response) {
                 assert.equal(response.statusCode, 401);
@@ -306,8 +318,22 @@ describe("server", function() {
         });
         it("returns all the messages as an array", function(done) {
             authenticateUser(testUser, testToken, function() {
-                request(requestUrl, function(error, response, body) {
-                    assert.equal(JSON.parse(body), []);
+                allMsges.toArray.callsArgWith(0, null, testMessages);
+                request({url: requestUrl, jar: cookieJar}, function(error, response, body) {
+                    assert.deepEqual(JSON.parse(body), [{
+                        to: "nikos",
+                        from: "giannis",
+                        msg: "this is a message"
+                    }]);
+                    done();
+                });
+            });
+        });
+        it("responds with status code 500 if database error", function(done) {
+            authenticateUser(testUser, testToken, function() {
+                allMsges.toArray.callsArgWith(0, {err: "Database failure"}, null);
+                request({url: requestUrl, jar: cookieJar}, function(error, response) {
+                    assert.equal(response.statusCode, 500);
                     done();
                 });
             });
