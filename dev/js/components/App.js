@@ -32,7 +32,7 @@ class App extends Component {
         );
     }
     render() {
-        if(this.props.session !==false){
+        if(this.props.session){
             return this.renderNormal();
         } else{
             return this.renderLogin();
