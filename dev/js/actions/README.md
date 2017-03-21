@@ -4,7 +4,7 @@
 
 ### sendAuthUriRequest
 ### sendSesionRequest
-
+-------------------------------------------------------------------------------
 Actions are just things that happen *(seriously, that's it)*.
 - most actions are user events (clicked a button, submitted a form, etc...)
 - can also be other events such as an API call returning data
