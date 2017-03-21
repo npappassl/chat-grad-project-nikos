@@ -11,10 +11,9 @@ class UserDetail extends Component {
         super(props);
         // console.log(allActions);
         this.props.actions.loadMessages();
-        // sendMessagesRequest(this.props.dispatch);
-        // setInterval( () =>{
-        //     sendMessagesRequest(this.props.dispatch);
-        // } , 2000);
+        setInterval( () =>{
+            this.props.actions.loadMessages();
+        } , 4000);
     }
     eachMsg(msg,i,classNames) {
         return (
@@ -25,7 +24,7 @@ class UserDetail extends Component {
         console.log("rendered messages");
         if(this.props.messages){
             return this.props.messages.map((msg,i) => {
-                console.log(msg.from,this.props.session._id);
+                // console.log(msg.from,this.props.session._id);
                 if(msg.from === this.props.session._id &&
                 msg.to === this.props.user.id){
                     return this.eachMsg(msg,i,"sent");

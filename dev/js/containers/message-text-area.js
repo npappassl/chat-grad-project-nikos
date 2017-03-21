@@ -1,6 +1,7 @@
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import {sendMessageRequest} from "../actions/index"
+import React, {Component} from "react";
+import {connect} from "react-redux";
+import {sendMessageRequest} from "../actions/messageActions"
+// import {sendMessageRequest} from "../actions/index";
 class MessageTextArea extends Component {
     constructor(props){
         super(props);
@@ -19,7 +20,7 @@ class MessageTextArea extends Component {
             msg : this.state.value
         };
         this.setState({value: ""});
-        sendMessageRequest(null,obj);
+        sendMessageRequest(obj);
         event.preventDefault();
     }
     render() {

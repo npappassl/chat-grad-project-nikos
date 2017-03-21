@@ -12,8 +12,8 @@ class App extends Component {
     constructor(props){
         super(props);
         // const dis = this.props.dispatch;
-        this.props.actions.sendAuthUriRequest();
         this.props.actions.sendSesionRequest();
+        this.props.actions.sendAuthUriRequest();
     }
     renderLogin() {
         return (<LoginScreen loginUri={this.props.loginUri} />);
@@ -34,10 +34,11 @@ class App extends Component {
     }
     render() {
         if(this.props.session){
-            return this.renderNormal();
-        } else{
-            return this.renderLogin();
+            if(this.props.session._id){
+                return this.renderNormal();
+            }
         }
+        return this.renderLogin();
     }
 }
 function mapStateToProps(state) {
@@ -54,4 +55,4 @@ function mapDispatchToProps(dispatch){
         actions: bindActionCreators(loginActions, dispatch)
     }
 }
-export default connect(mapStateToProps,mapDispatchToProps)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(App);

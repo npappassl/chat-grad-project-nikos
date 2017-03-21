@@ -6,13 +6,13 @@ var bodyParser = require("body-parser");
 module.exports = function(port, db, githubAuthoriser, middleware) {
     var app = express();
 
-    app.use(express.static("public"));
-    app.use(bodyParser.json());
-    app.use(cookieParser());
     for (let i in middleware) {
         app.use(middleware[i]);
     }
+    app.use(bodyParser.json());
+    app.use(cookieParser());
 
+    app.use(express.static("public"));
     var users = db.collection("users");
     var messages = db.collection("messages");
     var sessions = {};

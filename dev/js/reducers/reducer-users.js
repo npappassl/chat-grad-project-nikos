@@ -4,7 +4,7 @@ export default function (state = [], action) {
     switch (action.type) {
         case ATypes.GOT_USERS:
             return action.payload;
-            break;
+            // break;
     }
     if (state.length === 0){
         return [

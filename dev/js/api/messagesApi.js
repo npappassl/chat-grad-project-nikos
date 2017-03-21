@@ -1,17 +1,31 @@
 export default class MessagesApi{
     static getAllMessages() {
-    // const headers = this.requestHeaders();
-    // const request = new Request(`${process.env.API_HOST}/api/v1/cats`, {
-    const request = new Request("/api/messages", {
-      method: 'GET',
-    //   headers: headers
-    });
+        const request = new Request("/api/messages", {
+            method: 'GET',
+            credentials: 'include'
+        });
 
-    return fetch(request).then(response => {
-         return response.json();
-       }).catch(error => {
-         return error;
-       });
+        return fetch(request).then(response => {
+            return response.json();
+        }).catch(error => {
+            return error;
+        });
      }
 
+     static sendMessage(obj){
+         const request = new Request("/api/message", {
+             method: 'POST',
+             headers: {
+                "Content-type": "application/json"
+             },
+             body: JSON.stringify(obj),
+             credentials: 'include'
+         });
+
+        return fetch(request).then(response => {
+            return response.json();
+        }).catch(error => {
+            return error;
+        });
+     }
 }

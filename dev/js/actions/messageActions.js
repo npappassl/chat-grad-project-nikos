@@ -5,20 +5,21 @@ export const loadMessages = function() {
     console.log("loadMessages");
     return function(dispatch) {
         console.log("dis",dispatch);
-        return MessagesApi.getAllMessages().then(messages =>{
-                dispatch(()=>{
-                    return {
-                        type: ATypes.GOT_MESSAGES,
-                        payload: messages
-                    }
-                });
+        return MessagesApi.getAllMessages()
+            .then(messages =>{
+                dispatch(loadMessagesSuccess(messages));
         }).catch(error => {
             throw(error);
         });
     };
-}
-export const sendMessagesRequest = function (dispatch){
-    console.log("send Messages requet");
+};
+const loadMessagesSuccess = function(messages) {
+    return {
+        type: ATypes.GOT_MESSAGES,
+        payload: messages
+    };
+};
 
-    sendRequest("GET","api/messages",dispatch,setMessagesInProps);
+export const sendMessageRequest = function(obj){
+    MessagesApi.sendMessage(obj);
 }
