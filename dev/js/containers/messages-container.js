@@ -1,6 +1,4 @@
 import React, {Component} from 'react';
-// import ReactDOM from "react-dom";
-// import Popup from "react-popup";
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import * as messageActions from "../actions/messageActions"
@@ -14,7 +12,6 @@ class MessagesContainer extends Component {
     constructor(props){
         super(props);
         // console.log(allActions);
-        // this.popout = this.popout.bind(this);
         this.props.actions.loadMessages(this.props.session);
         setInterval( () =>{
             this.props.actions.loadMessages(this.props.session);
@@ -28,12 +25,6 @@ class MessagesContainer extends Component {
             <li key={i} className={classNames}> {msg.msg} </li>
         );
     }
-    // popout(){
-    //     this.setState({ poppedOut: true });
-    // }
-    // popupClosed() {
-    //     this.setState({ poppedOut: false });
-    // }
     renderMessages() {
         console.log("rendered messages");
         if(this.props.messages){
@@ -52,18 +43,6 @@ class MessagesContainer extends Component {
         }
 
     }
-    // componentDidUpdate(){
-    //     const {user} = this.props;
-    //     if(user&&this.state.poppedOut){
-    //         ReactDOM.render(<Popup title={user.id} />,document.getElementById("popout"));
-    //
-    //         // <Popup title="nikosPop" onClosing={this.popupClosed}>
-    //         //     <ul id="messages">
-    //         //         {this.renderMessages()}
-    //         //     </ul>
-    //         // </Popup>
-    //     }
-    // }
     render() {
         const {user} = this.props;
         if (!user) {
