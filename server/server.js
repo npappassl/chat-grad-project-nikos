@@ -3,6 +3,8 @@ var express = require("express");
 var cookieParser = require("cookie-parser");
 var bodyParser = require("body-parser");
 
+const getMessagesRelativeTo = getFilteredMessages;
+
 module.exports = function(port, db, githubAuthoriser, middleware) {
     var app = express();
 
@@ -107,6 +109,23 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             }
         });
     });
+
+    app.get("/api/messages/:id", function(req, res) {
+        messages.find().toArray(function(err, docs) {
+            if (!err) {
+                res.json(getMessagesRelativeTo(req.params.id, docs)
+                .map(function(message) {
+                    return {
+                        to: message.userTo,
+                        from: message.userFrom,
+                        msg: message.msg
+                    };
+                }));
+            } else {
+                res.sendStatus(500);
+            }
+        });
+    });
     app.post("/api/message", function(req, res) {
         console.log(req.body);
         messages.insertOne(req.body);
@@ -114,3 +133,12 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
     });
     return app.listen(port);
 };
+//  My auxiliary functions
+function getFilteredMessages(id, docs) {
+    return docs.filter(function(message) {
+        return (
+            message.userFrom === id ||
+            message.userTo === id
+        );
+    });
+}
