@@ -1,18 +1,19 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 import UserList from '../containers/user-list';
 import UserDetails from '../containers/user-detail';
 import MessageTextArea from '../containers/message-text-area';
 import LoginScreen from "../containers/login-screen";
-import {sendAuthUriRequest, sendSesionRequest} from "../actions/index";
+import * as loginActions from "../actions/loginActions";
 
 require('../../scss/style.scss');
 class App extends Component {
     constructor(props){
         super(props);
-        const dis = this.props.dispatch;
-        sendAuthUriRequest(dis);
-        sendSesionRequest(dis);
+        // const dis = this.props.dispatch;
+        this.props.actions.sendSesionRequest();
+        this.props.actions.sendAuthUriRequest();
     }
     renderLogin() {
         return (<LoginScreen loginUri={this.props.loginUri} />);
@@ -33,10 +34,11 @@ class App extends Component {
     }
     render() {
         if(this.props.session){
-            return this.renderNormal();
-        } else{
-            return this.renderLogin();
+            if(this.props.session._id){
+                return this.renderNormal();
+            }
         }
+        return this.renderLogin();
     }
 }
 function mapStateToProps(state) {
@@ -45,4 +47,12 @@ function mapStateToProps(state) {
         loginUri: state.loginUri,
     };
 }
-export default connect(mapStateToProps)(App);
+function mapDispatchToProps(dispatch){
+    // return{
+    //     getUri: () => {return bindActionCreators(loginActions.sendAuthUriRequest,dispatch)}
+    // }
+    return {
+        actions: bindActionCreators(loginActions, dispatch)
+    }
+}
+export default connect(mapStateToProps, mapDispatchToProps)(App);

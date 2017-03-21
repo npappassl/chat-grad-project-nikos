@@ -1,6 +1,7 @@
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import {sendMessageRequest} from "../actions/index"
+import React, {Component} from "react";
+import {connect} from "react-redux";
+import {sendMessageRequest} from "../actions/messageActions"
+// import {sendMessageRequest} from "../actions/index";
 class MessageTextArea extends Component {
     constructor(props){
         super(props);
@@ -19,14 +20,14 @@ class MessageTextArea extends Component {
             msg : this.state.value
         };
         this.setState({value: ""});
-        sendMessageRequest(null,obj);
+        sendMessageRequest(obj);
         event.preventDefault();
     }
     render() {
         return (
             <div id="messageDiv">
                 <form onSubmit={this.sendMessage} >
-                    <input type="text" id="messageTextArea" value={this.state.value} onChange={this.handleChange}></input>
+                    <input type="text" id="messageTextArea" value={this.state.value} onChange={this.handleChange} autoFocus></input>
                     <input id="submit-message" type="submit" value="send"></input>
                 </form>
             </div>

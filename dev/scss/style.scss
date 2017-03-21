@@ -1,13 +1,14 @@
 $primary: #006699;
-$userListBgColor: #5f3a51;
+$userListBgColor: #773d3d;
 $userListFgColor: #fdfdff;
 $messageTextAreaFgColor: #011;
-$messageDivBgColor: #85928e;
+$messageDivBgColor: #3b8a72;
+$userListTitle: $messageDivBgColor;
 $mainFont: "Comfortaa", cursive;
 $buttonFont: "Hind", sans-serif;
 
 h2 {
-	color: $primary;
+	color: $userListTitle;
 }
 main,body,html,#layout,#root{
 	font-family: $mainFont;
@@ -73,7 +74,7 @@ li{
 #messageTextArea{
 	margin: 1em auto;
 	display: inline-block;
-	min-width: 85%;
+	width: 95%;
 	min-height: 20px;
 	max-height: 25px;
 	color: $messageTextAreaFgColor;
@@ -81,16 +82,17 @@ li{
 	padding: 0;
 }
 #submit-message{
-	font-family: $buttonFont;
-	font-weight: 100;
-	background-color: rgba(255,255,255,0.3);
-	margin:0;
-	padding: 0;
-	border-width: 1px;
-	min-height: 20px;
-	max-height: 25px;
-	width:80px;
-	color: white;
+	display: none;
+	// font-family: $buttonFont;
+	// font-weight: 100;
+	// background-color: rgba(255,255,255,0.3);
+	// margin:0;
+	// padding: 0;
+	// border-width: 1px;
+	// min-height: 20px;
+	// max-height: 25px;
+	// width:80px;
+	// color: white;
 }
 .sent{
 	text-align: right;
