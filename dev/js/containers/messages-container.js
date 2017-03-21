@@ -6,7 +6,9 @@ import * as messageActions from "../actions/messageActions"
  * We need "if(!this.props.user)" because we set state to null by default
  * */
 
-class UserDetail extends Component {
+const filterMessages = filterMessagesFromTo;
+
+class MessagesContainer extends Component {
     constructor(props){
         super(props);
         // console.log(allActions);
@@ -14,6 +16,9 @@ class UserDetail extends Component {
         setInterval( () =>{
             this.props.actions.loadMessages(this.props.session);
         } , 4000);
+        this.state = {
+            poppedOut: false
+        }
     }
     eachMsg(msg,i,classNames) {
         return (
@@ -62,6 +67,10 @@ class UserDetail extends Component {
     }
 }
 
+function filterMessagesFromTo(msg,idFrom,idTo) {
+
+}
+
 // "state.activeUser" is set in reducers/index.js
 function mapStateToProps(state) {
     return {
@@ -76,4 +85,4 @@ function mapDispatchToProps(dispatch) {
     };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(UserDetail);
+export default connect(mapStateToProps, mapDispatchToProps)(MessagesContainer);

@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import UserList from '../containers/user-list';
-import UserDetails from '../containers/user-detail';
+import MessagesContainer from '../containers/messages-container';
 import MessageTextArea from '../containers/message-text-area';
 import LoginScreen from "../containers/login-screen";
 import * as loginActions from "../actions/loginActions";
@@ -26,7 +26,7 @@ class App extends Component {
                     <UserList />
                 </div>
                 <div id="rightVerticalLayout">
-                    <UserDetails />
+                    <MessagesContainer />
                     <MessageTextArea />
                 </div>
             </div>
