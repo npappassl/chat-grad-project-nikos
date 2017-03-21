@@ -6,6 +6,7 @@ var bodyParser = require("body-parser");
 const getMessagesRelativeTo = getFilteredMessages;
 
 module.exports = function(port, db, githubAuthoriser, middleware) {
+    let lastTransaction = Date.now();
     var app = express();
 
     for (let i in middleware) {
@@ -32,6 +33,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                             name: githubUser.name,
                             avatarUrl: githubUser.avatar_url
                         });
+                        lastTransaction = Date.now();
                     }
                     sessions[token] = {
                         user: githubUser.login
@@ -127,13 +129,14 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
         });
     });
     app.post("/api/message", function(req, res) {
+        lastTransaction = Date.now();
         console.log(req.body);
         messages.insertOne(req.body);
         res.sendStatus(200);
     });
     return app.listen(port);
 };
-//  My auxiliary functions
+//-------------------  My auxiliary functions ----------------------------------
 function getFilteredMessages(id, docs) {
     return docs.filter(function(message) {
         return (
