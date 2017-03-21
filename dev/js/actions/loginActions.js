@@ -6,8 +6,6 @@ export const sendAuthUriRequest = function() {
     return function(dispatch){
         return LoginApi.getUri()
         .then(uri => {
-            console.log(uri);
-            console.log(dispatch);
             dispatch(loadURISuccess(uri));
         }).catch( function(error) {
             throw (error);
@@ -19,8 +17,6 @@ export const sendSesionRequest = function() {
     return function (dispatch) {
         return LoginApi.getSession()
         .then(session => {
-            console.log(session);
-            console.log(dispatch);
             dispatch(loadSessionSuccess(session));
         }).catch( function(error) {
             throw (error);
@@ -35,7 +31,6 @@ const loadURISuccess = function(uri) {
 };
 
 const loadSessionSuccess = function(session) {
-    console.log(session);
         return {
             type: ATypes.GOT_SESION,
             payload: session
