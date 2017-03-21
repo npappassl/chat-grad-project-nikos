@@ -2,7 +2,8 @@ import React, {Component} from "react";
 import {bindActionCreators} from "redux";
 import {connect} from "react-redux";
 import {selectUser} from "../actions/index";
-import {sendUsersRequest} from "../actions/usersActions"
+import {sendUsersRequest} from "../actions/usersActions";
+import SearchFilterInput from "./searchFilterInput";
 
 class UserList extends Component {
     constructor(props){
@@ -22,7 +23,11 @@ class UserList extends Component {
     renderList() {
         if(this.props.users){
             return this.props.users.map((user) => {
-                return this.eachUser(user);
+                if(this.props.userFilter === ""){
+                    return this.eachUser(user);
+                } else if(user.id.match(this.props.userFilter)){
+                    return this.eachUser(user);
+                }
             });
         } else {
             return;
@@ -31,9 +36,12 @@ class UserList extends Component {
 
     render() {
         return (
-            <ul>
-                {this.renderList()}
-            </ul>
+            <div>
+                <SearchFilterInput />
+                <ul>
+                    {this.renderList()}
+                </ul>
+            </div>
         );
     }
 
@@ -44,6 +52,7 @@ class UserList extends Component {
 function mapStateToProps(state) {
     return {
         users: state.users,
+        userFilter: state.searchFilter
         // hasErrored : state.usersHasErrored,
         // isLoading: state.usersIsLoading
     };
@@ -52,10 +61,6 @@ function mapStateToProps(state) {
 // Get actions and pass them as props to to UserList
 //      > now UserList has this.props.selectUser
 function matchDispatchToProps(dispatch){
-    // return {
-    //     selectUser: (user) => dispatch(selectUser(user)),
-    //     sendUsersRequest: () => sendUsersRequest(dispatch)
-    // };
     return bindActionCreators({
         selectUser: selectUser,
         sendUsersRequest:sendUsersRequest}, dispatch
@@ -65,5 +70,4 @@ function matchDispatchToProps(dispatch){
 // We don't want to return the plain UserList (component) anymore, we want to return the smart Container
 //      > UserList is now aware of state and actions
 
-// export default connect(mapStateToProps)(UserList);
 export default connect(mapStateToProps, matchDispatchToProps)(UserList);
