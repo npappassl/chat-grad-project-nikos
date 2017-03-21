@@ -8,12 +8,11 @@
 ## messageActions.js
 
 ### sendMessageRequest(obj)
-### loadMessages
+### loadMessages()
 
 ## usersActions.js
 
 ### sendUsersRequest()
-### loadUsersSuccess(users)
 -------------------------------------------------------------------------------
 Actions are just things that happen *(seriously, that's it)*.
 - most actions are user events (clicked a button, submitted a form, etc...)
