@@ -4,7 +4,9 @@ import {connect} from 'react-redux';
 class LoginScreen extends Component{
     render(){
         return(
-            <a href={this.props.loginUri}>Log In</a>
+            <div id="loginWrap">
+                <a href={this.props.loginUri}>Log In</a>
+            </div>
         );
     }
 }

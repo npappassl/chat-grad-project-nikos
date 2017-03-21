@@ -13,7 +13,6 @@ export const sendAuthUriRequest = function() {
             throw (error);
         });
     };
-    // sendRequest("GET","api/oauth/uri",dispatch,setAuthenticationUriInProps);
 };
 export const sendSesionRequest = function() {
     console.log("this is sendSession request");
@@ -27,7 +26,6 @@ export const sendSesionRequest = function() {
             throw (error);
         });
     };
-    // sendRequest("GET","api/user",dispatch,setSessionInProps);
 };
 const loadURISuccess = function(uri) {
         return {

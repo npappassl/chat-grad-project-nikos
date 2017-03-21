@@ -1,4 +1,4 @@
-$primary: #006699;
+$primary: #88c2c2;
 $userListBgColor: #773d3d;
 $userListFgColor: #fdfdff;
 $messageTextAreaFgColor: #011;
@@ -26,6 +26,26 @@ li img{
 li{
 	margin-top: 1em;
 }
+// --------------------------- loginScreen -------------------------------------
+#loginWrap{
+	width: 100%;
+	text-align: center;
+	font-size: 2em;
+	margin: 2em;
+}
+#loginWrap a{
+	transition: all 0.4s ease;
+	background-color: $primary;
+	color:white;
+	padding: 1em;
+	border-radius: 0.3em;
+	text-decoration: none;
+}
+#loginWrap a:hover{
+	filter: invert(1);
+	color: black;
+}
+
 #rightVerticalLayout{
 	display: flex;
 	height: 100%;
