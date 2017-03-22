@@ -32,7 +32,7 @@ getUri()
 getSession()
 
 ### MessagesApi.js
-getAllMessages()
+    getAllMessages()
 
 getMessages(user)
 
