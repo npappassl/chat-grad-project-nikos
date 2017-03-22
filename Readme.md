@@ -20,3 +20,5 @@ reducer-login-uri | loginUriReducer | loginUri
 reduser-login | loginReducer | session
 reducer-users | usersReducer | users
 reducer-messages | messagesReducer | messages
+reducer-users-filter | userFilterReducer | searchFilter
+reducer-server-transaction | serverTransReducer | serverTransactionTS
