@@ -26,8 +26,14 @@ reducer-server-transaction | serverTransReducer | serverTransactionTS
 
 ## api
 
-### LoginApi
-file | methods | public
----- | ------- | ------
-LoginApi.js | getUri | true
----- | getSession | true
+### LoginApi.js
+getUri()
+getSession()
+
+### MessagesApi.js
+getAllMessages()
+getMessages(user)
+sendMessage(obj,callback,callbackArg)
+
+##UsersApi
+getUsers()
