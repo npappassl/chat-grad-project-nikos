@@ -15,6 +15,7 @@ class MessageTextArea extends Component {
         this.setState({value: event.target.value});
     }
     sendMessage(event){
+        event.preventDefault();
         const obj = {
             userTo: this.props.userTo.id,
             userFrom: this.props.userFrom._id,
@@ -23,9 +24,7 @@ class MessageTextArea extends Component {
         this.setState({value: ""});
         console.log("userFrom",this.props.userFrom);
         sendMessageRequest(obj);
-        this.props.loadMessages(this.props.userFrom._id);
-        event.preventDefault();
-        // this.props.loadMessages();
+        this.props.loadMessages(this.props.userFrom);
     }
     render() {
         if(!this.props.userTo){
