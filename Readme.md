@@ -27,16 +27,16 @@ reducer-server-transaction | serverTransReducer | serverTransactionTS
 ## api
 
 ### LoginApi.js
-getUri()
+    getUri()
 
-getSession()
+    getSession()
 
 ### MessagesApi.js
     getAllMessages()
 
-getMessages(user)
+    getMessages(user)
 
-sendMessage(obj,callback,callbackArg)
+    sendMessage(obj,callback,callbackArg)
 
-##UsersApi
-getUsers()
+## UsersApi
+    getUsers()
