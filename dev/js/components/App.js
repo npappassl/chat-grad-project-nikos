@@ -7,6 +7,8 @@ import MessageTextArea from '../containers/message-text-area';
 import LoginScreen from "../containers/login-screen";
 import SearchFilterInput from "../containers/searchFilterInput";
 import * as loginActions from "../actions/loginActions";
+import * as messageActions from "../actions/messageActions";
+import * as usersActions from "../actions/usersActions";
 
 require('../../scss/style.scss');
 class App extends Component {
@@ -21,6 +23,11 @@ class App extends Component {
     }
     componentWillUpdate(){
         console.log("updated");
+        if(this.props.serverTransactionTS.needToUpdate){
+            console.log("fetching everything");
+            this.props.actions.loadMessages(this.props.session._id);
+            this.props.actions.sendUsersRequest();
+        }
     }
     renderNormal() {
         return (
@@ -56,8 +63,14 @@ function mapStateToProps(state) {
     };
 }
 function mapDispatchToProps(dispatch){
+    const allActions = {
+        sendSesionRequest:loginActions.sendSesionRequest,
+        sendAuthUriRequest:loginActions.sendAuthUriRequest,
+        sendUsersRequest: usersActions.sendUsersRequest,
+        loadMessages :messageActions.loadMessages
+    }
     return {
-        actions: bindActionCreators(loginActions, dispatch)
+        actions: bindActionCreators(allActions, dispatch)
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(App);
