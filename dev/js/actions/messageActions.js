@@ -8,12 +8,18 @@ export const loadMessages = function(user) {
         // return MessagesApi.getAllMessages()
         return MessagesApi.getMessages(user)
             .then(messages =>{
-                dispatch(loadMessagesSuccess(messages));
+                dispatch(loadServerTransaction(messages.lastTrans));
+                dispatch(loadMessagesSuccess(messages.messages));
         }).catch(error => {
             throw(error);
         });
     };
 };
+
+export const sendMessageRequest = function(obj){
+    MessagesApi.sendMessage(obj);
+}
+
 const loadMessagesSuccess = function(messages) {
     return {
         type: ATypes.GOT_MESSAGES,
@@ -21,6 +27,9 @@ const loadMessagesSuccess = function(messages) {
     };
 };
 
-export const sendMessageRequest = function(obj){
-    MessagesApi.sendMessage(obj);
-}
+const loadServerTransaction = function(timestamp) {
+    return {
+        type: ATypes.SERVER_TRANSACTION_TIMESTAMP,
+        payload: timestamp
+    };
+};

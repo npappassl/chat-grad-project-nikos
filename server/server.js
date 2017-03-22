@@ -99,13 +99,17 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
     app.get("/api/messages", function(req, res) {
         messages.find().toArray(function(err, docs) {
             if (!err) {
-                res.json(docs.map(function(message) {
-                    return {
-                        to: message.userTo,
-                        from: message.userFrom,
-                        msg: message.msg
-                    };
-                }));
+                const retVal = {
+                    lastTrans: lastTransaction,
+                    messages: docs.map(function(message) {
+                        return {
+                            to: message.userTo,
+                            from: message.userFrom,
+                            msg: message.msg
+                        };
+                    })
+                };
+                res.json(retVal);
             } else {
                 res.sendStatus(500);
             }
@@ -115,14 +119,18 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
     app.get("/api/messages/:id", function(req, res) {
         messages.find().toArray(function(err, docs) {
             if (!err) {
-                res.json(getMessagesRelativeTo(req.params.id, docs)
-                .map(function(message) {
-                    return {
-                        to: message.userTo,
-                        from: message.userFrom,
-                        msg: message.msg
-                    };
-                }));
+                const retVal = {
+                    lastTrans: lastTransaction,
+                    messages: getMessagesRelativeTo(req.params.id, docs)
+                    .map(function(message) {
+                        return {
+                            to: message.userTo,
+                            from: message.userFrom,
+                            msg: message.msg
+                        };
+                    })
+                };
+                res.json(retVal);
             } else {
                 res.sendStatus(500);
             }

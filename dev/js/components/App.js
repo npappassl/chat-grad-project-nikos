@@ -19,6 +19,9 @@ class App extends Component {
     renderLogin() {
         return (<LoginScreen loginUri={this.props.loginUri} />);
     }
+    componentWillUpdate(){
+        console.log("updated");
+    }
     renderNormal() {
         return (
             <div id="layout">
@@ -35,9 +38,11 @@ class App extends Component {
         );
     }
     render() {
-        if(this.props.session){
-            if(this.props.session._id){
+        if(this.props.session) {
+            if(this.props.session._id) {
                 return this.renderNormal();
+            } else if(this.props.session === "loading") {
+                return (<span id="appPlaceholder">Loading...</span>);
             }
         }
         return this.renderLogin();
@@ -47,6 +52,7 @@ function mapStateToProps(state) {
     return {
         session: state.session,
         loginUri: state.loginUri,
+        serverTransactionTS: state.serverTransactionTS
     };
 }
 function mapDispatchToProps(dispatch){

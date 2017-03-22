@@ -26,6 +26,12 @@ li img{
 li{
 	margin-top: 1em;
 }
+// ----------------------------- Loading ---------------------------------------
+#appPlaceholder{
+	font-size: 3em;
+	display: block;
+	margin:2em 46%;
+}
 // --------------------------- loginScreen -------------------------------------
 #loginWrap{
 	width: 100%;
@@ -106,6 +112,10 @@ li{
 	width: 95%;
 	min-height: 20px;
 	max-height: 25px;
+	border-radius: 3px;
+	border-style: solid;
+	border-color: $userListBgColor;
+	border-width: 1px;
 	color: $messageTextAreaFgColor;
 	font-family: $mainFont;
 	padding: 0;

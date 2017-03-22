@@ -15,6 +15,7 @@ export const sendAuthUriRequest = function() {
 export const sendSesionRequest = function() {
     console.log("this is sendSession request");
     return function (dispatch) {
+        dispatch(loadSessionLoading());
         return LoginApi.getSession()
         .then(session => {
             dispatch(loadSessionSuccess(session));
@@ -32,7 +33,12 @@ const loadURISuccess = function(uri) {
 
 const loadSessionSuccess = function(session) {
         return {
-            type: ATypes.GOT_SESION,
+            type: ATypes.GOT_SESION_SUCCESS,
             payload: session
+        };
+};
+const loadSessionLoading = function() {
+        return {
+            type: ATypes.GOT_SESION_LOADING,
         };
 };

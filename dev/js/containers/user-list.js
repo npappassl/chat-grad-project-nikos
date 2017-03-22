@@ -20,7 +20,11 @@ class UserList extends Component {
         );
     }
     renderList() {
-        if(this.props.users){
+        if(this.props.users==="loading"){
+            return (
+                <span>Loading...</span>
+            );
+        } else if(this.props.users){
             return this.props.users.map((user) => {
                 if(this.props.userFilter === ""){
                     return this.eachUser(user);
@@ -28,8 +32,6 @@ class UserList extends Component {
                     return this.eachUser(user);
                 }
             });
-        } else {
-            return;
         }
     }
 
