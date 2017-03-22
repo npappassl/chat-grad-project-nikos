@@ -21,11 +21,11 @@ class App extends Component {
     renderLogin() {
         return (<LoginScreen loginUri={this.props.loginUri} />);
     }
-    componentWillUpdate(){
+    componentDidUpdate(){
         console.log("updated");
-        if(this.props.serverTransactionTS.needToUpdate){
+        if(this.props.serverTransactionTS.needToUpdate && this.props.session) {
             console.log("fetching everything");
-            this.props.actions.loadMessages(this.props.session._id);
+            this.props.actions.loadMessages(this.props.session);
             this.props.actions.sendUsersRequest();
         }
     }

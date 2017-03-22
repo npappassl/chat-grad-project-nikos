@@ -8,6 +8,7 @@ export const loadMessages = function(user) {
         // return MessagesApi.getAllMessages()
         return MessagesApi.getMessages(user)
             .then(messages =>{
+                console.log(messages);
                 dispatch(loadServerTransaction(messages.lastTrans));
                 dispatch(loadMessagesSuccess(messages.messages));
         }).catch(error => {
@@ -16,8 +17,8 @@ export const loadMessages = function(user) {
     };
 };
 
-export const sendMessageRequest = function(obj,callback,callbackArg){
-    MessagesApi.sendMessage(obj,callback,callbackArg);
+export const sendMessageRequest = function(obj){
+    MessagesApi.sendMessage(obj);
 }
 
 const loadMessagesSuccess = function(messages) {

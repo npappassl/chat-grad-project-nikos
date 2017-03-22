@@ -21,8 +21,10 @@ class MessageTextArea extends Component {
             msg : this.state.value
         };
         this.setState({value: ""});
+        console.log("userFrom",this.props.userFrom);
+        sendMessageRequest(obj);
+        this.props.loadMessages(this.props.userFrom._id);
         event.preventDefault();
-        sendMessageRequest(obj,this.props.loadMessages,this.props.userFrom);
         // this.props.loadMessages();
     }
     render() {
