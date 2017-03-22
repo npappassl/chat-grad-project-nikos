@@ -22,3 +22,12 @@ reducer-users | usersReducer | users
 reducer-messages | messagesReducer | messages
 reducer-users-filter | userFilterReducer | searchFilter
 reducer-server-transaction | serverTransReducer | serverTransactionTS
+
+
+## api
+
+### LoginApi
+file | methods | public
+---- | ------- | ------
+LoginApi.js | getUri | true
+ | getSession | true
