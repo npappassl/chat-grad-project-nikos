@@ -16,3 +16,7 @@ user-list.js | UserList
 file | Class | state.property
 ---- | ----- | --------------
 reducer-active-user | ActiveUserReducer | activeUser
+reducer-login-uri | loginUriReducer | loginUri
+reduser-login | loginReducer | session
+reducer-users | usersReducer | users
+reducer-messages | messagesReducer | messages
