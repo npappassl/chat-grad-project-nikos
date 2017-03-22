@@ -1,8 +1,8 @@
 import {ATypes} from "../actions/types";
 
-export default function (state = "loading", action) {
+export default function (state = "", action) {
     switch (action.type) {
-        case ATypes.GOT_USERS:
+        case ATypes.SEARCH_FILTER_CHANGED:
             return action.payload;
             // break;
     }

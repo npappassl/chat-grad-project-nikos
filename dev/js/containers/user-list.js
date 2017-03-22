@@ -3,7 +3,6 @@ import {bindActionCreators} from "redux";
 import {connect} from "react-redux";
 import {selectUser} from "../actions/index";
 import {sendUsersRequest} from "../actions/usersActions";
-import SearchFilterInput from "./searchFilterInput";
 
 class UserList extends Component {
     constructor(props){
@@ -21,7 +20,11 @@ class UserList extends Component {
         );
     }
     renderList() {
-        if(this.props.users){
+        if(this.props.users==="loading"){
+            return (
+                <span>Loading...</span>
+            );
+        } else if(this.props.users){
             return this.props.users.map((user) => {
                 if(this.props.userFilter === ""){
                     return this.eachUser(user);
@@ -29,19 +32,14 @@ class UserList extends Component {
                     return this.eachUser(user);
                 }
             });
-        } else {
-            return;
         }
     }
 
     render() {
         return (
-            <div>
-                <SearchFilterInput />
                 <ul>
                     {this.renderList()}
                 </ul>
-            </div>
         );
     }
 

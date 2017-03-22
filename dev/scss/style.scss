@@ -26,6 +26,12 @@ li img{
 li{
 	margin-top: 1em;
 }
+// ----------------------------- Loading ---------------------------------------
+#appPlaceholder{
+	font-size: 3em;
+	display: block;
+	margin:2em 46%;
+}
 // --------------------------- loginScreen -------------------------------------
 #loginWrap{
 	width: 100%;
@@ -72,8 +78,13 @@ li{
 }
 // left SideBar (nav list)
 #searchFilterInput{
+	width: 90%;
 	display: block;
 	margin: 1em auto;
+	border-radius: 3px;
+	border-style: solid;
+	border-color: $userListTitle;
+	border-width: 1px;
 }
 #UserList{
 	float: left;
@@ -101,6 +112,10 @@ li{
 	width: 95%;
 	min-height: 20px;
 	max-height: 25px;
+	border-radius: 3px;
+	border-style: solid;
+	border-color: $userListBgColor;
+	border-width: 1px;
 	color: $messageTextAreaFgColor;
 	font-family: $mainFont;
 	padding: 0;

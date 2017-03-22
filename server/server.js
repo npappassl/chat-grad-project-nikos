@@ -6,6 +6,7 @@ var bodyParser = require("body-parser");
 const getMessagesRelativeTo = getFilteredMessages;
 
 module.exports = function(port, db, githubAuthoriser, middleware) {
+    let lastTransaction = Date.now();
     var app = express();
 
     for (let i in middleware) {
@@ -32,6 +33,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                             name: githubUser.name,
                             avatarUrl: githubUser.avatar_url
                         });
+                        lastTransaction = Date.now();
                     }
                     sessions[token] = {
                         user: githubUser.login
@@ -97,13 +99,17 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
     app.get("/api/messages", function(req, res) {
         messages.find().toArray(function(err, docs) {
             if (!err) {
-                res.json(docs.map(function(message) {
-                    return {
-                        to: message.userTo,
-                        from: message.userFrom,
-                        msg: message.msg
-                    };
-                }));
+                const retVal = {
+                    lastTrans: lastTransaction,
+                    messages: docs.map(function(message) {
+                        return {
+                            to: message.userTo,
+                            from: message.userFrom,
+                            msg: message.msg
+                        };
+                    })
+                };
+                res.json(retVal);
             } else {
                 res.sendStatus(500);
             }
@@ -113,27 +119,32 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
     app.get("/api/messages/:id", function(req, res) {
         messages.find().toArray(function(err, docs) {
             if (!err) {
-                res.json(getMessagesRelativeTo(req.params.id, docs)
-                .map(function(message) {
-                    return {
-                        to: message.userTo,
-                        from: message.userFrom,
-                        msg: message.msg
-                    };
-                }));
+                const retVal = {
+                    lastTrans: lastTransaction,
+                    messages: getMessagesRelativeTo(req.params.id, docs)
+                    .map(function(message) {
+                        return {
+                            to: message.userTo,
+                            from: message.userFrom,
+                            msg: message.msg
+                        };
+                    })
+                };
+                res.json(retVal);
             } else {
                 res.sendStatus(500);
             }
         });
     });
     app.post("/api/message", function(req, res) {
+        lastTransaction = Date.now();
         console.log(req.body);
         messages.insertOne(req.body);
         res.sendStatus(200);
     });
     return app.listen(port);
 };
-//  My auxiliary functions
+//-------------------  My auxiliary functions ----------------------------------
 function getFilteredMessages(id, docs) {
     return docs.filter(function(message) {
         return (

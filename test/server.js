@@ -325,7 +325,7 @@ describe("server", function() {
             authenticateUser(testUser, testToken, function() {
                 allMsges.toArray.callsArgWith(0, null, testMessages);
                 request({url: requestUrl, jar: cookieJar}, function(error, response, body) {
-                    assert.deepEqual(JSON.parse(body), [
+                    assert.deepEqual(JSON.parse(body).messages, [
                         {to: "nikos",
                         from: "giannis",
                         msg: "this is a message 1"},
@@ -366,7 +366,7 @@ describe("server", function() {
             authenticateUser(testUser, testToken, function() {
                 allMsges.toArray.callsArgWith(0, null, testMessages);
                 request({url: requestUrl, jar: cookieJar}, function(error, response, body) {
-                    assert.deepEqual(JSON.parse(body), [
+                    assert.deepEqual(JSON.parse(body).messages, [
                         {to: "nikos",
                         from: "giannis",
                         msg: "this is a message 1"}

@@ -13,17 +13,19 @@ class MessagesContainer extends Component {
         super(props);
         // console.log(allActions);
         this.props.actions.loadMessages(this.props.session);
-        setInterval( () =>{
-            this.props.actions.loadMessages(this.props.session);
-        } , 4000);
-        this.state = {
-            poppedOut: false
-        }
+        // setInterval( () =>{
+        //     this.props.actions.loadMessages(this.props.session);
+        // } , 4000);
     }
     eachMsg(msg,i,classNames) {
         return (
             <li key={i} className={classNames}> {msg.msg} </li>
         );
+    }
+    componentWillUpdate(){
+        console.log("messages container updated");
+        // this.props.actions.loadMessages(this.props.session);
+
     }
     renderMessages() {
         console.log("rendered messages");
