@@ -3,7 +3,6 @@ import {bindActionCreators} from "redux";
 import {connect} from "react-redux";
 import {selectUser} from "../actions/index";
 import {sendUsersRequest} from "../actions/usersActions";
-import SearchFilterInput from "./searchFilterInput";
 
 class UserList extends Component {
     constructor(props){
@@ -36,12 +35,9 @@ class UserList extends Component {
 
     render() {
         return (
-            <div>
-                <SearchFilterInput />
                 <ul>
                     {this.renderList()}
                 </ul>
-            </div>
         );
     }
 

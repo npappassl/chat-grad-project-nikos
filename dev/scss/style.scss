@@ -72,8 +72,13 @@ li{
 }
 // left SideBar (nav list)
 #searchFilterInput{
+	width: 90%;
 	display: block;
 	margin: 1em auto;
+	border-radius: 3px;
+	border-style: solid;
+	border-color: $userListTitle;
+	border-width: 1px;
 }
 #UserList{
 	float: left;

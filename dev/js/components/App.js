@@ -5,6 +5,7 @@ import UserList from '../containers/user-list';
 import MessagesContainer from '../containers/messages-container';
 import MessageTextArea from '../containers/message-text-area';
 import LoginScreen from "../containers/login-screen";
+import SearchFilterInput from "../containers/searchFilterInput";
 import * as loginActions from "../actions/loginActions";
 
 require('../../scss/style.scss');
@@ -22,6 +23,7 @@ class App extends Component {
         return (
             <div id="layout">
                 <div id="UserList">
+                    <SearchFilterInput />
                     <h2>User List</h2>
                     <UserList />
                 </div>
