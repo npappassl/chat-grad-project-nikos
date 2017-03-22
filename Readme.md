@@ -3,8 +3,8 @@
 ## components
 ### App.js
 
-## containers
---------------------- | ------------------
+containers | Class
+---------- | -----
 login-screen.js | LoginScreen
 message-text-area.js | MessageTextArea
 ### messages-container.js
