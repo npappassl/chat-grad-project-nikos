@@ -30,4 +30,4 @@ reducer-server-transaction | serverTransReducer | serverTransactionTS
 file | methods | public
 ---- | ------- | ------
 LoginApi.js | getUri | true
-- | getSession | true
+---- | getSession | true
