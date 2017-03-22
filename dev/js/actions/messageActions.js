@@ -16,8 +16,8 @@ export const loadMessages = function(user) {
     };
 };
 
-export const sendMessageRequest = function(obj){
-    MessagesApi.sendMessage(obj);
+export const sendMessageRequest = function(obj,callback,callbackArg){
+    MessagesApi.sendMessage(obj,callback,callbackArg);
 }
 
 const loadMessagesSuccess = function(messages) {
