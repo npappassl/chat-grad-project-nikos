@@ -2,11 +2,17 @@
 
 ## components
 ### App.js
-
-containers | Class
----------- | -----
+## containers
+file | Class
+---- | -----
 login-screen.js | LoginScreen
 message-text-area.js | MessageTextArea
-### messages-container.js
-### searchFilterInput.js
-### user-list.js
+messages-container.js | MessagesContainer
+searchFilterInput.js | SearchFilterInput
+user-list.js | UserList
+
+## reducers
+
+file | Class | state.property
+---- | ----- | --------------
+reducer-active-user | ActiveUserReducer | activeUser
