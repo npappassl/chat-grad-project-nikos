@@ -13,17 +13,20 @@ class MessagesContainer extends Component {
         super(props);
         // console.log(allActions);
         this.props.actions.loadMessages(this.props.session);
-        // setInterval( () =>{
-        //     this.props.actions.loadMessages(this.props.session);
-        // } , 4000);
+        setInterval( () =>{
+            this.props.actions.loadMessages(this.props.session);
+        } , 10000);
     }
     eachMsg(msg,i,classNames) {
         return (
             <li key={i} className={classNames}> {msg.msg} </li>
         );
     }
+    componentDidMount(){
+        // document.getElementById('userDetailWrap').scrollTop = 1000000;
+    }
     componentWillUpdate(){
-        console.log("messages container updated");
+        // document.getElementById('userDetailWrap').scrollTop = 1000000;
         // this.props.actions.loadMessages(this.props.session);
 
     }

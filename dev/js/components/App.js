@@ -56,9 +56,6 @@ function mapStateToProps(state) {
     };
 }
 function mapDispatchToProps(dispatch){
-    // return{
-    //     getUri: () => {return bindActionCreators(loginActions.sendAuthUriRequest,dispatch)}
-    // }
     return {
         actions: bindActionCreators(loginActions, dispatch)
     }

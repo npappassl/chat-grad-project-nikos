@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
-import {sendMessageRequest} from "../actions/messageActions"
+import {sendMessageRequest,loadMessages} from "../actions/messageActions"
+import {bindActionCreators} from "redux";
 // import {sendMessageRequest} from "../actions/index";
 class MessageTextArea extends Component {
     constructor(props){
@@ -20,8 +21,9 @@ class MessageTextArea extends Component {
             msg : this.state.value
         };
         this.setState({value: ""});
-        sendMessageRequest(obj);
         event.preventDefault();
+        sendMessageRequest(obj);
+        this.props.loadMessages(this.props.userFrom);
     }
     render() {
         if(!this.props.userTo){
@@ -46,5 +48,9 @@ function mapStateToProps(state) {
         userFrom: state.session
     };
 }
-
-export default connect(mapStateToProps)(MessageTextArea);
+function mapDispatchToProps(dispatch) {
+    return {
+      loadMessages: bindActionCreators(loadMessages, dispatch)
+    };
+}
+export default connect(mapStateToProps, mapDispatchToProps)(MessageTextArea);
