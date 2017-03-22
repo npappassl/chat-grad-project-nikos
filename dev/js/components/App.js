@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import UserList from '../containers/user-list';
+import Conversations from '../containers/conversation-list';
 import MessagesContainer from '../containers/messages-container';
 import MessageTextArea from '../containers/message-text-area';
 import LoginScreen from "../containers/login-screen";
@@ -21,7 +22,7 @@ class App extends Component {
     renderLogin() {
         return (<LoginScreen loginUri={this.props.loginUri} />);
     }
-    componentDidUpdate(){
+    componentWillUpdate(){
         console.log("updated");
         if(this.props.serverTransactionTS.needToUpdate && this.props.session) {
             console.log("fetching everything");
@@ -33,6 +34,9 @@ class App extends Component {
         return (
             <div id="layout">
                 <div id="UserList">
+                    <h2>Conversations</h2>
+                    <Conversations />
+                    <hr />
                     <SearchFilterInput />
                     <h2>User List</h2>
                     <UserList />
