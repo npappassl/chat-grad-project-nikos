@@ -26,7 +26,7 @@ export default class MessagesApi{
       }
 
 
-     static sendMessage(obj,callback,callbackArg){
+     static sendMessage(obj){
          const request = new Request("/api/message", {
              method: 'POST',
              headers: {
@@ -37,7 +37,6 @@ export default class MessagesApi{
          });
 
         return fetch(request).then(response => {
-            callback(callbackArg);
             return response.json();
         }).catch(error => {
             return error;
