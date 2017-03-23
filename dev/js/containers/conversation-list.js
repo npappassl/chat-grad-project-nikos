@@ -18,7 +18,7 @@ class Conversations extends Component {
                 key={user.id}
                 onClick={() => this.selectUserAndUpdateSession(user)}
             >
-                <img width="32" src={user.avatarUrl} />{user.id} {user.last}
+                <img width="32" src={user.avatarUrl} />{user.id}
             </li>
         );
     }
@@ -28,10 +28,11 @@ class Conversations extends Component {
                 <span>Loading...</span>
             );
         } else if(this.props.users){
-            console.log(this.props.userList);
+            console.log("usersList",this.props.userList);
+            console.log("users",this.props.users)
             return this.props.users.map((user) => {
                 for(let i in this.props.userList){
-                    if(user === this.props.userList[i].id){
+                    if(user.user === this.props.userList[i].id){
                         return this.eachUser(this.props.userList[i]);
                     }
                 }
@@ -56,7 +57,7 @@ class Conversations extends Component {
 //      > whenever state changes, the UserList will automatically re-render
 function mapStateToProps(state) {
     return {
-        users: state.session.subsribedTo,
+        users: state.session.subscribedTo,
         userList: state.users,
         userFilter: state.searchFilter
         // hasErrored : state.usersHasErrored,

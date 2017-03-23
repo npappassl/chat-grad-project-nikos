@@ -166,7 +166,7 @@ describe("server", function() {
                     group: false,
                     avatarUrl: "http://avatar.url.com/u=test",
                     subscriptionRequests: [],
-                    subsribedTo: []
+                    subscribedTo: []
                 });
                 done();
             });

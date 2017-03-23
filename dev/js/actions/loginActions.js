@@ -12,10 +12,15 @@ export const sendAuthUriRequest = function() {
         });
     };
 };
-export const sendSesionRequest = function() {
+export const sendSesionRequest = function(reload) {
     console.log("this is sendSession request");
     return function (dispatch) {
-        dispatch(loadSessionLoading());
+        if(reload) {
+            dispatch(loadSessionReLoading());
+
+        }else {
+            dispatch(loadSessionLoading());
+        }
         return LoginApi.getSession()
         .then(session => {
             dispatch(loadSessionSuccess(session));
@@ -40,5 +45,11 @@ const loadSessionSuccess = function(session) {
 const loadSessionLoading = function() {
         return {
             type: ATypes.GOT_SESION_LOADING,
+        };
+};
+
+const loadSessionReLoading = function() {
+        return {
+            type: ATypes.GOT_SESION_RELOADING,
         };
 };

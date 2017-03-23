@@ -5,6 +5,9 @@ export default function (state = false, action) {
         case ATypes.GOT_SESION_LOADING:
             return "loading";
             break;
+        case ATypes.GOT_SESION_RELOADING:
+            return state;
+            break;
         case ATypes.GOT_SESION_ERROR:
             return false;
             break;

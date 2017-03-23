@@ -2,6 +2,7 @@
 var express = require("express");
 var cookieParser = require("cookie-parser");
 var bodyParser = require("body-parser");
+var _ = require("underscore");
 
 const getMessagesRelativeTo = getFilteredMessages;
 
@@ -33,7 +34,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                             name: githubUser.name,
                             avatarUrl: githubUser.avatar_url,
                             group: false,
-                            subsribedTo: [],
+                            subscribedTo: [],
                             subscriptionRequests: []
                         });
                         lastTransaction = Date.now();
@@ -83,18 +84,25 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             }
         });
     });
-    app.put("/api/user/subscribe/:id/:subsribeTo", function(req, res) {
+    app.put("/api/user/subscribe/:id/:subscribeTo", function(req, res) {
         users.findOne({
             _id: req.params.id
         }, function(err, user) {
-            if (user.subsribedTo.indexOf(req.params.subsribeTo) < 0) {
-                user.subsribedTo.push(req.params.subsribeTo);
-                console.log(user);
+            let index = user.subscribedTo.find(function(subscription) {
+                 return subscription.user === req.params.subscribeTo;
+             });
+            if (!index) {
+                user.subscribedTo.push({
+                    user: req.params.subscribeTo,
+                    lastRead: Date.now()
+                });
+            } else {
+                index.lastRead = Date.now();
             }
             try {
                 users.updateOne(
                     {_id: req.params.id},
-                    {$set: {"subsribedTo": user.subsribedTo}}
+                    {$set: {"subscribedTo": user.subscribedTo}}
                 );
             } catch (e) {
                 console.log(e);

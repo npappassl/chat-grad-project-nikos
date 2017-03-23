@@ -28,6 +28,7 @@ class App extends Component {
             console.log("fetching everything");
             this.props.actions.loadMessages(this.props.session);
             this.props.actions.sendUsersRequest();
+            this.props.actions.sendSesionRequest(true);
         }
     }
     renderNormal() {
