@@ -13,9 +13,6 @@ class MessagesContainer extends Component {
         super(props);
         // console.log(allActions);
         this.props.actions.loadMessages(this.props.session);
-        setInterval( () =>{
-            this.props.actions.loadMessages(this.props.session);
-        } , 4000);
     }
     eachMsg(msg,i,classNames,sender) {
         return (

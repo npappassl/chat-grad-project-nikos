@@ -16,8 +16,12 @@ class App extends Component {
     constructor(props){
         super(props);
         // const dis = this.props.dispatch;
-        this.props.actions.sendSesionRequest();
+        this.props.actions.sendSessionRequest();
         this.props.actions.sendAuthUriRequest();
+        setInterval( () =>{
+            if(this.props.session && this.props.session._id )
+            this.props.actions.sendServerTransactionRequest();
+        } , 4000);
     }
     renderLogin() {
         return (<LoginScreen loginUri={this.props.loginUri} />);
@@ -25,10 +29,14 @@ class App extends Component {
     componentWillUpdate(){
         console.log("updated");
         if(this.props.serverTransactionTS.needToUpdate && this.props.session) {
-            console.log("fetching everything");
-            this.props.actions.loadMessages(this.props.session);
-            this.props.actions.sendUsersRequest();
-            this.props.actions.sendSesionRequest(true);
+            // this.setState({serverTransactionTS:{needToUpdate:false, timestamp:this.props.serverTransactionTS.timestamp}})
+            if(this.props.session._id){
+                console.log("fetching everything");
+                this.props.actions.sendServerTransactionRequest();
+                this.props.actions.loadMessages(this.props.session);
+                this.props.actions.sendUsersRequest();
+                this.props.actions.sendSessionRequest(true);
+            }
         }
     }
     renderNormal() {
@@ -69,8 +77,9 @@ function mapStateToProps(state) {
 }
 function mapDispatchToProps(dispatch){
     const allActions = {
-        sendSesionRequest:loginActions.sendSesionRequest,
+        sendSessionRequest:loginActions.sendSessionRequest,
         sendAuthUriRequest:loginActions.sendAuthUriRequest,
+        sendServerTransactionRequest: loginActions.sendServerTransactionRequest,
         sendUsersRequest: usersActions.sendUsersRequest,
         loadMessages :messageActions.loadMessages
     }

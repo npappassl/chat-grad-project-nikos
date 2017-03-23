@@ -104,7 +104,10 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                     {_id: req.params.id},
                     {$set: {"subscribedTo": user.subscribedTo}}
                 );
+                lastTransaction = Date.now();
+                res.sendStatus(200);
             } catch (e) {
+                res.sendStatus(500);
                 console.log(e);
             }
         });
@@ -117,8 +120,6 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                         id: user._id,
                         name: user.name,
                         avatarUrl: user.avatarUrl,
-                        subsribedTo: user.subsribedTo,
-                        subscriptionRequests: user.subscriptionRequests
                     };
                 }));
             } else {
@@ -179,6 +180,11 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
         messages.insertOne(tempMessage);
         res.sendStatus(200);
     });
+
+    app.get("/api/state", function(req, res) {
+        res.json(lastTransaction);
+    });
+
     return app.listen(port);
 };
 //-------------------  My auxiliary functions ----------------------------------
