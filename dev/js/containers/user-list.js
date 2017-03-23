@@ -2,18 +2,28 @@ import React, {Component} from "react";
 import {bindActionCreators} from "redux";
 import {connect} from "react-redux";
 import {selectUser} from "../actions/index";
-import {sendUsersRequest} from "../actions/usersActions";
+import {sendUsersRequest, updateUserSeen} from "../actions/usersActions";
 
 class UserList extends Component {
     constructor(props){
         super(props);
         this.props.sendUsersRequest();
     }
+    selectUserAndUpdateSession(user){
+        this.props.selectUser(user);
+        const request = new Request("/api/user/subscribe/"+this.props.session._id +
+                "/" + user.id, {
+            method: 'PUT',
+            credentials: 'include'
+        });
+        fetch(request);
+
+    }
     eachUser(user) {
         return (
             <li
                 key={user.id}
-                onClick={() => this.props.selectUser(user)}
+                onClick={() => this.selectUserAndUpdateSession(user)}
             >
                 <img width="32" src={user.avatarUrl} />{user.id} {user.last}
             </li>
@@ -50,7 +60,8 @@ class UserList extends Component {
 function mapStateToProps(state) {
     return {
         users: state.users,
-        userFilter: state.searchFilter
+        userFilter: state.searchFilter,
+        session: state.session
         // hasErrored : state.usersHasErrored,
         // isLoading: state.usersIsLoading
     };

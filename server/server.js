@@ -2,6 +2,7 @@
 var express = require("express");
 var cookieParser = require("cookie-parser");
 var bodyParser = require("body-parser");
+var _ = require("underscore");
 
 const getMessagesRelativeTo = getFilteredMessages;
 
@@ -31,7 +32,10 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                         users.insertOne({
                             _id: githubUser.login,
                             name: githubUser.name,
-                            avatarUrl: githubUser.avatar_url
+                            avatarUrl: githubUser.avatar_url,
+                            group: false,
+                            subscribedTo: [],
+                            subscriptionRequests: []
                         });
                         lastTransaction = Date.now();
                     }
@@ -74,21 +78,48 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             _id: req.session.user
         }, function(err, user) {
             if (!err) {
-                res.json(user);
+                res.status(200).json(user);
             } else {
                 res.sendStatus(500);
             }
         });
     });
-
+    app.put("/api/user/subscribe/:id/:subscribeTo", function(req, res) {
+        users.findOne({
+            _id: req.params.id
+        }, function(err, user) {
+            let index = user.subscribedTo.find(function(subscription) {
+                 return subscription.user === req.params.subscribeTo;
+             });
+            if (!index) {
+                user.subscribedTo.push({
+                    user: req.params.subscribeTo,
+                    lastRead: Date.now()
+                });
+            } else {
+                index.lastRead = Date.now();
+            }
+            try {
+                users.updateOne(
+                    {_id: req.params.id},
+                    {$set: {"subscribedTo": user.subscribedTo}}
+                );
+                lastTransaction = Date.now();
+                res.sendStatus(200);
+            } catch (e) {
+                res.sendStatus(500);
+                console.log(e);
+            }
+        });
+    });
     app.get("/api/users", function(req, res) {
         users.find().toArray(function(err, docs) {
             if (!err) {
-                res.json(docs.map(function(user) {
+                res.status(200).json(docs.map(function(user) {
                     return {
                         id: user._id,
                         name: user.name,
-                        avatarUrl: user.avatarUrl
+                        avatarUrl: user.avatarUrl,
                     };
                 }));
             } else {
@@ -126,7 +157,8 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                         return {
                             to: message.userTo,
                             from: message.userFrom,
-                            msg: message.msg
+                            msg: message.msg,
+                            timestamp: message.timestamp
                         };
                     })
                 };
@@ -139,9 +171,20 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
     app.post("/api/message", function(req, res) {
         lastTransaction = Date.now();
         console.log(req.body);
-        messages.insertOne(req.body);
+        const tempMessage = {
+            userFrom: req.body.userFrom,
+            userTo:   req.body.userTo,
+            msg:      req.body.msg,
+            timestamp: Date.now()
+        };
+        messages.insertOne(tempMessage);
         res.sendStatus(200);
     });
+
+    app.get("/api/state", function(req, res) {
+        res.json(lastTransaction);
+    });
+
     return app.listen(port);
 };
 //-------------------  My auxiliary functions ----------------------------------

@@ -163,7 +163,10 @@ describe("server", function() {
                 assert.deepEqual(dbCollections.users.insertOne.firstCall.args[0], {
                     _id: "bob",
                     name: "Bob Bilson",
-                    avatarUrl: "http://avatar.url.com/u=test"
+                    group: false,
+                    avatarUrl: "http://avatar.url.com/u=test",
+                    subscriptionRequests: [],
+                    subscribedTo: []
                 });
                 done();
             });

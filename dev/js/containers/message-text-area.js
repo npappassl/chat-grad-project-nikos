@@ -1,8 +1,9 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
-import {sendMessageRequest,loadMessages} from "../actions/messageActions"
+import {sendMessageRequest,loadMessages} from "../actions/messageActions";
+import {sendServerTransactionRequest} from "../actions/loginActions";
 import {bindActionCreators} from "redux";
-// import {sendMessageRequest} from "../actions/index";
+
 class MessageTextArea extends Component {
     constructor(props){
         super(props);
@@ -22,9 +23,8 @@ class MessageTextArea extends Component {
             msg : this.state.value
         };
         this.setState({value: ""});
-        console.log("userFrom",this.props.userFrom);
         sendMessageRequest(obj);
-        this.props.loadMessages(this.props.userFrom);
+        this.props.actions.sendServerTransactionRequest();
     }
     render() {
         if(!this.props.userTo){
@@ -51,7 +51,10 @@ function mapStateToProps(state) {
 }
 function mapDispatchToProps(dispatch) {
     return {
-      loadMessages: bindActionCreators(loadMessages, dispatch)
+      actions: bindActionCreators(
+          {loadMessages: loadMessages,
+          sendServerTransactionRequest: sendServerTransactionRequest}
+          , dispatch)
     };
 }
 export default connect(mapStateToProps, mapDispatchToProps)(MessageTextArea);

@@ -12,10 +12,15 @@ export const sendAuthUriRequest = function() {
         });
     };
 };
-export const sendSesionRequest = function() {
+export const sendSessionRequest = function(reload) {
     console.log("this is sendSession request");
     return function (dispatch) {
-        dispatch(loadSessionLoading());
+        if(reload) {
+            dispatch(loadSessionReLoading());
+
+        }else {
+            dispatch(loadSessionLoading());
+        }
         return LoginApi.getSession()
         .then(session => {
             dispatch(loadSessionSuccess(session));
@@ -24,6 +29,14 @@ export const sendSesionRequest = function() {
         });
     };
 };
+export const sendServerTransactionRequest = function() {
+    return function (dispatch){
+        return LoginApi.getServerLastTransaction()
+        .then(timestamp => {
+            dispatch(loadServerTransactionSuccess(timestamp))
+        })
+    };
+}
 const loadURISuccess = function(uri) {
         return {
             type: ATypes.GOT_URI,
@@ -33,12 +46,25 @@ const loadURISuccess = function(uri) {
 
 const loadSessionSuccess = function(session) {
         return {
-            type: ATypes.GOT_SESION_SUCCESS,
+            type: ATypes.GOT_SESSION_SUCCESS,
             payload: session
         };
 };
 const loadSessionLoading = function() {
         return {
-            type: ATypes.GOT_SESION_LOADING,
+            type: ATypes.GOT_SESSION_LOADING,
+        };
+};
+
+const loadSessionReLoading = function() {
+        return {
+            type: ATypes.GOT_SESSION_RELOADING,
+        };
+};
+
+const loadServerTransactionSuccess = function(timestamp) {
+        return {
+            type: ATypes.SERVER_TRANSACTION_TIMESTAMP,
+            payload: timestamp
         };
 };

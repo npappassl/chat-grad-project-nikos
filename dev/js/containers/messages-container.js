@@ -13,13 +13,10 @@ class MessagesContainer extends Component {
         super(props);
         // console.log(allActions);
         this.props.actions.loadMessages(this.props.session);
-        setInterval( () =>{
-            this.props.actions.loadMessages(this.props.session);
-        } , 10000);
     }
-    eachMsg(msg,i,classNames) {
+    eachMsg(msg,i,classNames,sender) {
         return (
-            <li key={i} className={classNames}> {msg.msg} </li>
+            <li key={i} className={classNames}>{new Date(msg.timestamp).toString} {msg.msg} </li>
         );
     }
     componentDidMount(){
@@ -33,6 +30,9 @@ class MessagesContainer extends Component {
     renderMessages() {
         console.log("rendered messages");
         if(this.props.messages){
+            let subscription = this.props.session.subscribedTo.find((subs) => {
+                return subs.user === this.props.user.id
+            });
             return this.props.messages.map((msg,i) => {
                 // console.log(msg.from,this.props.session._id);
                 if(msg.from === this.props.session._id &&
@@ -40,7 +40,11 @@ class MessagesContainer extends Component {
                     return this.eachMsg(msg,i,"sent");
                 } else if(msg.to === this.props.session._id &&
                 msg.from === this.props.user.id){
-                    return this.eachMsg(msg,i,"recieved");
+                    if(subscription&&msg.timestamp>subscription.lastRead){
+                        return this.eachMsg(msg,i,"recieved unread");
+                    } else {
+                        return this.eachMsg(msg,i,"recieved");
+                    }
                 }
             });
         } else {
