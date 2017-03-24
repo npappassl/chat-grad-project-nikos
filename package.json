@@ -37,6 +37,7 @@
     "sinon": "^1.15.4"
   },
   "dependencies": {
+     "grunt-cli": "1.2.0",
     "URIjs": "^1.15.1",
     "babel-core": "^6.24.0",
     "babel-loader": "^6.4.0",
