@@ -53,6 +53,9 @@ class App extends Component {
                     <UserList />
                 </div>
                 <div id="rightVerticalLayout">
+                <h1>Pings</h1>
+                <ul id='pings'></ul>
+
                     <MessagesContainer />
                     <MessageTextArea />
                 </div>

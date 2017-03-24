@@ -4,6 +4,9 @@ var cookieParser = require("cookie-parser");
 var bodyParser = require("body-parser");
 const ObjectID = require("mongodb").ObjectID;
 
+const http = require("http");
+const WebSocketServer = require("ws").Server;
+
 const getMessagesRelativeTo = getFilteredMessages;
 
 module.exports = function(port, db, githubAuthoriser, middleware) {
@@ -273,8 +276,26 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
         res.json(lastTransaction);
     });
 
-    return app.listen(port);
-    //-------------------  My auxiliary functions  LOCAL --------------------------
+    //------------------------------ web socket server -------------------------
+    const server = http.createServer(app);
+
+    let wss = new WebSocketServer({server: server});
+    console.log("websocket server created");
+    wss.on("connection", function(ws) {
+        var id = setInterval(function() {
+            ws.send(JSON.stringify(new Date()), function() {  });
+        }, 1000);
+
+        console.log("websocket connection open");
+
+        ws.on("close", function() {
+            console.log("websocket connection close");
+            clearInterval(id);
+        });
+    });
+
+    return server.listen(port);
+    //-------------------  My auxiliary functions  LOCAL -----------------------
     function addConversationToUser(userId, conversationId) {
         users.findOne({_id: userId}, function(err, user) {
             if (!err) {

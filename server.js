@@ -40,5 +40,6 @@ MongoClient.connect(dbUri, function(err, db) {
     var githubAuthoriser = oAuthGithub(oauthClientId, oauthSecret);
 
     console.log("Server running on port " + port);
+
     server(port, db, githubAuthoriser, middleware);
 });
