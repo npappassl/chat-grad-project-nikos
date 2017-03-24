@@ -1,37 +1,40 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
 import {bindActionCreators} from "redux";
-import {selectUser} from "../actions/index";
-import {sendUsersRequest} from "../actions/usersActions";
+import {selectConversation,selectUser} from "../actions/index";
+import {sendUsersRequest,sendConversationsRequest,sendConversationDetailRequest} from "../actions/usersActions";
 
 class Conversations extends Component {
     constructor(props){
         super(props);
-        this.props.sendUsersRequest();
+        console.log(this.props.session._id);
+        this.props.sendConversationsRequest(this.props.session._id);
     }
-    selectUserAndUpdateSession(user){
+    selectUserAndUpdateSession(user,conversationId){
+        this.props.selectConversation(conversationId);
+        this.props.sendConversationDetailRequest(conversationId);
         this.props.selectUser(user);
     }
-    eachUser(user) {
+    eachUser(user,conversationId) {
         return (
             <li
-                key={user.id}
-                onClick={() => this.selectUserAndUpdateSession(user)}
+                key={conversationId}
+                onClick={() => this.selectUserAndUpdateSession(user, conversationId)}
             >
                 <img width="32" src={user.avatarUrl} />{user.id}
             </li>
         );
     }
     renderList() {
-        if(this.props.userList==="loading"){
+        if(this.props.conversations==="loading"){
             return (
                 <span>Loading...</span>
             );
-        } else if(this.props.users){
-            return this.props.users.map((user) => {
+        } else if(this.props.conversations){
+            return this.props.conversations.map((user) => {
                 for(let i in this.props.userList){
-                    if(user.user === this.props.userList[i].id){
-                        return this.eachUser(this.props.userList[i]);
+                    if(user.participant === this.props.userList[i].id){
+                        return this.eachUser(this.props.userList[i],user.id);
                     }
                 }
             });
@@ -53,14 +56,19 @@ function mapStateToProps(state) {
         users: state.session.subscribedTo,
         userList: state.users,
         userFilter: state.searchFilter,
-        messages: state.messages
+        messages: state.messages,
+        session: state.session,
+        conversations: state.conversations
     };
 }
 
 function matchDispatchToProps(dispatch){
     return bindActionCreators({
         selectUser: selectUser,
-        sendUsersRequest:sendUsersRequest}, dispatch
+        selectConversation: selectConversation,
+        sendUsersRequest:sendUsersRequest,
+        sendConversationsRequest:sendConversationsRequest,
+        sendConversationDetailRequest:sendConversationDetailRequest, }, dispatch
     );
 }
 

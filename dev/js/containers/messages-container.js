@@ -12,11 +12,12 @@ class MessagesContainer extends Component {
     constructor(props){
         super(props);
         // console.log(allActions);
-        this.props.actions.loadMessages(this.props.session);
+        // this.props.actions.loadMessages(this.props.session);
     }
     eachMsg(msg,i,classNames,sender) {
+        console.log(msg);
         return (
-            <li key={i} className={classNames}>{new Date(msg.timestamp).toString} {msg.msg} </li>
+            <li key={i} className={classNames}> {msg.msg} </li>
         );
     }
     componentDidMount(){
@@ -29,22 +30,16 @@ class MessagesContainer extends Component {
     }
     renderMessages() {
         console.log("rendered messages");
-        if(this.props.messages){
-            let subscription = this.props.session.subscribedTo.find((subs) => {
-                return subs.user === this.props.user.id
-            });
-            return this.props.messages.map((msg,i) => {
-                // console.log(msg.from,this.props.session._id);
-                if(msg.from === this.props.session._id &&
-                msg.to === this.props.user.id){
+        console.log(this.props.messages);
+        if(this.props.messages.messages){
+            return this.props.messages.messages.map((msg,i) => {
+                console.log(msg,i);
+                if(msg.userFrom === this.props.session._id &&
+                msg.userTo === this.props.user.id){
                     return this.eachMsg(msg,i,"sent");
-                } else if(msg.to === this.props.session._id &&
-                msg.from === this.props.user.id){
-                    if(subscription&&msg.timestamp>subscription.lastRead){
-                        return this.eachMsg(msg,i,"recieved unread");
-                    } else {
-                        return this.eachMsg(msg,i,"recieved");
-                    }
+                } else if(msg.userTo === this.props.session._id &&
+                msg.userFrom === this.props.user.id){
+                    return this.eachMsg(msg,i,"recieved");
                 }
             });
         } else {

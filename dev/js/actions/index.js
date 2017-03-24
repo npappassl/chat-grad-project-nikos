@@ -8,6 +8,13 @@ export const selectUser = (user) => {
         payload: user
     };
 };
+export const selectConversation = (conversationId) => {
+    console.log("You clicked on conversation: ", conversationId);
+    return {
+        type: ATypes.CONVERSATION_SELECTED,
+        payload: conversationId
+    };
+};
 
 // const sendRequest = function(method,url,dispatch,next,obj) {
 //     try {

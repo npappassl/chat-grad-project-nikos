@@ -33,7 +33,9 @@ class App extends Component {
             if(this.props.session._id){
                 console.log("fetching everything");
                 this.props.actions.sendServerTransactionRequest();
-                this.props.actions.loadMessages(this.props.session);
+                if(this.props.activeConversation){
+                    // this.props.actions.loadConversationDetail(this.props.activeConversation);
+                }
                 this.props.actions.sendUsersRequest();
                 this.props.actions.sendSessionRequest(true);
             }
@@ -72,7 +74,8 @@ function mapStateToProps(state) {
     return {
         session: state.session,
         loginUri: state.loginUri,
-        serverTransactionTS: state.serverTransactionTS
+        serverTransactionTS: state.serverTransactionTS,
+        activeConversation: state.activeConversation
     };
 }
 function mapDispatchToProps(dispatch){
@@ -81,6 +84,7 @@ function mapDispatchToProps(dispatch){
         sendAuthUriRequest:loginActions.sendAuthUriRequest,
         sendServerTransactionRequest: loginActions.sendServerTransactionRequest,
         sendUsersRequest: usersActions.sendUsersRequest,
+        loadConversationDetail: usersActions.sendConversationDetailRequest,
         loadMessages :messageActions.loadMessages
     }
     return {

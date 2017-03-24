@@ -18,12 +18,13 @@ class MessageTextArea extends Component {
     sendMessage(event){
         event.preventDefault();
         const obj = {
+            conversationId: this.props.activeConversation,
             userTo: this.props.userTo.id,
             userFrom: this.props.userFrom._id,
             msg : this.state.value
         };
         this.setState({value: ""});
-        sendMessageRequest(obj);
+        this.props.actions.sendMessageRequest(obj);
         this.props.actions.sendServerTransactionRequest();
     }
     render() {
@@ -46,15 +47,17 @@ class MessageTextArea extends Component {
 function mapStateToProps(state) {
     return {
         userTo: state.activeUser,
-        userFrom: state.session
+        userFrom: state.session,
+        activeConversation: state.activeConversation
     };
 }
 function mapDispatchToProps(dispatch) {
     return {
-      actions: bindActionCreators(
-          {loadMessages: loadMessages,
-          sendServerTransactionRequest: sendServerTransactionRequest}
-          , dispatch)
+      actions: bindActionCreators({
+          loadMessages: loadMessages,
+          sendServerTransactionRequest: sendServerTransactionRequest,
+          sendMessageRequest: sendMessageRequest
+      }, dispatch)
     };
 }
 export default connect(mapStateToProps, mapDispatchToProps)(MessageTextArea);

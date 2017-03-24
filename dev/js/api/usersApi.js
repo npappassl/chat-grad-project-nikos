@@ -11,10 +11,28 @@ export default class UsersApi{
             return error;
         });
     }
-    // const loadURISuccess = function(uri) {
-    //         return {
-    //             type: ATypes.GOT_URI,
-    //             payload: uri.uri
-    //         };
-    // };
+    static getConversations(user) {
+        const request = new Request("/api/conversations/"+user, {
+            method: 'GET',
+            credentials: 'include'
+        });
+
+        return fetch(request).then(response => {
+            return response.json();
+        }).catch(error => {
+            return error;
+        });
+    }
+    static getConversationDetail(user) {
+        const request = new Request("/api/conversation/"+user, {
+            method: 'GET',
+            credentials: 'include'
+        });
+
+        return fetch(request).then(response => {
+            return response.json();
+        }).catch(error => {
+            return error;
+        });
+    }
 }

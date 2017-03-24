@@ -6,6 +6,8 @@ import loginReducer from "./reducer-login";
 import loginUriReducer from "./reducer-login-uri";
 import userFilterReducer from "./reducer-users-filter";
 import serverTransReducer from "./reducer-server-transaction";
+import conversationsReducer from "./reducer-conversations";
+import activeConversationReducer from "./reducer-active-conversations"
 /*
  * We combine all reducers into a single object before updated data is dispatched (sent) to store
  * Your entire applications state (store) is just whatever gets returned from all your reducers
@@ -14,11 +16,13 @@ import serverTransReducer from "./reducer-server-transaction";
 const allReducers = combineReducers({
     users: UserReducer,
     activeUser: ActiveUserReducer,
+    activeConversation: activeConversationReducer,
     session: loginReducer,
     loginUri: loginUriReducer,
     messages: messagesReducer,
     searchFilter: userFilterReducer,
-    serverTransactionTS: serverTransReducer
+    serverTransactionTS: serverTransReducer,
+    conversations: conversationsReducer
 });
 
 export default allReducers;

@@ -2,6 +2,7 @@
 var express = require("express");
 var cookieParser = require("cookie-parser");
 var bodyParser = require("body-parser");
+const ObjectID = require('mongodb').ObjectID;
 
 const getMessagesRelativeTo = getFilteredMessages;
 
@@ -17,6 +18,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
 
     app.use(express.static("public"));
     var users = db.collection("users");
+    var conversations = db.collection("conversations");
     var messages = db.collection("messages");
     var sessions = {};
 
@@ -167,8 +169,63 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             }
         });
     });
+    app.get("/api/conversation/:conversationId", function(req, res) {
+        console.log(req.params.conversationId);
+        if (req.params.conversationId === null ||
+            req.params.conversationId === undefined ||
+            req.params.conversationId === "null" ||
+            req.params.conversationId === "undefined") {
+            return res.sendStatus(404);
+        }
+        conversations.findOne({_id: ObjectID(req.params.conversationId)}, function(err, conversation) {
+            if(err){
+                console.log(err.message);
+                res.sendStatus(500);
+            } else if(!err){
+                console.log(conversation)
+                res.status(200).json(conversation);
+            }
+        });
+    });
+    app.get("/api/conversations/:userId", function(req, res) {
+        lastTransaction = Date.now();
+        if(!req.params.userId) {
+            res.sendStatus(404);
+        }
+        console.log(req.params.userId);
+        users.findOne({_id:req.params.userId}, function (err,user) {
+            if (!err) {
+                console.log("user.subscribedTo",user.subscribedTo);
+                conversations.find({_id: { $in: user.subscribedTo}}).toArray(function(err, data) {
+                    if(!err){
+                        let retVal = [];
+                        for (var i in data){
+                            let participant = "";
+                            if(req.params.userId === data[i].messages[0].userFrom){
+                                participant = data[i].messages[0].userTo;
+                            } else {
+                                participant = data[i].messages[0].userFrom;
+                            }
+                            retVal.push({
+                                id: data[i]._id,
+                                participant: participant,
+                                timestamp: data[i].messages[0].timestamp
+                            });
+                            console.log(i, data[i]);
+                        }
+                        res.status(200).json(retVal);
+                    }else{
+                        console.log(err);
+                    }
+                });
+            }else {
+                res.sendStatus(500);
+            }
+        });
+    });
     app.post("/api/message", function(req, res) {
         lastTransaction = Date.now();
+        let retConversationId = "";
         console.log(req.body);
         const tempMessage = {
             userFrom: req.body.userFrom,
@@ -176,8 +233,40 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             msg:      req.body.msg,
             timestamp: Date.now()
         };
-        messages.insertOne(tempMessage);
-        res.sendStatus(200);
+        if(!req.body.conversationId){
+            conversations.insertOne({
+                messages: [tempMessage]
+            },function (err, data) {
+                if(!err){
+                    retConversationId = data.insertedId;
+                    addConversationToUser(req.body.userFrom,data.insertedId);
+                    if(req.body.userFrom !== req.body.userTo){
+                        addConversationToUser(req.body.userTo,data.insertedId);
+                    }
+                }
+            });
+        } else {
+            retConversationId = req.body.conversationId;
+            console.log(retConversationId,"retConversationId");
+            conversations.findOne({_id: ObjectID(retConversationId)}, function (err, conversation) {
+                if(!err){
+                    console.log(conversation)
+                    conversation.messages.push(tempMessage);
+                    try{
+                        conversations.updateOne({_id: ObjectID(retConversationId)},
+                            {$set: {messages:conversation.messages}});
+                        } catch (e) {
+                            console.log(e,"error Caught");
+                        }
+                } else{
+                    console.log(err, "is an error");
+                }
+            });
+        }
+        // messages.insertOne(tempMessage,function(err,data) {
+        //     console.log("message inserted as",data.insertedId);
+        // });
+        res.status(200).json(retConversationId);
     });
 
     app.get("/api/state", function(req, res) {
@@ -185,8 +274,22 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
     });
 
     return app.listen(port);
+//-------------------  My auxiliary functions  LOCAL --------------------------
+    function addConversationToUser(userId, conversationId) {
+        users.findOne({_id: userId}, function(err, user) {
+            if(!err) {
+                user.subscribedTo.push(conversationId);
+                users.updateOne({_id: userId},
+                    {$set: {subscribedTo: user.subscribedTo}},
+                    function(err,data) {
+                        console.log(data);
+                    })
+            }
+        })
+    }
 };
-//-------------------  My auxiliary functions ----------------------------------
+//-------------------  My auxiliary functions  GLOBAL --------------------------
+
 function getFilteredMessages(id, docs) {
     return docs.filter(function(message) {
         return (

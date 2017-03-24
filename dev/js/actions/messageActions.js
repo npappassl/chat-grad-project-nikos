@@ -14,9 +14,16 @@ export const loadMessages = function(user) {
 };
 
 export const sendMessageRequest = function(obj){
-    MessagesApi.sendMessage(obj);
+    MessagesApi.sendMessage(obj).then((activeConversationId) => {
+        dispatch(conversationCreaterWithId(activeConversationId));
+    });
 }
-
+const conversationCreaterWithId = function(conversationId) {
+    return {
+        type: ATypes.CONVERSATION_CREATED,
+        payload: conversationId
+    }
+}
 const loadMessagesSuccess = function(messages) {
     return {
         type: ATypes.GOT_MESSAGES,
