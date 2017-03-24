@@ -21,7 +21,7 @@ class App extends Component {
         setInterval( () =>{
             if(this.props.session && this.props.session._id )
             this.props.actions.sendServerTransactionRequest();
-        } , 4000);
+        } , 10000);
     }
     renderLogin() {
         return (<LoginScreen loginUri={this.props.loginUri} />);
@@ -31,13 +31,12 @@ class App extends Component {
         if(this.props.serverTransactionTS.needToUpdate && this.props.session) {
             // this.setState({serverTransactionTS:{needToUpdate:false, timestamp:this.props.serverTransactionTS.timestamp}})
             if(this.props.session._id){
-                this.setState({serverTransactionTS:{needToUpdate:false}});
                 console.log("fetching everything");
-                // this.props.actions.sendServerTransactionRequest();
+                this.props.actions.sendServerTransactionRequest();
                 if(this.props.activeConversation){
-                    // this.props.actions.loadConversationDetail(this.props.activeConversation);
+                    this.props.actions.loadConversationDetail(this.props.activeConversation);
                 }
-                // this.props.actions.sendUsersRequest();
+                this.props.actions.sendUsersRequest();
                 this.props.actions.sendSessionRequest(true);
             }
         }
