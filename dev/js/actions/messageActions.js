@@ -14,9 +14,11 @@ export const loadMessages = function(user) {
 };
 
 export const sendMessageRequest = function(obj){
-    MessagesApi.sendMessage(obj).then((activeConversationId) => {
-        dispatch(conversationCreaterWithId(activeConversationId));
-    });
+    return function (dispatch) {
+        return MessagesApi.sendMessage(obj).then((activeConversationId) => {
+            dispatch(conversationCreaterWithId(activeConversationId));
+        });
+    }
 }
 const conversationCreaterWithId = function(conversationId) {
     return {

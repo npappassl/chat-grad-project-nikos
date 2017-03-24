@@ -2,7 +2,7 @@
 var express = require("express");
 var cookieParser = require("cookie-parser");
 var bodyParser = require("body-parser");
-const ObjectID = require('mongodb').ObjectID;
+const ObjectID = require("mongodb").ObjectID;
 
 const getMessagesRelativeTo = getFilteredMessages;
 
@@ -177,31 +177,31 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             req.params.conversationId === "undefined") {
             return res.sendStatus(404);
         }
-        conversations.findOne({_id: ObjectID(req.params.conversationId)}, function(err, conversation) {
-            if(err){
+        conversations.findOne({_id: new ObjectID(req.params.conversationId)}, function(err, conversation) {
+            if (err) {
                 console.log(err.message);
                 res.sendStatus(500);
-            } else if(!err){
-                console.log(conversation)
+            } else if (!err) {
+                console.log(conversation);
                 res.status(200).json(conversation);
             }
         });
     });
     app.get("/api/conversations/:userId", function(req, res) {
         lastTransaction = Date.now();
-        if(!req.params.userId) {
+        if (!req.params.userId) {
             res.sendStatus(404);
         }
         console.log(req.params.userId);
-        users.findOne({_id:req.params.userId}, function (err,user) {
+        users.findOne({_id: req.params.userId}, function (err, user) {
             if (!err) {
-                console.log("user.subscribedTo",user.subscribedTo);
-                conversations.find({_id: { $in: user.subscribedTo}}).toArray(function(err, data) {
-                    if(!err){
+                console.log("user.subscribedTo", user.subscribedTo);
+                conversations.find({_id: {$in: user.subscribedTo}}).toArray(function(err, data) {
+                    if (!err) {
                         let retVal = [];
-                        for (var i in data){
+                        for (var i in data) {
                             let participant = "";
-                            if(req.params.userId === data[i].messages[0].userFrom){
+                            if (req.params.userId === data[i].messages[0].userFrom) {
                                 participant = data[i].messages[0].userTo;
                             } else {
                                 participant = data[i].messages[0].userFrom;
@@ -214,7 +214,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                             console.log(i, data[i]);
                         }
                         res.status(200).json(retVal);
-                    }else{
+                    }else {
                         console.log(err);
                     }
                 });
@@ -233,37 +233,37 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             msg:      req.body.msg,
             timestamp: Date.now()
         };
-        if(!req.body.conversationId){
+        if (!req.body.conversationId) {
             conversations.insertOne({
                 messages: [tempMessage]
-            },function (err, data) {
-                if(!err){
+            }, function (err, data) {
+                if (!err) {
                     retConversationId = data.insertedId;
-                    addConversationToUser(req.body.userFrom,data.insertedId);
-                    if(req.body.userFrom !== req.body.userTo){
-                        addConversationToUser(req.body.userTo,data.insertedId);
+                    addConversationToUser(req.body.userFrom, data.insertedId);
+                    if (req.body.userFrom !== req.body.userTo) {
+                        addConversationToUser(req.body.userTo, data.insertedId);
                     }
                 }
             });
         } else {
             retConversationId = req.body.conversationId;
-            console.log(retConversationId,"retConversationId");
-            conversations.findOne({_id: ObjectID(retConversationId)}, function (err, conversation) {
-                if(!err){
-                    console.log(conversation)
+            console.log(retConversationId, "retConversationId");
+            conversations.findOne({_id: new ObjectID(retConversationId)}, function (err, conversation) {
+                if (!err) {
+                    console.log(conversation);
                     conversation.messages.push(tempMessage);
-                    try{
-                        conversations.updateOne({_id: ObjectID(retConversationId)},
-                            {$set: {messages:conversation.messages}});
-                        } catch (e) {
-                            console.log(e,"error Caught");
-                        }
-                } else{
+                    try {
+                        conversations.updateOne({_id: new ObjectID(retConversationId)},
+                            {$set: {messages: conversation.messages}});
+                    } catch (e) {
+                        console.log(e, "error Caught");
+                    }
+                } else {
                     console.log(err, "is an error");
                 }
             });
         }
-        // messages.insertOne(tempMessage,function(err,data) {
+        // messages.insertOne(tempMessage, function(err,data) {
         //     console.log("message inserted as",data.insertedId);
         // });
         res.status(200).json(retConversationId);
@@ -274,18 +274,18 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
     });
 
     return app.listen(port);
-//-------------------  My auxiliary functions  LOCAL --------------------------
+    //-------------------  My auxiliary functions  LOCAL --------------------------
     function addConversationToUser(userId, conversationId) {
         users.findOne({_id: userId}, function(err, user) {
-            if(!err) {
+            if (!err) {
                 user.subscribedTo.push(conversationId);
                 users.updateOne({_id: userId},
                     {$set: {subscribedTo: user.subscribedTo}},
-                    function(err,data) {
+                    function(err, data) {
                         console.log(data);
-                    })
+                    });
             }
-        })
+        });
     }
 };
 //-------------------  My auxiliary functions  GLOBAL --------------------------
