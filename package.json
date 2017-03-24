@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "This is a chat application",
   "engines": {
-    "node": "^6.0.0",
+    "node": "^6.9.5",
     "npm": "^3.0.0"
   },
   "main": "server.js",
