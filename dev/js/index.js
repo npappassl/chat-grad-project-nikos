@@ -28,9 +28,10 @@ ReactDOM.render(
     document.getElementById("root")
 );
 
-var host = location.origin.replace(/^http/, 'ws')
+var host = location.origin.replace(/^http/, 'ws');
 var ws = new WebSocket(host);
 ws.onmessage = function (event) {
+    console.log(event);
     var li = document.createElement('li');
     li.innerHTML = JSON.parse(event.data);
     document.querySelector('#pings').appendChild(li);
