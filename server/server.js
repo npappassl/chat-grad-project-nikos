@@ -212,7 +212,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                             retVal.push({
                                 id: data[i]._id,
                                 participant: participant,
-                                timestamp: data[i].messages[data[i].messages.length-1].timestamp
+                                timestamp: data[i].messages[data[i].messages.length - 1].timestamp
                             });
                         }
                         res.status(200).json(retVal);
