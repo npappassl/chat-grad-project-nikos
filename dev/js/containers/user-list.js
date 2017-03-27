@@ -45,6 +45,9 @@ class UserList extends Component {
                 <span>Loading...</span>
             );
         } else if(this.props.users){
+            const tempUsers = this.props.users.sort((a, b) => {
+                return a.id > b.id;
+            })
             return this.props.users.map((user) => {
                 if(this.props.userFilter === ""){
                     return this.eachUser(user);
