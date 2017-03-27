@@ -288,7 +288,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             console.log(sessions[sesToken]);
         }
         if (!sessions[sesToken]){
-            ws.close()
+            ws.close();
         }
         var id = setInterval(function() {
             console.log(new Date(), sessions[sesToken]);
