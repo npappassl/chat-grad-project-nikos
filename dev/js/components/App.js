@@ -17,17 +17,19 @@ class App extends Component {
         super(props);
         const self = this;
         // const dis = this.props.dispatch;
-        this.props.actions.sendSessionRequest();
-        this.props.actions.sendAuthUriRequest();
+        self.props.actions.sendSessionRequest();
+        self.props.actions.sendAuthUriRequest();
         var host = location.origin.replace(/^http/, 'ws');
         var ws = new WebSocket(host);
         ws.onmessage = function (event) {
             console.log(event);
             const data = JSON.parse(event.data);
-            if(self.props.activeConversation){
+            if (self.props.activeConversation) {
                 self.props.actions.loadConversationDetail(self.props.activeConversation);
             }
-            // self.props.actions.loadConversations(self.props.session._id);
+            if (self.props.session._id) {
+                self.props.actions.sendConversationsRequest(self.props.session._id);
+            }
             self.props.actions.sendUsersRequest();
             self.props.actions.sendSessionRequest(true);
             //
@@ -99,6 +101,7 @@ function mapDispatchToProps(dispatch){
         sendServerTransactionRequest: loginActions.sendServerTransactionRequest,
         sendUsersRequest: usersActions.sendUsersRequest,
         loadConversationDetail: usersActions.sendConversationDetailRequest,
+        sendConversationsRequest: usersActions.sendConversationsRequest,
         loadMessages :messageActions.loadMessages
     }
     return {

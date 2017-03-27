@@ -42,6 +42,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                             subscriptionRequests: []
                         });
                         lastTransaction = Date.now();
+                        notifyAll(sessions);
                     }
                     sessions[token] = {
                         user: githubUser.login,
@@ -317,22 +318,34 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                 users.updateOne({_id: userId},
                     {$set: {subscribedTo: user.subscribedTo}},
                     function(err, data) {
-                        console.log(data);
+                        if (!err) {
+                            console.log(data);
+                            notifyUser(userId, sessions);
+                        } else {
+                            console.log(err);
+                        }
                     });
             }
         });
     }
 };
 //-------------------  My auxiliary functions  GLOBAL --------------------------
+function notifyAll(sessionList) {
+    for (let i in sessionList) {
+        if (sessionList[i].socket) {
+            sessionList[i].socket.send(JSON.stringify(new Date()), function() {  });
+        }
+    }
+}
 function notifyUser(userId, sessionList) {
     for (let i in sessionList) {
         if (sessionList[i].user === userId) {
-            if(sessionList[i].socket){
+            if (sessionList[i].socket) {
                 sessionList[i].socket.send(JSON.stringify(new Date()), function() {  });
+                break;
             }
         }
     }
-
 }
 function getFilteredMessages(id, docs) {
     return docs.filter(function(message) {
