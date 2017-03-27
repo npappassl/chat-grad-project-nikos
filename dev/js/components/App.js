@@ -15,13 +15,26 @@ require('../../scss/style.scss');
 class App extends Component {
     constructor(props){
         super(props);
+        const self = this;
         // const dis = this.props.dispatch;
         this.props.actions.sendSessionRequest();
         this.props.actions.sendAuthUriRequest();
-        setInterval( () =>{
-            if(this.props.session && this.props.session._id )
-            this.props.actions.sendServerTransactionRequest();
-        } , 10000);
+        var host = location.origin.replace(/^http/, 'ws');
+        var ws = new WebSocket(host);
+        ws.onmessage = function (event) {
+            console.log(event);
+            const data = JSON.parse(event.data);
+            if(self.props.activeConversation){
+                self.props.actions.loadConversationDetail(self.props.activeConversation);
+            }
+            // self.props.actions.loadConversations(self.props.session._id);
+            self.props.actions.sendUsersRequest();
+            self.props.actions.sendSessionRequest(true);
+            //
+            // var li = document.createElement('li');
+            // li.innerHTML = JSON.parse(event.data);
+            // document.querySelector('#pings').appendChild(li);
+        };
     }
     renderLogin() {
         return (<LoginScreen loginUri={this.props.loginUri} />);
@@ -31,13 +44,14 @@ class App extends Component {
         if(this.props.serverTransactionTS.needToUpdate && this.props.session) {
             // this.setState({serverTransactionTS:{needToUpdate:false, timestamp:this.props.serverTransactionTS.timestamp}})
             if(this.props.session._id){
-                console.log("fetching everything");
-                this.props.actions.sendServerTransactionRequest();
-                if(this.props.activeConversation){
-                    this.props.actions.loadConversationDetail(this.props.activeConversation);
-                }
-                this.props.actions.sendUsersRequest();
-                this.props.actions.sendSessionRequest(true);
+                // console.log("fetching everything");
+                // this.props.actions.sendServerTransactionRequest();
+// -------------------------------------------------------------------------------
+                // if(this.props.activeConversation){
+                //     this.props.actions.loadConversationDetail(this.props.activeConversation);
+                // }
+                // this.props.actions.sendUsersRequest();
+                // this.props.actions.sendSessionRequest(true);
             }
         }
     }
@@ -53,9 +67,6 @@ class App extends Component {
                     <UserList />
                 </div>
                 <div id="rightVerticalLayout">
-                <h1>Pings</h1>
-                <ul id='pings'></ul>
-
                     <MessagesContainer />
                     <MessageTextArea />
                 </div>

@@ -11,7 +11,7 @@ const getMessagesRelativeTo = getFilteredMessages;
 
 module.exports = function(port, db, githubAuthoriser, middleware) {
     let lastTransaction = Date.now();
-    var app = express();
+    const app = express();
 
     for (let i in middleware) {
         app.use(middleware[i]);
@@ -185,7 +185,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                 console.log(err.message);
                 res.sendStatus(500);
             } else if (!err) {
-                console.log(conversation);
+                // console.log(conversation);
                 res.status(200).json(conversation);
             }
         });
@@ -195,6 +195,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
         if (!req.params.userId) {
             res.sendStatus(404);
         }
+        // findConversationsRelatedTo(req.params.userId);
         users.findOne({_id: req.params.userId}, function (err, user) {
             if (!err) {
                 conversations.find({_id: {$in: user.subscribedTo}}).toArray(function(err, data) {
@@ -212,7 +213,6 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                                 participant: participant,
                                 timestamp: data[i].messages[0].timestamp
                             });
-                            console.log(i, data[i]);
                         }
                         res.status(200).json(retVal);
                     }else {
@@ -227,13 +227,13 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
     app.post("/api/message", function(req, res) {
         lastTransaction = Date.now();
         let retConversationId = "";
-        console.log(req.body);
         const tempMessage = {
             userFrom: req.body.userFrom,
             userTo:   req.body.userTo,
             msg:      req.body.msg,
             timestamp: Date.now()
         };
+        console.log(tempMessage);
         if (!req.body.conversationId) {
             conversations.insertOne({
                 messages: [tempMessage]
@@ -248,14 +248,16 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             });
         } else {
             retConversationId = req.body.conversationId;
-            console.log(retConversationId, "retConversationId");
             conversations.findOne({_id: new ObjectID(retConversationId)}, function (err, conversation) {
                 if (!err) {
-                    console.log(conversation);
                     conversation.messages.push(tempMessage);
                     try {
                         conversations.updateOne({_id: new ObjectID(retConversationId)},
                             {$set: {messages: conversation.messages}});
+
+                        notifyUser(req.body.userTo, sessions);
+                        notifyUser(req.body.userFrom, sessions);
+
                     } catch (e) {
                         console.log(e, "error Caught");
                     }
@@ -264,14 +266,8 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                 }
             });
         }
-        // messages.insertOne(tempMessage, function(err,data) {
-        //     console.log("message inserted as",data.insertedId);
-        // });
-        res.status(200).json(retConversationId);
-    });
 
-    app.get("/api/state", function(req, res) {
-        res.json(lastTransaction);
+        res.status(200).json(retConversationId);
     });
 
     //------------------------------ web socket server -------------------------
@@ -279,26 +275,35 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
 
     let wss = new WebSocketServer({server: server});
     console.log("websocket server created");
+    // -------------- connection------------------------------------------------
     wss.on("connection", function connection(ws) {
         let sesToken;
         let cookie = ws.upgradeReq.headers.cookie;
         if (cookie) {
             sesToken = cookie.split("=")[1];
             console.log(sesToken);
-            console.log(sessions[sesToken]);
+            // console.log(sessions[sesToken]);
         }
         if (!sessions[sesToken]) {
             ws.close();
+        } else {
+            sessions[sesToken].socket = ws;
         }
-        var id = setInterval(function() {
-            console.log(new Date(), sessions[sesToken]);
+        //
+        // ws.send(JSON.stringify())
+        var id = setTimeout(function() {
+            // console.log(new Date(), sessions[sesToken].user);
             ws.send(JSON.stringify(new Date()), function() {  });
         }, 4000);
 
-        console.log("websocket connection open");
+        console.log("websocket connection open:", sesToken);
 
+        // -------------- close connection -------------------------------------
         ws.on("close", function() {
-            console.log("websocket connection close");
+            if (sessions[sesToken]) {
+                sessions[sesToken].socket = null;
+            }
+            console.log("websocket connection close:", sesToken);
             clearInterval(id);
         });
     });
@@ -319,7 +324,16 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
     }
 };
 //-------------------  My auxiliary functions  GLOBAL --------------------------
+function notifyUser(userId, sessionList) {
+    for (let i in sessionList) {
+        if (sessionList[i].user === userId) {
+            if(sessionList[i].socket){
+                sessionList[i].socket.send(JSON.stringify(new Date()), function() {  });
+            }
+        }
+    }
 
+}
 function getFilteredMessages(id, docs) {
     return docs.filter(function(message) {
         return (

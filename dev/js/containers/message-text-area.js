@@ -25,7 +25,6 @@ class MessageTextArea extends Component {
         };
         this.setState({value: ""});
         this.props.actions.sendMessageRequest(obj);
-        this.props.actions.sendServerTransactionRequest();
     }
     render() {
         if(!this.props.userTo){

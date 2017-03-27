@@ -1,16 +1,14 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import * as messageActions from "../actions/messageActions"
 /*
  * We need "if(!this.props.user)" because we set state to null by default
  * */
 
-const filterMessages = filterMessagesFromTo;
-
 class MessagesContainer extends Component {
     constructor(props){
         super(props);
+
         // console.log(allActions);
         // this.props.actions.loadMessages(this.props.session);
     }
@@ -71,9 +69,6 @@ class MessagesContainer extends Component {
     }
 }
 
-function filterMessagesFromTo(msg,idFrom,idTo) {
-
-}
 
 // "state.activeUser" is set in reducers/index.js
 function mapStateToProps(state) {
@@ -89,4 +84,5 @@ function mapDispatchToProps(dispatch) {
     };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(MessagesContainer);
+export default connect(mapStateToProps)(MessagesContainer);
+// export default connect(mapStateToProps, mapDispatchToProps)(MessagesContainer);

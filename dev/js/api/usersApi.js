@@ -11,6 +11,7 @@ export default class UsersApi{
             return error;
         });
     }
+
     static getConversations(user) {
         const request = new Request("/api/conversations/"+user, {
             method: 'GET',
@@ -23,6 +24,7 @@ export default class UsersApi{
             return error;
         });
     }
+
     static getConversationDetail(user) {
         const request = new Request("/api/conversation/"+user, {
             method: 'GET',
