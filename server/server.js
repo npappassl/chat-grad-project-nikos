@@ -44,7 +44,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                         lastTransaction = Date.now();
                     }
                     sessions[token] = {
-                        user: githubUser.login
+                        user: githubUser.login,
                     };
                     res.cookie("sessionToken", token);
                     res.header("Location", "/");
@@ -195,10 +195,8 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
         if (!req.params.userId) {
             res.sendStatus(404);
         }
-        console.log(req.params.userId);
         users.findOne({_id: req.params.userId}, function (err, user) {
             if (!err) {
-                console.log("user.subscribedTo", user.subscribedTo);
                 conversations.find({_id: {$in: user.subscribedTo}}).toArray(function(err, data) {
                     if (!err) {
                         let retVal = [];
@@ -281,10 +279,21 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
 
     let wss = new WebSocketServer({server: server});
     console.log("websocket server created");
-    wss.on("connection", function(ws) {
+    wss.on("connection", function connection(ws) {
+        let sesToken;
+        let cookie = ws.upgradeReq.headers.cookie;
+        if(cookie){
+            sesToken = cookie.split("=")[1];
+            console.log(sesToken);
+            console.log(sessions[sesToken]);
+        }
+        if (!sessions[sesToken]){
+            ws.close()
+        }
         var id = setInterval(function() {
+            console.log(new Date(), sessions[sesToken]);
             ws.send(JSON.stringify(new Date()), function() {  });
-        }, 1000);
+        }, 4000);
 
         console.log("websocket connection open");
 
