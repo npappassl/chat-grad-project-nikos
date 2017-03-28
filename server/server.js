@@ -1,13 +1,10 @@
 "use strict";
-var express = require("express");
-var cookieParser = require("cookie-parser");
-var bodyParser = require("body-parser");
+const express = require("express");
+const cookieParser = require("cookie-parser");
+const bodyParser = require("body-parser");
 const ObjectID = require("mongodb").ObjectID;
-
 const http = require("http");
 const WebSocketServer = require("ws").Server;
-
-const getMessagesRelativeTo = getFilteredMessages;
 
 module.exports = function(port, db, githubAuthoriser, middleware) {
     let lastTransaction = Date.now();
@@ -89,34 +86,6 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             }
         });
     });
-    app.put("/api/user/subscribe/:id/:subscribeTo", function(req, res) {
-        users.findOne({
-            _id: req.params.id
-        }, function(err, user) {
-            let index = user.subscribedTo.find(function(subscription) {
-                 return subscription.user === req.params.subscribeTo;
-             });
-            if (!index) {
-                user.subscribedTo.push({
-                    user: req.params.subscribeTo,
-                    lastRead: Date.now()
-                });
-            } else {
-                index.lastRead = Date.now();
-            }
-            try {
-                users.updateOne(
-                    {_id: req.params.id},
-                    {$set: {"subscribedTo": user.subscribedTo}}
-                );
-                lastTransaction = Date.now();
-                res.sendStatus(200);
-            } catch (e) {
-                res.sendStatus(500);
-                console.log(e);
-            }
-        });
-    });
     app.get("/api/users", function(req, res) {
         users.find().toArray(function(err, docs) {
             if (!err) {
@@ -132,47 +101,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             }
         });
     });
-    app.get("/api/messages", function(req, res) {
-        messages.find().toArray(function(err, docs) {
-            if (!err) {
-                const retVal = {
-                    lastTrans: lastTransaction,
-                    messages: docs.map(function(message) {
-                        return {
-                            to: message.userTo,
-                            from: message.userFrom,
-                            msg: message.msg
-                        };
-                    })
-                };
-                res.json(retVal);
-            } else {
-                res.sendStatus(500);
-            }
-        });
-    });
 
-    app.get("/api/messages/:id", function(req, res) {
-        messages.find().toArray(function(err, docs) {
-            if (!err) {
-                const retVal = {
-                    lastTrans: lastTransaction,
-                    messages: getMessagesRelativeTo(req.params.id, docs)
-                    .map(function(message) {
-                        return {
-                            to: message.userTo,
-                            from: message.userFrom,
-                            msg: message.msg,
-                            timestamp: message.timestamp
-                        };
-                    })
-                };
-                res.json(retVal);
-            } else {
-                res.sendStatus(500);
-            }
-        });
-    });
     app.get("/api/conversation/:conversationId", function(req, res) {
         console.log(req.params.conversationId);
         if (req.params.conversationId === null ||
@@ -186,14 +115,18 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                 console.log(err.message);
                 res.sendStatus(500);
             } else if (!err) {
-                // console.log(conversation);
+                console.log(conversation);
                 res.status(200).json(conversation);
             }
         });
     });
     app.get("/api/conversations/:userId", function(req, res) {
+        console.log("req.params.userId", req.params.userId);
         lastTransaction = Date.now();
-        if (!req.params.userId) {
+        if (!req.params.userId ||
+            req.params.userId === "null" ||
+            req.params.userId === "undefined"
+        ) {
             res.sendStatus(404);
         }
         // findConversationsRelatedTo(req.params.userId);
@@ -214,10 +147,11 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                                 participant: participant,
                                 timestamp: data[i].messages[data[i].messages.length - 1].timestamp
                             });
+                            console.log(retVal);
                         }
                         res.status(200).json(retVal);
-                    }else {
-                        console.log(err);
+                    } else {
+                        res.sendStatus(500);
                     }
                 });
             }else {
@@ -295,7 +229,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
         var id = setTimeout(function() {
             // console.log(new Date(), sessions[sesToken].user);
             ws.send(JSON.stringify(new Date()), function() {  });
-        }, 4000);
+        }, 2000);
 
         console.log("websocket connection open:", sesToken);
 
@@ -346,12 +280,4 @@ function notifyUser(userId, sessionList) {
             }
         }
     }
-}
-function getFilteredMessages(id, docs) {
-    return docs.filter(function(message) {
-        return (
-            message.userFrom === id ||
-            message.userTo === id
-        );
-    });
 }
