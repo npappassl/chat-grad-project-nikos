@@ -128,36 +128,36 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             req.params.userId === "undefined"
         ) {
             res.sendStatus(404);
-        }
-        // findConversationsRelatedTo(req.params.userId);
-        users.findOne({_id: req.params.userId}, function (err, user) {
-            if (!err) {
-                conversations.find({_id: {$in: user.subscribedTo}}).toArray(function(err, data) {
-                    if (!err) {
-                        let retVal = [];
-                        for (var i in data) {
-                            let participant = "";
-                            if (req.params.userId === data[i].messages[0].userFrom) {
-                                participant = data[i].messages[0].userTo;
-                            } else {
-                                participant = data[i].messages[0].userFrom;
+        } else {
+            users.findOne({_id: req.params.userId}, function (err, user) {
+                if (!err) {
+                    conversations.find({_id: {$in: user.subscribedTo}}).toArray(function(err, data) {
+                        if (!err) {
+                            let retVal = [];
+                            for (var i in data) {
+                                let participant = "";
+                                if (req.params.userId === data[i].messages[0].userFrom) {
+                                    participant = data[i].messages[0].userTo;
+                                } else {
+                                    participant = data[i].messages[0].userFrom;
+                                }
+                                retVal.push({
+                                    id: data[i]._id,
+                                    participant: participant,
+                                    timestamp: data[i].messages[data[i].messages.length - 1].timestamp
+                                });
+                                console.log(retVal);
                             }
-                            retVal.push({
-                                id: data[i]._id,
-                                participant: participant,
-                                timestamp: data[i].messages[data[i].messages.length - 1].timestamp
-                            });
-                            console.log(retVal);
+                            res.status(200).json(retVal);
+                        } else {
+                            res.sendStatus(500);
                         }
-                        res.status(200).json(retVal);
-                    } else {
-                        res.sendStatus(500);
-                    }
-                });
-            }else {
-                res.sendStatus(500);
-            }
-        });
+                    });
+                }else {
+                    res.sendStatus(500);
+                }
+            });
+        }
     });
     app.post("/api/message", function(req, res) {
         lastTransaction = Date.now();
