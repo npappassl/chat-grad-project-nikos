@@ -15,7 +15,9 @@ class MessagesContainer extends Component {
     eachMsg(msg,i,classNames,sender) {
         console.log(msg);
         return (
-            <li key={i} className={classNames}> {msg.msg} </li>
+            <li key={i} className={classNames}>
+                <span className="timestamp">{Math.floor((msg.timestamp%86400000)/(60*60*1000))+":"+Math.floor((msg.timestamp%3600000)/(60*1000))}</span>
+                <br />{msg.msg} </li>
         );
     }
     componentDidMount(){
@@ -32,11 +34,9 @@ class MessagesContainer extends Component {
         if(this.props.messages.messages){
             return this.props.messages.messages.map((msg,i) => {
                 console.log(msg,i);
-                if(msg.userFrom === this.props.session._id &&
-                msg.userTo === this.props.user.id){
+                if (msg.userFrom === this.props.session._id) {
                     return this.eachMsg(msg,i,"sent");
-                } else if(msg.userTo === this.props.session._id &&
-                msg.userFrom === this.props.user.id){
+                } else if (msg.userFrom === this.props.user.id) {
                     return this.eachMsg(msg,i,"recieved");
                 }
             });
