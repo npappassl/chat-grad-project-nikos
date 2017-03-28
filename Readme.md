@@ -21,10 +21,12 @@ reduser-login | loginReducer | session
 reducer-users | usersReducer | users
 reducer-messages | messagesReducer | messages
 reducer-users-filter | userFilterReducer | searchFilter
-reducer-server-transaction | serverTransReducer | serverTransactionTS
 
 
 ## api
+
+## WebSocket
+    the WebSocket sends a message to the user when the user needs to update his store
 
 ### LoginApi.js
     getUri()

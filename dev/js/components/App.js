@@ -41,22 +41,6 @@ class App extends Component {
     renderLogin() {
         return (<LoginScreen loginUri={this.props.loginUri} />);
     }
-    componentWillUpdate(){
-        console.log("updated");
-        if(this.props.serverTransactionTS.needToUpdate && this.props.session) {
-            // this.setState({serverTransactionTS:{needToUpdate:false, timestamp:this.props.serverTransactionTS.timestamp}})
-            if(this.props.session._id){
-                // console.log("fetching everything");
-                // this.props.actions.sendServerTransactionRequest();
-// -------------------------------------------------------------------------------
-                // if(this.props.activeConversation){
-                //     this.props.actions.loadConversationDetail(this.props.activeConversation);
-                // }
-                // this.props.actions.sendUsersRequest();
-                // this.props.actions.sendSessionRequest(true);
-            }
-        }
-    }
     renderNormal() {
         return (
             <div id="layout">
@@ -90,7 +74,6 @@ function mapStateToProps(state) {
     return {
         session: state.session,
         loginUri: state.loginUri,
-        serverTransactionTS: state.serverTransactionTS,
         activeConversation: state.activeConversation
     };
 }

@@ -17,6 +17,7 @@ export const sendMessageRequest = function(obj){
     return function (dispatch) {
         return MessagesApi.sendMessage(obj).then((activeConversationId) => {
             dispatch(conversationCreaterWithId(activeConversationId));
+            return activeConversationId;
         });
     }
 }

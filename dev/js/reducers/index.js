@@ -5,7 +5,6 @@ import messagesReducer from "./reducer-messages";
 import loginReducer from "./reducer-login";
 import loginUriReducer from "./reducer-login-uri";
 import userFilterReducer from "./reducer-users-filter";
-import serverTransReducer from "./reducer-server-transaction";
 import conversationsReducer from "./reducer-conversations";
 import activeConversationReducer from "./reducer-active-conversations"
 /*
@@ -21,7 +20,6 @@ const allReducers = combineReducers({
     loginUri: loginUriReducer,
     messages: messagesReducer,
     searchFilter: userFilterReducer,
-    serverTransactionTS: serverTransReducer,
     conversations: conversationsReducer
 });
 

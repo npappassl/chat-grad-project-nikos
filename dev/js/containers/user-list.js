@@ -21,13 +21,6 @@ class UserList extends Component {
             }
         }
         this.props.selectUser(user);
-        const request = new Request("/api/user/subscribe/"+this.props.session._id +
-        "/" + user.id, {
-            method: 'PUT',
-            credentials: 'include'
-        });
-        fetch(request);
-
     }
     eachUser(user) {
         return (

@@ -174,11 +174,13 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                 messages: [tempMessage]
             }, function (err, data) {
                 if (!err) {
+                    console.log("this is data", data.insertedId);
                     retConversationId = data.insertedId;
                     addConversationToUser(req.body.userFrom, data.insertedId);
                     if (req.body.userFrom !== req.body.userTo) {
                         addConversationToUser(req.body.userTo, data.insertedId);
                     }
+                    res.status(200).json(retConversationId);
                 }
             });
         } else {
@@ -189,7 +191,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                     try {
                         conversations.updateOne({_id: new ObjectID(retConversationId)},
                             {$set: {messages: conversation.messages}});
-
+                        res.status(200).json(retConversationId);
                         notifyUser(req.body.userTo, sessions);
                         notifyUser(req.body.userFrom, sessions);
 
@@ -201,8 +203,6 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                 }
             });
         }
-
-        res.status(200).json(retConversationId);
     });
 
     //------------------------------ web socket server -------------------------
@@ -253,7 +253,6 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                     {$set: {subscribedTo: user.subscribedTo}},
                     function(err, data) {
                         if (!err) {
-                            console.log(data);
                             notifyUser(userId, sessions);
                         } else {
                             console.log(err);
