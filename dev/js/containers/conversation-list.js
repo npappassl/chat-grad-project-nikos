@@ -3,7 +3,7 @@ import {connect} from "react-redux";
 import {bindActionCreators} from "redux";
 import {selectConversation,selectUser} from "../actions/index";
 import {sendUsersRequest,sendConversationsRequest,sendConversationDetailRequest} from "../actions/usersActions";
-
+import Badge from "./badge-container";
 class Conversations extends Component {
     constructor(props){
         super(props);
@@ -21,7 +21,9 @@ class Conversations extends Component {
                 key={conversationId}
                 onClick={() => this.selectUserAndUpdateSession(user, conversationId)}
             >
-                <img width="32" src={user.avatarUrl} />{user.id}
+                <img width="32" src={user.avatarUrl} />
+                <Badge number="3" className="badge" />
+                {user.id}
             </li>
         );
     }
