@@ -21,7 +21,8 @@ const oauthClientId = "1234clientId";
 const testUser = {
     _id: "bob",
     name: "Bob Bilson",
-    avatarUrl: "http://avatar.url.com/u=test"
+    avatarUrl: "http://avatar.url.com/u=test",
+    subscribedTo: []
 };
 const testUser2 = {
     _id: "charlie",
@@ -36,7 +37,7 @@ const testGithubUser = {
 const testToken = "123123";
 const testExpiredToken = "987978";
 const testMessage1 = {
-    userTo: "nikos",
+    userTo: "bob",
     userFrom: "giannis",
     msg: "this is a message 1"
 };
@@ -82,24 +83,20 @@ describe("server", function() {
             users: {
                 find: sinon.stub(),
                 findOne: sinon.stub(),
-                insertOne: sinon.spy()
-            },
-            messages: {
-                find: sinon.stub(),
-                findOne: sinon.stub(),
-                insertOne: sinon.spy()
+                insertOne: sinon.spy(),
+                updateOne: sinon.stub()
             },
             conversations: {
                 find: sinon.stub(),
                 findOne: sinon.stub(),
-                insertOne: sinon.stub()
+                insertOne: sinon.stub(),
+                updateOne: sinon.stub()
             }
         };
         db = {
             collection: sinon.stub()
         };
         db.collection.withArgs("users").returns(dbCollections.users);
-        db.collection.withArgs("messages").returns(dbCollections.messages);
         db.collection.withArgs("conversations").returns(dbCollections.conversations);
 
         githubAuthoriser = {
@@ -237,7 +234,8 @@ describe("server", function() {
                     assert.deepEqual(JSON.parse(body), {
                         _id: "bob",
                         name: "Bob Bilson",
-                        avatarUrl: "http://avatar.url.com/u=test"
+                        avatarUrl: "http://avatar.url.com/u=test",
+                        subscribedTo: []
                     });
                     done();
                 });
@@ -313,7 +311,7 @@ describe("server", function() {
         });
         it("responds with status code 500 if database error", function(done) {
             authenticateUser(testUser, testToken, function() {
-                allUsers.toArray.callsArgWith(1, {err: "Database failure"}, null);
+                allUsers.toArray.callsArgWith(0, {err: "Database failure"}, null);
                 request({url: requestUrl, jar: cookieJar}, function(error, response) {
                     assert.equal(response.statusCode, 500);
                     done();
@@ -323,64 +321,124 @@ describe("server", function() {
     });
     describe("POST api/message", function() {
         var requestUrl = baseUrl + "/api/message/";
-        var conversation;
-        var conversationInster;
-        beforeEach(function() {
-            conversation = sinon.stub();
-            conversationInster = sinon.stub();
-            dbCollections.conversations.findOne.returns(conversation);
-            dbCollections.conversations.insertOne.returns(conversationInster);
-            dbCollections.users.findOne.returns(testUser);
-        });
+
         it("responds with status code 401 if user not authenticated", function(done) {
             request(requestUrl, function(error, response) {
                 assert.equal(response.statusCode, 401);
                 done();
             });
         });
-        // it("responds with 200 if message posted -- old conversation", function(done) {
-        //     const objOld = {
-        //         conversationId: undefined,
-        //         userFrom: "nikos",
-        //         userTo: "bob",
-        //         msg: "ela re twra"
-        //     };
-        //     authenticateUser(testUser, testToken, function() {
-        //         conversation.callsArgWith(1, null, testConversation);
-        //         request({
-        //             url: requestUrl, jar: cookieJar,
-        //             method: "POST",
-        //             headers: {
-        //                 "Content-type": "application/json"
-        //             },
-        //             body: JSON.stringify(objOld)
-        //         }, function(error, response, body) {
-        //             assert.equal(response.statusCode, 200);
-        //             done();
-        //         });
-        //     });
-        // });
-        // it("responds with 200 if message posted -- new conversation", function(done) {
-        //     const objNew = {
-        //         conversationId: "58d52c27983d681738f5449e",
-        //         userFrom: "nikos",
-        //         userTo: "bob",
-        //         msg: "ela re twra"
-        //     };
-        //     authenticateUser(testUser, testToken, function() {
-        //         conversationInster.callsArgWith(1, null, {insertedId: "sdasdasd44w4tgsdfsdfdf"});
-        //
-        //         request({url: requestUrl, jar: cookieJar,
-        //             method: "POST", headers: {
-        //                 "Content-type": "application/json"
-        //             },
-        //             body: JSON.stringify(objNew)
-        //         }, function(error, response, body) {
-        //             assert.equal(response.statusCode, 200);
-        //             done();
-        //         });
-        //     });
-        // });
+        it("responds with 200 if message posted -- old conversation", function(done) {
+            const objOld = {
+                conversationId: "58d52c27983d681738f5449e",
+                userFrom: "nikos",
+                userTo: "bob",
+                msg: "ela re twra"
+            };
+            authenticateUser(testUser, testToken, function() {
+                dbCollections.conversations.findOne.callsArgWith(1, null, JSON.parse(JSON.stringify(testConversation)));
+                dbCollections.conversations.updateOne.callsArgWith(2, null, null);
+                request({
+                    url: requestUrl, jar: cookieJar,
+                    method: "POST",
+                    headers: {
+                        "Content-type": "application/json"
+                    },
+                    body: JSON.stringify(objOld)
+                }, function(error, response, body) {
+                    assert.equal(response.statusCode, 200);
+                    done();
+                });
+            });
+        });
+        // ___________------ I have no Idea what provokes this ------___________
+        it("responds with 500 if findOne fails", function(done) {
+            const objOld = {
+                conversationId: "58d52c27983d681738f5449e",
+                userFrom: "nikos",
+                userTo: "bob",
+                msg: "ela re twra"
+            };
+            authenticateUser(testUser, testToken, function() {
+                dbCollections.conversations.findOne.callsArgWith(1, {err: "Not found"}, null);
+                request({
+                    url: requestUrl, jar: cookieJar,
+                    method: "POST",
+                    headers: {
+                        "Content-type": "application/json"
+                    },
+                    body: JSON.stringify(objOld)
+                }, function(error, response, body) {
+                    assert.equal(response.statusCode, 500);
+                    done();
+                });
+            });
+        });
+        it("responds with 500 if udateOne fails", function(done) {
+            const objOld = {
+                conversationId: "58d52c27983d681738f5449e",
+                userFrom: "nikos",
+                userTo: "bob",
+                msg: "ela re twra"
+            };
+            authenticateUser(testUser, testToken, function() {
+                dbCollections.conversations.findOne.callsArgWith(1, null, JSON.parse(JSON.stringify(testConversation)));
+                dbCollections.conversations.updateOne.callsArgWith(2, {err: "Not found"}, null);
+                request({
+                    url: requestUrl, jar: cookieJar,
+                    method: "POST",
+                    headers: {
+                        "Content-type": "application/json"
+                    },
+                    body: JSON.stringify(objOld)
+                }, function(error, response, body) {
+                    assert.equal(response.statusCode, 500);
+                    done();
+                });
+            });
+        });
+        it("responds with 200 if message posted -- new conversation", function(done) {
+            const objNew = {
+                conversationId: undefined,
+                userFrom: "nikos",
+                userTo: "bob",
+                msg: "ela re twra"
+            };
+            authenticateUser(testUser, testToken, function() {
+                dbCollections.conversations.insertOne.callsArgWith(1, null, {insertedId: "58d52c27983d681738f5449e"});
+                dbCollections.users.findOne.callsArgWith(1, null, testUser);
+                request({url: requestUrl, jar: cookieJar,
+                    method: "POST", headers: {
+                        "Content-type": "application/json"
+                    },
+                    body: JSON.stringify(objNew)
+                }, function(error, response, body) {
+                    assert.equal(response.statusCode, 200);
+                    done();
+                });
+            });
+        });
+        it("responds with 500 when insertOne Conversation fails -- new conversation", function(done) {
+            const objNew = {
+                conversationId: undefined,
+                userFrom: "nikos",
+                userTo: "bob",
+                msg: "ela re twra"
+            };
+            authenticateUser(testUser, testToken, function() {
+                dbCollections.conversations.insertOne.callsArgWith(1, {err: "cannot insert conversation"}, null);
+                request({url: requestUrl, jar: cookieJar,
+                    method: "POST", headers: {
+                        "Content-type": "application/json"
+                    },
+                    body: JSON.stringify(objNew)
+                }, function(error, response, body) {
+                    assert.equal(response.statusCode, 500);
+                    done();
+                });
+            });
+
+        });
     });
     describe("GET api/conversations/:userId", function() {
         var requestUrl = baseUrl + "/api/conversations/" + testUser._id;
@@ -397,7 +455,7 @@ describe("server", function() {
         });
         it("returns all conversation from specific user",  function (done) {
             authenticateUser(testUser, testToken, function() {
-                bobUser.callsArgWith(0, testUser._id, testUser);
+                bobUser.callsArgWith(1, null, testUser);
                 conversation.toArray.callsArgWith(0, null, [testConversation]);
                 request({url: requestUrl, jar: cookieJar, method: "GET"}, function(error, response, body) {
                     assert.equal(1, JSON.parse(body).length);
@@ -407,7 +465,7 @@ describe("server", function() {
         });
         it("returns 500 when conversations find errors ",  function (done) {
             authenticateUser(testUser, testToken, function() {
-                bobUser.callsArgWith(0, testUser._id, testUser);
+                bobUser.callsArgWith(1, null, testUser);
                 conversation.toArray.callsArgWith(0, {err: "Database error"}, null);
                 request({url: requestUrl, jar: cookieJar, method: "GET"}, function(error, response, body) {
                     assert.equal(500, response.statusCode);
@@ -415,10 +473,20 @@ describe("server", function() {
                 });
             });
         });
+        it("returns 500 when users findOne errors ",  function (done) {
+            authenticateUser(testUser, testToken, function() {
+                bobUser.callsArgWith(1, "Database error -- cannot find user", null);
+                conversation.toArray.callsArgWith(0, null, [testConversation]);
+                request({url: requestUrl, jar: cookieJar, method: "GET"}, function(error, response, body) {
+                    assert.equal(200, response.statusCode);
+                    done();
+                });
+            });
+        });
         it("returns 404 when userId is undefined",  function (done) {
             requestUrl = baseUrl + "/api/conversations/undefined";
             authenticateUser(testUser, testToken, function() {
-                bobUser.callsArgWith(0, testUser._id, testUser);
+                bobUser.callsArgWith(1, null, testUser);
                 conversation.toArray.callsArgWith(0, null, [testConversation]);
                 request({url: requestUrl, jar: cookieJar, method: "GET"}, function(error, response, body) {
                     assert.equal(404, response.statusCode);
@@ -436,9 +504,8 @@ describe("server", function() {
         });
         it("gets the specific conversation", function(done) {
             authenticateUser(testUser, testToken, function() {
-                dbCollections.conversations.findOne.callsArgWith(1, null, testConversation);
+                dbCollections.conversations.findOne.callsArgWith(1, null, JSON.parse(JSON.stringify(testConversation)));
                 request({url: requestUrl, jar: cookieJar, method: "GET"}, function(error, response, body) {
-                    console.log(body);
                     assert.equal(2, JSON.parse(body).messages.length);
                     done();
                 });
@@ -478,7 +545,6 @@ describe("server", function() {
         beforeEach(function() {
             var ws = new WebSocket(requestUrl);
             ws.on("message", function(event) {
-                console.log(event);
                 ws.close();
             });
         });

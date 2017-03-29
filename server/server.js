@@ -111,12 +111,12 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             return res.sendStatus(404);
         }
         conversations.findOne({_id: new ObjectID(req.params.conversationId)}, function(err, conversation) {
-            if (err) {
-                console.log(err.message);
-                res.sendStatus(500);
-            } else if (!err) {
+            if (!err) {
                 console.log(conversation);
                 res.status(200).json(conversation);
+            } else {
+                console.log(err.message);
+                res.sendStatus(500);
             }
         });
     });
@@ -130,9 +130,11 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             res.sendStatus(404);
         } else {
             users.findOne({_id: req.params.userId}, function (err, user) {
+                console.log("err", err);
                 if (!err) {
-                    conversations.find({_id: {$in: user.subscribedTo}}).toArray(function(err, data) {
-                        if (!err) {
+                    conversations.find({_id: {$in: user.subscribedTo}}).toArray(function(errConv, data) {
+                        console.log("errConv", errConv);
+                        if (!errConv) {
                             let retVal = [];
                             for (var i in data) {
                                 let participant = "";
@@ -150,10 +152,12 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                             }
                             res.status(200).json(retVal);
                         } else {
+                            console.log(errConv);
                             res.sendStatus(500);
                         }
                     });
                 }else {
+                    console.log(err);
                     res.sendStatus(500);
                 }
             });
@@ -168,19 +172,20 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             msg:      req.body.msg,
             timestamp: Date.now()
         };
-        console.log(tempMessage);
         if (!req.body.conversationId) {
             conversations.insertOne({
                 messages: [tempMessage]
             }, function (err, data) {
                 if (!err) {
-                    console.log("this is data", data.insertedId);
                     retConversationId = data.insertedId;
                     addConversationToUser(req.body.userFrom, data.insertedId);
                     if (req.body.userFrom !== req.body.userTo) {
                         addConversationToUser(req.body.userTo, data.insertedId);
                     }
                     res.status(200).json(retConversationId);
+                } else {
+                    console.log(err);
+                    res.sendStatus(500);
                 }
             });
         } else {
@@ -188,18 +193,20 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             conversations.findOne({_id: new ObjectID(retConversationId)}, function (err, conversation) {
                 if (!err) {
                     conversation.messages.push(tempMessage);
-                    try {
-                        conversations.updateOne({_id: new ObjectID(retConversationId)},
-                            {$set: {messages: conversation.messages}});
-                        res.status(200).json(retConversationId);
-                        notifyUser(req.body.userTo, sessions);
-                        notifyUser(req.body.userFrom, sessions);
-
-                    } catch (e) {
-                        console.log(e, "error Caught");
-                    }
+                    conversations.updateOne({_id: new ObjectID(retConversationId)},
+                        {$set: {messages: conversation.messages}}, function(errUpdate, data) {
+                        if (!errUpdate) {
+                            res.status(200).json(retConversationId);
+                            notifyUser(req.body.userTo, sessions);
+                            notifyUser(req.body.userFrom, sessions);
+                        } else {
+                            console.log(errUpdate);
+                            res.sendStatus(500);
+                        }
+                    });
                 } else {
                     console.log(err, "is an error");
+                    res.sendStatus(500);
                 }
             });
         }
