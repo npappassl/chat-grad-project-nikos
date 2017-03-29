@@ -60,20 +60,29 @@ li{
 }
 #userDetailWrap{
 	overflow-y: auto;
-	flex-grow: 4
+	flex-grow: 4;
 }
 //  title header
 #userDetailSpan{
+	z-index: 1;
 	display: inline-block;
+	background-color: #f1f1f1;
+	width: 100%;
+	max-height: 80px;
+	box-shadow: 1px 1px 12px 1px lightgrey;
+	position: fixed;
 }
 #userThumbSpan{
+	vertical-align: middle;
 	min-width: 110px;
-	display: block;
+	display: inline-block;
 }
 #userName{
-	display: block;
+	display: inline-block;
+	padding-right: 3em;
 }
 #userDescription{
+	display: block;
 	font-size: 0.75em;
 }
 // left SideBar (nav list)
@@ -121,6 +130,7 @@ li{
 	// vertical-align: top;
 }
 #messages{
+	margin-top: 80px;
 	width: 90%;
 }
 .timestamp{
