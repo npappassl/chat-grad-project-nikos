@@ -6,10 +6,10 @@ aware of the state (whenever data changes) in the application then make it a con
 
 # App.js
 App
-	- LoginScreen
-	- Conversations
-		-- Badge
-	- SearchFilterInput
-	- UserList
-	- MessagesContainer
-	- MessageTextArea
+* LoginScreen
+* Conversations
+		- Badge
+* SearchFilterInput
+* UserList
+* MessagesContainer
+* MessageTextArea
