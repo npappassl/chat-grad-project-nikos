@@ -26,14 +26,17 @@ class Conversations extends Component {
         );
     }
     renderList() {
-        if(this.props.conversations==="loading"){
+        if (this.props.conversations==="loading") {
             return (
                 <span>Loading...</span>
             );
-        } else if(this.props.conversations){
+        } else if(this.props.conversations) {
+            const conversationsTemp = this.props.conversations.sort((a, b) => {
+                return a.timestamp < b.timestamp;
+            })
             return this.props.conversations.map((user) => {
-                for(let i in this.props.userList){
-                    if(user.participant === this.props.userList[i].id){
+                for (let i in this.props.userList) {
+                    if (user.participant === this.props.userList[i].id) {
                         return this.eachUser(this.props.userList[i],user.id);
                     }
                 }

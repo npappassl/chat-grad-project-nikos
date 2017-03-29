@@ -1,23 +1,23 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import * as messageActions from "../actions/messageActions"
 /*
  * We need "if(!this.props.user)" because we set state to null by default
  * */
 
-const filterMessages = filterMessagesFromTo;
-
 class MessagesContainer extends Component {
     constructor(props){
         super(props);
+
         // console.log(allActions);
         // this.props.actions.loadMessages(this.props.session);
     }
     eachMsg(msg,i,classNames,sender) {
         console.log(msg);
         return (
-            <li key={i} className={classNames}> {msg.msg} </li>
+            <li key={i} className={classNames}>
+                <span className="timestamp">{Math.floor((msg.timestamp%86400000)/(60*60*1000))+":"+Math.floor((msg.timestamp%3600000)/(60*1000))}</span>
+                <br />{msg.msg} </li>
         );
     }
     componentDidMount(){
@@ -34,11 +34,9 @@ class MessagesContainer extends Component {
         if(this.props.messages.messages){
             return this.props.messages.messages.map((msg,i) => {
                 console.log(msg,i);
-                if(msg.userFrom === this.props.session._id &&
-                msg.userTo === this.props.user.id){
+                if (msg.userFrom === this.props.session._id) {
                     return this.eachMsg(msg,i,"sent");
-                } else if(msg.userTo === this.props.session._id &&
-                msg.userFrom === this.props.user.id){
+                } else if (msg.userFrom === this.props.user.id) {
                     return this.eachMsg(msg,i,"recieved");
                 }
             });
@@ -71,9 +69,6 @@ class MessagesContainer extends Component {
     }
 }
 
-function filterMessagesFromTo(msg,idFrom,idTo) {
-
-}
 
 // "state.activeUser" is set in reducers/index.js
 function mapStateToProps(state) {
@@ -89,4 +84,5 @@ function mapDispatchToProps(dispatch) {
     };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(MessagesContainer);
+export default connect(mapStateToProps)(MessagesContainer);
+// export default connect(mapStateToProps, mapDispatchToProps)(MessagesContainer);

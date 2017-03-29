@@ -25,18 +25,5 @@ export default class LoginApi{
         });
 
      }
-     static getServerLastTransaction() {
-         const request = new Request("/api/state", {
-             method: 'GET',
-             credentials: 'include'
-         });
-
-         return fetch(request).then(response => {
-             return response.json();
-         }).catch(error => {
-             return error;
-         });
-
-      }
 
 }

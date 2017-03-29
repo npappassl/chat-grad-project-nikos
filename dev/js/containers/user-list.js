@@ -1,23 +1,26 @@
 import React, {Component} from "react";
 import {bindActionCreators} from "redux";
 import {connect} from "react-redux";
-import {selectUser} from "../actions/index";
-import {sendUsersRequest, updateUserSeen} from "../actions/usersActions";
+import {selectUser,selectConversation} from "../actions/index";
+import {sendUsersRequest, updateUserSeen, sendConversationDetailRequest} from "../actions/usersActions";
 
 class UserList extends Component {
     constructor(props){
         super(props);
-        this.props.sendUsersRequest();
+        const self = this;
+        self.props.sendUsersRequest();
     }
     selectUserAndUpdateSession(user){
+        for( let i in this.props.conversations) {
+            console.log(i, this.props.conversations[i], user.id);
+            if(this.props.conversations[i].participant === user.id) {
+                this.props.selectConversation(this.props.conversations[i].id);
+                this.props.sendConversationDetailRequest(this.props.conversations[i].id);
+                this.props.selectUser(user);
+                return;
+            }
+        }
         this.props.selectUser(user);
-        const request = new Request("/api/user/subscribe/"+this.props.session._id +
-                "/" + user.id, {
-            method: 'PUT',
-            credentials: 'include'
-        });
-        fetch(request);
-
     }
     eachUser(user) {
         return (
@@ -35,6 +38,9 @@ class UserList extends Component {
                 <span>Loading...</span>
             );
         } else if(this.props.users){
+            const tempUsers = this.props.users.sort((a, b) => {
+                return a.id > b.id;
+            })
             return this.props.users.map((user) => {
                 if(this.props.userFilter === ""){
                     return this.eachUser(user);
@@ -61,7 +67,8 @@ function mapStateToProps(state) {
     return {
         users: state.users,
         userFilter: state.searchFilter,
-        session: state.session
+        session: state.session,
+        conversations: state.conversations,
         // hasErrored : state.usersHasErrored,
         // isLoading: state.usersIsLoading
     };
@@ -72,7 +79,9 @@ function mapStateToProps(state) {
 function matchDispatchToProps(dispatch){
     return bindActionCreators({
         selectUser: selectUser,
-        sendUsersRequest:sendUsersRequest}, dispatch
+        sendUsersRequest:sendUsersRequest,
+        selectConversation: selectConversation,
+        sendConversationDetailRequest: sendConversationDetailRequest}, dispatch
     );
 }
 

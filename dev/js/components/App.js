@@ -15,31 +15,31 @@ require('../../scss/style.scss');
 class App extends Component {
     constructor(props){
         super(props);
+        const self = this;
         // const dis = this.props.dispatch;
-        this.props.actions.sendSessionRequest();
-        this.props.actions.sendAuthUriRequest();
-        setInterval( () =>{
-            if(this.props.session && this.props.session._id )
-            this.props.actions.sendServerTransactionRequest();
-        } , 10000);
+        self.props.actions.sendSessionRequest();
+        self.props.actions.sendAuthUriRequest();
+        var host = location.origin.replace(/^http/, 'ws');
+        var ws = new WebSocket(host);
+        ws.onmessage = function (event) {
+            console.log(event);
+            const data = JSON.parse(event.data);
+            if (self.props.activeConversation) {
+                self.props.actions.loadConversationDetail(self.props.activeConversation);
+            }
+            if (self.props.session._id) {
+                self.props.actions.sendConversationsRequest(self.props.session._id);
+            }
+            self.props.actions.sendUsersRequest();
+            self.props.actions.sendSessionRequest(true);
+            //
+            // var li = document.createElement('li');
+            // li.innerHTML = JSON.parse(event.data);
+            // document.querySelector('#pings').appendChild(li);
+        };
     }
     renderLogin() {
         return (<LoginScreen loginUri={this.props.loginUri} />);
-    }
-    componentWillUpdate(){
-        console.log("updated");
-        if(this.props.serverTransactionTS.needToUpdate && this.props.session) {
-            // this.setState({serverTransactionTS:{needToUpdate:false, timestamp:this.props.serverTransactionTS.timestamp}})
-            if(this.props.session._id){
-                console.log("fetching everything");
-                this.props.actions.sendServerTransactionRequest();
-                if(this.props.activeConversation){
-                    this.props.actions.loadConversationDetail(this.props.activeConversation);
-                }
-                this.props.actions.sendUsersRequest();
-                this.props.actions.sendSessionRequest(true);
-            }
-        }
     }
     renderNormal() {
         return (
@@ -53,9 +53,6 @@ class App extends Component {
                     <UserList />
                 </div>
                 <div id="rightVerticalLayout">
-                <h1>Pings</h1>
-                <ul id='pings'></ul>
-
                     <MessagesContainer />
                     <MessageTextArea />
                 </div>
@@ -77,7 +74,6 @@ function mapStateToProps(state) {
     return {
         session: state.session,
         loginUri: state.loginUri,
-        serverTransactionTS: state.serverTransactionTS,
         activeConversation: state.activeConversation
     };
 }
@@ -88,6 +84,7 @@ function mapDispatchToProps(dispatch){
         sendServerTransactionRequest: loginActions.sendServerTransactionRequest,
         sendUsersRequest: usersActions.sendUsersRequest,
         loadConversationDetail: usersActions.sendConversationDetailRequest,
+        sendConversationsRequest: usersActions.sendConversationsRequest,
         loadMessages :messageActions.loadMessages
     }
     return {
