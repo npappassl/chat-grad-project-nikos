@@ -5,7 +5,6 @@ part of your webpage is only used for displaying data (dumb) then make it a comp
 aware of the state (whenever data changes) in the application then make it a container.
 
 # App.js
-App
 * LoginScreen
 * Conversations  
 		- Badge
