@@ -2,8 +2,8 @@
 
 ##  loginActions.js
 
-###     sendAuthUriRequest()
-###     sendSesionRequest()
+    - sendAuthUriRequest()
+    - sendSesionRequest()
 
 ##  messageActions.js
 
