@@ -7,8 +7,8 @@
 
 ##  messageActions.js
 
-    - sendMessageRequest(obj)
-    - loadMessages()
+    + sendMessageRequest(obj)
+    + loadMessages()
 
 ##  usersActions.js
 
