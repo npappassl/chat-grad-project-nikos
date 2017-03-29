@@ -7,7 +7,7 @@ aware of the state (whenever data changes) in the application then make it a con
 # App.js
 App
 * LoginScreen
-* Conversations
+* Conversations  
 		- Badge
 * SearchFilterInput
 * UserList
