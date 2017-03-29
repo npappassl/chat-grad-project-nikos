@@ -21,13 +21,13 @@ class MessagesContainer extends Component {
         const timeDiff = Math.floor((Date.now() - msg.timestamp)/(1000*60));
         if (timeDiff < 60) {
             time = timeDiff + " minutes ago";
-        } else {
+        } else if(timeDiff < 60*24) {
             time = placeholderZeroH + hours + ":"+ placeholderZeroM + mins;
+        } else {
+            let d = new Date(msg.timestamp);
+            time = d.toLocaleString("en-GB");
         }
-        let d = new Date(0,0,0,0,0)
-        d.setMilliseconds(msg.timestamp);
-        console.log(d);
-        return time + " ----- " + d.toLocaleString("en-GB") + " --- " + msg.timestamp;
+        return time;
     }
     eachMsg(msg,i,classNames,sender) {
         console.log(msg);
