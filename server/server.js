@@ -19,7 +19,6 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
     app.use(express.static("public"));
     var users = db.collection("users");
     var conversations = db.collection("conversations");
-    var messages = db.collection("messages");
     var sessions = {};
 
     app.get("/oauth", function(req, res) {
@@ -192,7 +191,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             retConversationId = req.body.conversationId;
             conversations.findOne({_id: new ObjectID(retConversationId)}, function (err, conversation) {
                 if (!err) {
-                    conversation.messages.push(tempMessage);
+                    conversation.messages.unshift(tempMessage);
                     conversations.updateOne({_id: new ObjectID(retConversationId)},
                         {$set: {messages: conversation.messages}}, function(errUpdate, data) {
                         if (!errUpdate) {

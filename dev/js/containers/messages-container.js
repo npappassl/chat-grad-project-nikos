@@ -17,7 +17,17 @@ class MessagesContainer extends Component {
         const mins = Math.floor((msg.timestamp%3600000)/(60*1000));
         const placeholderZeroH = hours<10?"0":"";
         const placeholderZeroM = mins<10?"0":"";
-        return placeholderZeroH + hours + ":"+ placeholderZeroM + mins;
+        let time, newMins;
+        const timeDiff = Math.floor((Date.now() - msg.timestamp)/(1000*60));
+        if (timeDiff < 60) {
+            time = timeDiff + " minutes ago";
+        } else {
+            time = placeholderZeroH + hours + ":"+ placeholderZeroM + mins;
+        }
+        let d = new Date(0,0,0,0,0)
+        d.setMilliseconds(msg.timestamp);
+        console.log(d);
+        return time + " ----- " + d.toLocaleString("en-GB") + " --- " + msg.timestamp;
     }
     eachMsg(msg,i,classNames,sender) {
         console.log(msg);
@@ -30,9 +40,6 @@ class MessagesContainer extends Component {
     renderMessages() {
         console.log("rendered messages");
         if(this.props.messages.messages){
-            this.props.messages.messages.sort((a, b) => {
-                    return a.timestamp > b.timestamp
-            })
             return this.props.messages.messages.map((msg,i) => {
                 if (msg.userFrom === this.props.session._id) {
                     return this.eachMsg(msg,i,"sent");
