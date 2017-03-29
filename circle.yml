@@ -3,7 +3,7 @@ general:
     - "build_artifacts"
 deployment:
   prod:
-    branch: websocketExperimenting
+    branch: master
     heroku:
       appname: chat-grad-project-nikos
 machine:
