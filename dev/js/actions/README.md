@@ -1,18 +1,18 @@
 # Actions
 
-## loginActions.js
+##  loginActions.js
 
-### sendAuthUriRequest()
-### sendSesionRequest()
+###     sendAuthUriRequest()
+###     sendSesionRequest()
 
-## messageActions.js
+##  messageActions.js
 
-### sendMessageRequest(obj)
-### loadMessages()
+###     sendMessageRequest(obj)
+###     loadMessages()
 
-## usersActions.js
+##  usersActions.js
 
-### sendUsersRequest()
+###     sendUsersRequest()
 -------------------------------------------------------------------------------
 Actions are just things that happen *(seriously, that's it)*.
 - most actions are user events (clicked a button, submitted a form, etc...)
