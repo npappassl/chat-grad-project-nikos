@@ -154,15 +154,15 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                             let retVal = [];
                             for (var i in data) {
                                 let participant = "";
-                                if (req.params.userId === data[i].messages[0].userFrom) {
-                                    participant = data[i].messages[0].userTo;
+                                if (req.params.userId === data[i].messages[data[i].messages.length - 1].userFrom) {
+                                    participant = data[i].messages[data[i].messages.length - 1].userTo;
                                 } else {
-                                    participant = data[i].messages[0].userFrom;
+                                    participant = data[i].messages[data[i].messages.length - 1].userFrom;
                                 }
                                 retVal.push({
                                     id: data[i]._id,
                                     participant: participant,
-                                    timestamp: data[i].messages[data[i].messages.length - 1].timestamp,
+                                    timestamp: data[i].messages[0].timestamp,
                                     messages: data[i].messages
                                 });
                             }
