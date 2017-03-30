@@ -30,11 +30,18 @@ export const sendConversationsRequest = function(user) {
     };
 
 };
-
-export const sendConversationDetailRequest = function(user) {
+export const sendReadConversationRequest = function(conversationId, userId) {
+    return function(dispatch) {
+        return UsersApi.postReadConversation(conversationId, userId)
+        .then(response => {
+            console.log(response);
+        });
+    };
+};
+export const sendConversationDetailRequest = function(conversationId) {
     console.log("sendConversationsRequest");
     return function(dispatch){
-        return UsersApi.getConversationDetail(user)
+        return UsersApi.getConversationDetail(conversationId)
         .then(users => {
             console.log(users);
             dispatch(loadConversationDetailSuccess(users));
@@ -45,6 +52,16 @@ export const sendConversationDetailRequest = function(user) {
     };
 
 };
+
+// const loadReadConversations = function(conversationId, userId){
+//     return {
+//         ATypes.GOT_READ_CONVERSATIONS,
+//         payload: {
+//             conv: conversationId,
+//             user: userId
+//         }
+//     }
+// }
 
 const loadUsersSuccess = function(users) {
     console.log("users", users);

@@ -60,20 +60,29 @@ li{
 }
 #userDetailWrap{
 	overflow-y: auto;
-	flex-grow: 4
+	flex-grow: 4;
 }
 //  title header
 #userDetailSpan{
+	z-index: 1;
 	display: inline-block;
+	background-color: #f1f1f1;
+	width: 100%;
+	max-height: 80px;
+	box-shadow: 1px 1px 12px 1px lightgrey;
+	position: fixed;
 }
 #userThumbSpan{
+	vertical-align: middle;
 	min-width: 110px;
-	display: block;
+	display: inline-block;
 }
 #userName{
-	display: block;
+	display: inline-block;
+	padding-right: 3em;
 }
 #userDescription{
+	display: block;
 	font-size: 0.75em;
 }
 // left SideBar (nav list)
@@ -86,6 +95,7 @@ li{
 	border-color: $userListTitle;
 	border-width: 1px;
 }
+//  user list and conversation list
 #UserList{
 	float: left;
 	display: inline-block;
@@ -97,7 +107,30 @@ li{
 	max-width: 300px;
 	background-color: $userListBgColor;
 }
+#UserList img{
+	border-radius: 3px;
+}
+.badge{
+	background-color: $messageDivBgColor;
+	position: relative;
+	vertical-align: super;
+	text-align: center;
+	display: inline-block;
+	width: 1.5em;
+	height: 1.5em;
+	padding: 0.1 0.1 0.1 0.1;
+	font-size:0.6em;
+	transform: translateY(-0.7em);
+	margin-left: -2em;
+	margin-right: 1em;
+	border-radius: 100%;
+}
+.badge p{
+	margin: .3em auto;
+	// vertical-align: top;
+}
 #messages{
+	margin-top: 80px;
 	width: 90%;
 }
 .timestamp{
@@ -147,4 +180,8 @@ li{
 }
 .unread{
 	font-weight: 600;
+}
+// AUX
+.hidden{
+	display: none;
 }

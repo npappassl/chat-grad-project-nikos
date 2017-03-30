@@ -11,11 +11,21 @@ export default class UsersApi{
             return error;
         });
     }
-
+    static postReadConversation(conversationId, userId) {
+        const request = new Request("/api/user/"+conversationId+"/"+userId, {
+            method: "PUT",
+            credentials: "include"
+        });
+        return fetch(request).then(response => {
+            return response.json();
+        }).catch(error => {
+            return error;
+        });
+     }
     static getConversations(user) {
         const request = new Request("/api/conversations/"+user, {
-            method: 'GET',
-            credentials: 'include'
+            method: "GET",
+            credentials: "include"
         });
 
         return fetch(request).then(response => {

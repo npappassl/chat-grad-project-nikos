@@ -6,6 +6,7 @@ import loginReducer from "./reducer-login";
 import loginUriReducer from "./reducer-login-uri";
 import userFilterReducer from "./reducer-users-filter";
 import conversationsReducer from "./reducer-conversations";
+import notificationsReducer from "./reducer-notifications";
 import activeConversationReducer from "./reducer-active-conversations"
 /*
  * We combine all reducers into a single object before updated data is dispatched (sent) to store
@@ -20,7 +21,8 @@ const allReducers = combineReducers({
     loginUri: loginUriReducer,
     messages: messagesReducer,
     searchFilter: userFilterReducer,
-    conversations: conversationsReducer
+    conversations: conversationsReducer,
+    notifications: notificationsReducer
 });
 
 export default allReducers;

@@ -1,3 +1,12 @@
+# App.js
+* LoginScreen
+* Conversations  
+		- Badge
+* SearchFilterInput
+* UserList
+* MessagesContainer
+* MessageTextArea
+
 ## Containers vs. Components
 
 Containers are very similar to components, the only difference is that containers are aware of application state. If

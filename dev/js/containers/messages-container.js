@@ -8,32 +8,38 @@ import {bindActionCreators} from 'redux';
 class MessagesContainer extends Component {
     constructor(props){
         super(props);
-
-        // console.log(allActions);
-        // this.props.actions.loadMessages(this.props.session);
+    }
+    getTime(msg) {
+        const hours = Math.floor((msg.timestamp%86400000)/(60*60*1000));
+        const mins = Math.floor((msg.timestamp%3600000)/(60*1000));
+        const placeholderZeroH = hours<10?"0":"";
+        const placeholderZeroM = mins<10?"0":"";
+        let time, newMins;
+        const timeDiff = Math.floor((Date.now() - msg.timestamp)/(1000*60));
+        if (timeDiff === 0) {
+            time = "less than one minute ago";
+        } else if (timeDiff < 60) {
+            time = timeDiff + " minutes ago";
+        } else if(timeDiff < 60*24) {
+            time = placeholderZeroH + hours + ":"+ placeholderZeroM + mins;
+        } else {
+            let d = new Date(msg.timestamp);
+            time = d.toLocaleString("en-GB");
+        }
+        return time;
     }
     eachMsg(msg,i,classNames,sender) {
         console.log(msg);
         return (
             <li key={i} className={classNames}>
-                <span className="timestamp">{Math.floor((msg.timestamp%86400000)/(60*60*1000))+":"+Math.floor((msg.timestamp%3600000)/(60*1000))}</span>
+                <span className="timestamp">{this.getTime(msg)}</span>
                 <br />{msg.msg} </li>
         );
     }
-    componentDidMount(){
-        // document.getElementById('userDetailWrap').scrollTop = 1000000;
-    }
-    componentWillUpdate(){
-        // document.getElementById('userDetailWrap').scrollTop = 1000000;
-        // this.props.actions.loadMessages(this.props.session);
-
-    }
     renderMessages() {
         console.log("rendered messages");
-        console.log(this.props.messages);
-        if(this.props.messages.messages){
+        if(this.props.messages.messages && this.props.activeConversation){
             return this.props.messages.messages.map((msg,i) => {
-                console.log(msg,i);
                 if (msg.userFrom === this.props.session._id) {
                     return this.eachMsg(msg,i,"sent");
                 } else if (msg.userFrom === this.props.user.id) {
@@ -53,12 +59,14 @@ class MessagesContainer extends Component {
         return (
             <div id="userDetailWrap">
                 <div>
-                    <span id="userThumbSpan">
-                        <img id="userThumb" height="64" src={user.thumbnail} />
-                    </span>
                     <span id="userDetailSpan">
-                        <span id="userName">{user.id} {user.last}</span>
-                        <span id="userDescription">Description: {user.description}</span>
+                        <span id="userThumbSpan">
+                            <img id="userThumb" height="64" src={user.avatarUrl} />
+                        </span>
+                        <span id="userName">
+                            <span >{user.id} {user.last}</span>
+                            <span id="userDescription">Description: {user.description}</span>
+                        </span>
                     </span>
                 </div>
                 <ul id="messages">
@@ -75,7 +83,8 @@ function mapStateToProps(state) {
     return {
         user: state.activeUser,
         messages: state.messages,
-        session: state.session
+        session: state.session,
+        activeConversation: state.activeConversation
     };
 }
 function mapDispatchToProps(dispatch) {

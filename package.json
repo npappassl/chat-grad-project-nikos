@@ -8,6 +8,7 @@
   },
   "main": "server.js",
   "scripts": {
+    "tree": "rch dev/js/components/App.js",
     "build": "node server",
     "test": "grunt test",
     "start": "webpack -p && cross-env NODE_ENV=production node server"

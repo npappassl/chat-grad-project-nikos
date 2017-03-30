@@ -22,7 +22,8 @@ const testUser = {
     _id: "bob",
     name: "Bob Bilson",
     avatarUrl: "http://avatar.url.com/u=test",
-    subscribedTo: []
+    subscribedTo: [],
+    lastRead: {}
 };
 const testUser2 = {
     _id: "charlie",
@@ -175,7 +176,7 @@ describe("server", function() {
                     name: "Bob Bilson",
                     group: false,
                     avatarUrl: "http://avatar.url.com/u=test",
-                    subscriptionRequests: [],
+                    lastRead: {},
                     subscribedTo: []
                 });
                 done();
@@ -235,7 +236,8 @@ describe("server", function() {
                         _id: "bob",
                         name: "Bob Bilson",
                         avatarUrl: "http://avatar.url.com/u=test",
-                        subscribedTo: []
+                        subscribedTo: [],
+                        lastRead: {}
                     });
                     done();
                 });

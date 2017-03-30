@@ -20,6 +20,7 @@ class UserList extends Component {
                 return;
             }
         }
+        this.props.selectConversation(null);
         this.props.selectUser(user);
     }
     eachUser(user) {

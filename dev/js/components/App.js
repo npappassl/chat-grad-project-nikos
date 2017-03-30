@@ -8,7 +8,6 @@ import MessageTextArea from '../containers/message-text-area';
 import LoginScreen from "../containers/login-screen";
 import SearchFilterInput from "../containers/searchFilterInput";
 import * as loginActions from "../actions/loginActions";
-import * as messageActions from "../actions/messageActions";
 import * as usersActions from "../actions/usersActions";
 
 require('../../scss/style.scss');
@@ -16,7 +15,6 @@ class App extends Component {
     constructor(props){
         super(props);
         const self = this;
-        // const dis = this.props.dispatch;
         self.props.actions.sendSessionRequest();
         self.props.actions.sendAuthUriRequest();
         var host = location.origin.replace(/^http/, 'ws');
@@ -81,11 +79,9 @@ function mapDispatchToProps(dispatch){
     const allActions = {
         sendSessionRequest:loginActions.sendSessionRequest,
         sendAuthUriRequest:loginActions.sendAuthUriRequest,
-        sendServerTransactionRequest: loginActions.sendServerTransactionRequest,
         sendUsersRequest: usersActions.sendUsersRequest,
         loadConversationDetail: usersActions.sendConversationDetailRequest,
-        sendConversationsRequest: usersActions.sendConversationsRequest,
-        loadMessages :messageActions.loadMessages
+        sendConversationsRequest: usersActions.sendConversationsRequest
     }
     return {
         actions: bindActionCreators(allActions, dispatch)
