@@ -38,7 +38,7 @@ class MessagesContainer extends Component {
     }
     renderMessages() {
         console.log("rendered messages");
-        if(this.props.messages.messages){
+        if(this.props.messages.messages && this.props.activeConversation){
             return this.props.messages.messages.map((msg,i) => {
                 if (msg.userFrom === this.props.session._id) {
                     return this.eachMsg(msg,i,"sent");
@@ -83,7 +83,8 @@ function mapStateToProps(state) {
     return {
         user: state.activeUser,
         messages: state.messages,
-        session: state.session
+        session: state.session,
+        activeConversation: state.activeConversation
     };
 }
 function mapDispatchToProps(dispatch) {

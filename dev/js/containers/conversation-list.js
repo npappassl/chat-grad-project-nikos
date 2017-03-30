@@ -2,7 +2,8 @@ import React, {Component} from "react";
 import {connect} from "react-redux";
 import {bindActionCreators} from "redux";
 import {selectConversation,selectUser} from "../actions/index";
-import {sendUsersRequest,sendConversationsRequest,sendConversationDetailRequest} from "../actions/usersActions";
+import {sendUsersRequest,sendConversationsRequest,
+    sendConversationDetailRequest, sendReadConversationRequest} from "../actions/usersActions";
 import Badge from "./badge-container";
 class Conversations extends Component {
     constructor(props){
@@ -12,6 +13,7 @@ class Conversations extends Component {
     }
     selectUserAndUpdateSession(user,conversationId){
         this.props.selectConversation(conversationId);
+        this.props.sendReadConversationRequest(conversationId,this.props.session._id);
         this.props.sendConversationDetailRequest(conversationId);
         this.props.selectUser(user);
     }
@@ -87,9 +89,10 @@ function matchDispatchToProps(dispatch){
     return bindActionCreators({
         selectUser: selectUser,
         selectConversation: selectConversation,
-        sendUsersRequest:sendUsersRequest,
-        sendConversationsRequest:sendConversationsRequest,
-        sendConversationDetailRequest:sendConversationDetailRequest, }, dispatch
+        sendUsersRequest: sendUsersRequest,
+        sendConversationsRequest: sendConversationsRequest,
+        sendConversationDetailRequest: sendConversationDetailRequest,
+        sendReadConversationRequest: sendReadConversationRequest      }, dispatch
     );
 }
 

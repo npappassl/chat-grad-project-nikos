@@ -85,6 +85,26 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             }
         });
     });
+    app.put("/api/user/:conversationId/:userId", function(req, res) {
+        console.log("userId", req.params.userId);
+        users.findOne({_id: req.params.userId}, function(err, doc) {
+            if (!err) {
+                let tempLastRead = doc.lastRead;
+                tempLastRead[req.params.conversationId] = Date.now();
+                users.updateOne({_id: req.params.userId},
+                    {$set: {lastRead: tempLastRead}},
+                    function(errUpdate, doc) {
+                    if (!errUpdate) {
+                        res.sendStatus(200);
+                        notifyUser(req.params.userId, sessions);
+                    }
+                });
+            } else {
+                console.log(err);
+                res.sendStatus(500);
+            }
+        });
+    });
     app.get("/api/users", function(req, res) {
         users.find().toArray(function(err, docs) {
             if (!err) {
@@ -102,7 +122,6 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
     });
 
     app.get("/api/conversation/:conversationId", function(req, res) {
-        console.log(req.params.conversationId);
         if (req.params.conversationId === null ||
             req.params.conversationId === undefined ||
             req.params.conversationId === "null" ||
@@ -111,7 +130,6 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
         }
         conversations.findOne({_id: new ObjectID(req.params.conversationId)}, function(err, conversation) {
             if (!err) {
-                console.log(conversation);
                 res.status(200).json(conversation);
             } else {
                 console.log(err.message);
@@ -120,7 +138,6 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
         });
     });
     app.get("/api/conversations/:userId", function(req, res) {
-        console.log("req.params.userId", req.params.userId);
         lastTransaction = Date.now();
         if (!req.params.userId ||
             req.params.userId === "null" ||
@@ -131,7 +148,6 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             users.findOne({_id: req.params.userId}, function (err, user) {
                 console.log("err", err);
                 if (!err) {
-                    console.log(user.subscribedTo);
                     conversations.find({_id: {$in: user.subscribedTo}}).toArray(function(errConv, data) {
                         console.log("errConv", errConv);
                         if (!errConv) {
@@ -149,7 +165,6 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                                     timestamp: data[i].messages[data[i].messages.length - 1].timestamp,
                                     messages: data[i].messages
                                 });
-                                console.log("retval",  retVal);
                             }
                             res.status(200).json(retVal);
                         } else {
