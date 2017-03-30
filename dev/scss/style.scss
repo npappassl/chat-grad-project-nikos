@@ -9,6 +9,7 @@ $buttonFont: "Hind", sans-serif;
 
 h2 {
 	color: $userListTitle;
+	font-size: 1.4em;
 }
 main,body,html,#layout,#root{
 	font-family: $mainFont;
@@ -18,6 +19,7 @@ main,body,html,#layout,#root{
 }
 ul{
 	list-style: none;
+	height: 40vh;
 }
 li img{
  vertical-align: middle;
