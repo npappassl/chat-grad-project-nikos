@@ -1,15 +1,18 @@
-$primary: #88c2c2;
 $userListBgColor: #803c4a;//#773d3d;
 $userListFgColor: #fdfdff;
 $messageTextAreaFgColor: #011;
 $messageDivBgColor: #3b8a72;
 $userListTitle: $messageDivBgColor;
+$primary: $messageDivBgColor;//rgba(136, 194, 194, 0.8);
 $mainFont: "Comfortaa", cursive;
 $buttonFont: "Hind", sans-serif;
 
 h2 {
 	color: $userListTitle;
 	font-size: 1.4em;
+	font-weight: 100;
+	margin-left: 1em;
+	font-variant: small-caps;
 }
 main,body,html,#layout,#root{
 	font-family: $mainFont;
@@ -28,6 +31,13 @@ ul{
 li img{
  vertical-align: middle;
  margin-right: 1em;
+}
+ul .selected{
+	background-color: $primary;
+	font-weight: 900;
+	width:70%;
+	border-radius: 3px;
+
 }
 li{
 	margin-top: 1em;
@@ -56,6 +66,7 @@ li{
 #loginWrap a:hover{
 	filter: invert(1);
 	color: black;
+	transform: translate(2px,2px);
 }
 
 #rightVerticalLayout{

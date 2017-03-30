@@ -18,17 +18,22 @@ class Conversations extends Component {
         this.props.selectUser(user);
     }
     eachUser(user,conversationId, unreadMessagesCount) {
-        let classCss = "badge"
-        if(unreadMessagesCount === 0) {
-            classCss = "hidden";
+        let badgeClassCss = "badge"
+        if (unreadMessagesCount === 0) {
+            badgeClassCss = "hidden";
+        }
+        let activeConvCss = "";
+        console.log(conversationId,this.props.activeConversation)
+        if (conversationId===this.props.activeConversation) {
+            activeConvCss = "selected";
         }
         return (
-            <li
+            <li className={activeConvCss}
                 key={conversationId}
                 onClick={() => this.selectUserAndUpdateSession(user, conversationId)}
             >
                 <img width="32" src={user.avatarUrl} />
-                <Badge number={unreadMessagesCount} className={classCss} />
+                <Badge number={unreadMessagesCount} className={badgeClassCss} />
                 {user.id}
             </li>
         );
@@ -49,10 +54,9 @@ class Conversations extends Component {
                 <span>Loading...</span>
             );
         } else if(this.props.conversations) {
-            const conversationsTemp = this.props.conversations.sort((a, b) => {
+            return this.props.conversations.sort((a, b) => {
                 return a.timestamp < b.timestamp;
-            })
-            return this.props.conversations.map((conversation) => {
+            }).map((conversation) => {
                 const unreadMessagesCount = this.countUnreadMessages(conversation.messages, this.props.session.lastRead[conversation.id])
 
                 for (let i in this.props.userList) {
@@ -81,7 +85,8 @@ function mapStateToProps(state) {
         userFilter: state.searchFilter,
         messages: state.messages,
         session: state.session,
-        conversations: state.conversations
+        conversations: state.conversations,
+        activeConversation: state.activeConversation
     };
 }
 

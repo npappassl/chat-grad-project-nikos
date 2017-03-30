@@ -12,7 +12,6 @@ class UserList extends Component {
     }
     selectUserAndUpdateSession(user){
         for( let i in this.props.conversations) {
-            console.log(i, this.props.conversations[i], user.id);
             if(this.props.conversations[i].participant === user.id) {
                 this.props.selectConversation(this.props.conversations[i].id);
                 this.props.sendConversationDetailRequest(this.props.conversations[i].id);
@@ -29,7 +28,7 @@ class UserList extends Component {
                 key={user.id}
                 onClick={() => this.selectUserAndUpdateSession(user)}
             >
-                <img width="32" src={user.avatarUrl} />{user.id} {user.last}
+                <img width="32" src={user.avatarUrl} />{user.id}
             </li>
         );
     }
@@ -62,8 +61,6 @@ class UserList extends Component {
 
 }
 
-// Get apps state and pass it as props to UserList
-//      > whenever state changes, the UserList will automatically re-render
 function mapStateToProps(state) {
     return {
         users: state.users,
@@ -75,8 +72,6 @@ function mapStateToProps(state) {
     };
 }
 
-// Get actions and pass them as props to to UserList
-//      > now UserList has this.props.selectUser
 function matchDispatchToProps(dispatch){
     return bindActionCreators({
         selectUser: selectUser,
@@ -85,8 +80,5 @@ function matchDispatchToProps(dispatch){
         sendConversationDetailRequest: sendConversationDetailRequest}, dispatch
     );
 }
-
-// We don't want to return the plain UserList (component) anymore, we want to return the smart Container
-//      > UserList is now aware of state and actions
 
 export default connect(mapStateToProps, matchDispatchToProps)(UserList);
