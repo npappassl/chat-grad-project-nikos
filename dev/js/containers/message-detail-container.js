@@ -4,9 +4,6 @@ import {connect} from 'react-redux';
 class MessageDetail extends Component{
     constructor(props) {
         super(props);
-        this.msg = this.props.msg;
-        this.className = this.props.className;
-        console.log("from constructor",this.msg);
     }
     getTime(msg) {
         const hours = Math.floor((msg.timestamp%86400000)/(60*60*1000));
@@ -30,7 +27,7 @@ class MessageDetail extends Component{
     render(){
         console.log(this.props.index);
         return (
-            <li className={this.className}>
+            <li className={this.props.className}>
                 <span className="timestamp">{this.getTime(this.props.msg)}</span>
                 <br /><span className="messageText">{this.props.msg.msg}</span>
             </li>

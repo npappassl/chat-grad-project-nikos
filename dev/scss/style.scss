@@ -17,9 +17,13 @@ main,body,html,#layout,#root{
 	overflow-y: hidden;
 	margin: 0;
 }
+hr{
+	border-style: solid;
+	border-color: $messageDivBgColor;
+}
 ul{
 	list-style: none;
-	height: 40vh;
+	height: 30vh;
 }
 li img{
  vertical-align: middle;
@@ -130,6 +134,21 @@ li{
 .badge p{
 	margin: .3em auto;
 	// vertical-align: top;
+}
+button{
+	display: block;
+	margin: 1em auto;
+	text-align: center;
+	transition: all 0.4s ease;
+	background-color: $primary;
+	color:white;
+	padding: 1em;
+	border-radius: 0.3em;
+	border-style: none;
+	text-decoration: none;
+}
+button:hover{
+	transform: translate(2px,2px);
 }
 #messages{
 	margin-top: 80px;
