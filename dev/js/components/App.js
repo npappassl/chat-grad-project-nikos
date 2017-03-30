@@ -45,6 +45,8 @@ class App extends Component {
                     <SearchFilterInput />
                     <h2>User List</h2>
                     <UserList />
+                    <hr />
+                    <button id="createGroupButton" value="create group" >Create group</button>
                 </div>
                 <div id="rightVerticalLayout">
                     <MessagesContainer />
