@@ -2,8 +2,8 @@ import React, {Component} from "react";
 import {connect} from "react-redux";
 import {bindActionCreators} from "redux";
 import {selectConversation,selectUser} from "../actions/index";
-import {sendUsersRequest,sendConversationsRequest,
-    sendConversationDetailRequest, sendReadConversationRequest} from "../actions/usersActions";
+import {sendConversationsRequest, sendConversationDetailRequest,
+    sendReadConversationRequest} from "../actions/usersActions";
 import Badge from "./badge-container";
 class Conversations extends Component {
     constructor(props){
@@ -37,7 +37,7 @@ class Conversations extends Component {
         let count = 0;
         for (let i in convMessages) {
             const countCondition = convMessages[i].timestamp > lastRead;
-            if(countCondition) {
+            if(countCondition && convMessages[i].userTo === this.props.session._id) {
                 count++;
             }
         }
@@ -89,7 +89,7 @@ function matchDispatchToProps(dispatch){
     return bindActionCreators({
         selectUser: selectUser,
         selectConversation: selectConversation,
-        sendUsersRequest: sendUsersRequest,
+        // sendUsersRequest: sendUsersRequest,
         sendConversationsRequest: sendConversationsRequest,
         sendConversationDetailRequest: sendConversationDetailRequest,
         sendReadConversationRequest: sendReadConversationRequest      }, dispatch
