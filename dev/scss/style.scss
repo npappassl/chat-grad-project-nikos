@@ -32,12 +32,13 @@ li img{
  vertical-align: middle;
  margin-right: 1em;
 }
-ul .selected{
+.selected{
 	background-color: $primary;
 	font-weight: 900;
 	width:70%;
 	border-radius: 3px;
 
+	transition: all .5s ease;
 }
 li{
 	margin-top: 1em;
@@ -238,6 +239,16 @@ button:hover{
 }
 
 .example-enter.example-enter-active {
+  	transform: translateX(0);
+  	opacity: 1;
+  	transition: all 500ms ease-in;
+}
+.example-appear {
+	transform: translateY(-5%);
+  	opacity: 0.01;
+}
+
+.example-appear.example-appear-active {
   	transform: translateX(0);
   	opacity: 1;
   	transition: all 500ms ease-in;

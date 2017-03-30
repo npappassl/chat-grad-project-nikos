@@ -58,7 +58,11 @@ class MessagesContainer extends Component {
                     <ReactCSSTransitionGroup
                     transitionName="example"
                     transitionEnterTimeout={500}
-                    transitionLeaveTimeout={300}>
+                    transitionLeaveTimeout={300}
+                    transitionAppearTimeout={500}
+                    transitionLeave={false}
+                    transitionEnter={false}
+                    transitionAppear={true}>
                         {this.renderMessages()}
                     </ReactCSSTransitionGroup>
                 </ul>
