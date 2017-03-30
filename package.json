@@ -38,7 +38,6 @@
     "sinon": "^1.17.4"
   },
   "dependencies": {
-    "grunt-cli": "1.2.0",
     "URIjs": "^1.15.1",
     "babel-core": "^6.24.0",
     "babel-loader": "^6.4.0",
@@ -52,10 +51,12 @@
     "cross-env": "^3.2.3",
     "css-loader": "^0.27.3",
     "express": "^4.13.0",
+    "grunt-cli": "1.2.0",
     "isomorphic-fetch": "^2.2.1",
     "mongodb": "^2.2.24",
     "node-sass": "^4.5.0",
     "react": "^15.4.2",
+    "react-addons-css-transition-group": "^15.4.2",
     "react-addons-test-utils": "^15.4.2",
     "react-dom": "^15.4.2",
     "react-redux": "^5.0.3",
