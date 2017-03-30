@@ -30,10 +30,6 @@ class App extends Component {
             }
             self.props.actions.sendUsersRequest();
             self.props.actions.sendSessionRequest(true);
-            //
-            // var li = document.createElement('li');
-            // li.innerHTML = JSON.parse(event.data);
-            // document.querySelector('#pings').appendChild(li);
         };
     }
     renderLogin() {
