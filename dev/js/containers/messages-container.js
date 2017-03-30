@@ -8,9 +8,6 @@ import {bindActionCreators} from 'redux';
 class MessagesContainer extends Component {
     constructor(props){
         super(props);
-
-        // console.log(allActions);
-        // this.props.actions.loadMessages(this.props.session);
     }
     getTime(msg) {
         const hours = Math.floor((msg.timestamp%86400000)/(60*60*1000));
@@ -19,7 +16,9 @@ class MessagesContainer extends Component {
         const placeholderZeroM = mins<10?"0":"";
         let time, newMins;
         const timeDiff = Math.floor((Date.now() - msg.timestamp)/(1000*60));
-        if (timeDiff < 60) {
+        if (timeDiff === 0) {
+            time = "less than one minute ago";
+        } else if (timeDiff < 60) {
             time = timeDiff + " minutes ago";
         } else if(timeDiff < 60*24) {
             time = placeholderZeroH + hours + ":"+ placeholderZeroM + mins;

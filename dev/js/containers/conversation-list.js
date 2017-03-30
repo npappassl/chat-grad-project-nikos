@@ -15,17 +15,31 @@ class Conversations extends Component {
         this.props.sendConversationDetailRequest(conversationId);
         this.props.selectUser(user);
     }
-    eachUser(user,conversationId) {
+    eachUser(user,conversationId, unreadMessagesCount) {
+        let classCss = "badge"
+        if(unreadMessagesCount === 0) {
+            classCss = "hidden";
+        }
         return (
             <li
                 key={conversationId}
                 onClick={() => this.selectUserAndUpdateSession(user, conversationId)}
             >
                 <img width="32" src={user.avatarUrl} />
-                <Badge number="3" className="badge" />
+                <Badge number={unreadMessagesCount} className={classCss} />
                 {user.id}
             </li>
         );
+    }
+    countUnreadMessages(convMessages, lastRead) {
+        let count = 0;
+        for (let i in convMessages) {
+            const countCondition = convMessages[i].timestamp > lastRead;
+            if(countCondition) {
+                count++;
+            }
+        }
+        return count;
     }
     renderList() {
         if (this.props.conversations==="loading") {
@@ -36,10 +50,12 @@ class Conversations extends Component {
             const conversationsTemp = this.props.conversations.sort((a, b) => {
                 return a.timestamp < b.timestamp;
             })
-            return this.props.conversations.map((user) => {
+            return this.props.conversations.map((conversation) => {
+                const unreadMessagesCount = this.countUnreadMessages(conversation.messages, this.props.session.lastRead[conversation.id])
+
                 for (let i in this.props.userList) {
-                    if (user.participant === this.props.userList[i].id) {
-                        return this.eachUser(this.props.userList[i],user.id);
+                    if (conversation.participant === this.props.userList[i].id) {
+                        return this.eachUser(this.props.userList[i], conversation.id, unreadMessagesCount);
                     }
                 }
             });

@@ -35,7 +35,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                             avatarUrl: githubUser.avatar_url,
                             group: false,
                             subscribedTo: [],
-                            subscriptionRequests: []
+                            lastRead: {}
                         });
                         lastTransaction = Date.now();
                         notifyAll(sessions);
@@ -131,6 +131,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             users.findOne({_id: req.params.userId}, function (err, user) {
                 console.log("err", err);
                 if (!err) {
+                    console.log(user.subscribedTo);
                     conversations.find({_id: {$in: user.subscribedTo}}).toArray(function(errConv, data) {
                         console.log("errConv", errConv);
                         if (!errConv) {
@@ -145,9 +146,10 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                                 retVal.push({
                                     id: data[i]._id,
                                     participant: participant,
-                                    timestamp: data[i].messages[data[i].messages.length - 1].timestamp
+                                    timestamp: data[i].messages[data[i].messages.length - 1].timestamp,
+                                    messages: data[i].messages
                                 });
-                                console.log(retVal);
+                                console.log("retval",  retVal);
                             }
                             res.status(200).json(retVal);
                         } else {
@@ -177,9 +179,9 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             }, function (err, data) {
                 if (!err) {
                     retConversationId = data.insertedId;
-                    addConversationToUser(req.body.userFrom, data.insertedId);
+                    addConversationToUser(req.body.userFrom, data.insertedId, Date.now());
                     if (req.body.userFrom !== req.body.userTo) {
-                        addConversationToUser(req.body.userTo, data.insertedId);
+                        addConversationToUser(req.body.userTo, data.insertedId, 0);
                     }
                     res.status(200).json(retConversationId);
                 } else {
@@ -251,12 +253,16 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
 
     return server.listen(port);
     //-------------------  My auxiliary functions  LOCAL -----------------------
-    function addConversationToUser(userId, conversationId) {
+    function addConversationToUser(userId, conversationId, timestamp) {
         users.findOne({_id: userId}, function(err, user) {
             if (!err) {
                 user.subscribedTo.push(conversationId);
+                user.lastRead[conversationId] = timestamp;
                 users.updateOne({_id: userId},
-                    {$set: {subscribedTo: user.subscribedTo}},
+                    {$set: {
+                        subscribedTo: user.subscribedTo,
+                        lastRead: user.lastRead
+                    }},
                     function(err, data) {
                         if (!err) {
                             notifyUser(userId, sessions);
