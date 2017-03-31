@@ -42,6 +42,7 @@ class App extends Component {
                     <div id="logoDiv">
                         <img id="logo" src="bitmapLogo.png" />
                     </div>
+                    <hr />
                     <span id="sessionUser">
                         <img src={this.props.session.avatarUrl} />
                         {this.props.session._id}
