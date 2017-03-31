@@ -28,6 +28,32 @@ hr{
 	border-style: solid;
 	border-color: $messageDivBgColor;
 }
+#sessionUser{
+	flex-grow: 0;
+	flex-shrink: 10;
+	flex-basis: 40px;
+	display: block;
+	padding-left: 1em;
+	padding-bottom: 1em;
+	border-bottom: 1px solid $messageDivBgColor;
+}
+#sessionUser img{
+	margin-top: 1em;
+	max-height: 45px;
+	display: inline-block;
+	vertical-align: middle;
+	margin-right: 1em;
+}
+#logoDiv{
+	display: block;
+	padding: 1em auto;
+}
+#logo{
+	box-shadow: 0 0 2.5em 1.3em rgba(0, 0, 0, 0.6) inset, 0 0 2em 1em #2b1e1e;
+	max-width: 70%;
+	display: block;
+	margin: 1em 1em;
+}
 ul{
 	flex-grow: 2;
 	overflow-y: auto;
@@ -123,7 +149,8 @@ li{
 #UserList{
 	box-shadow: 0 0 10px 2px lightgrey;
 	float: left;
-	display: inline-block;
+	display: flex;
+	flex-direction: column;
 	left:0;
 	top:0;
 	height: 100%;
@@ -162,8 +189,9 @@ button{
 	background-color: $primary;
 	color:white;
 	padding: 1em;
+	border-style: solid;
+	border-color: $primary;
 	border-radius: 0.3em;
-	border-style: none;
 	text-decoration: none;
 }
 button:hover{
