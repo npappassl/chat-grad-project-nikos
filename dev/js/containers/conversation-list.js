@@ -22,11 +22,17 @@ class Conversations extends Component {
         if (unreadMessagesCount === 0) {
             badgeClassCss = "hidden";
         }
+
         let activeConvCss = "";
         console.log(conversationId,this.props.activeConversation)
         if (conversationId===this.props.activeConversation) {
             activeConvCss = "selected";
         }
+
+        if (this.props.userList.onlineUsers.indexOf(user.id) >= 0 ) {
+            activeConvCss += " online";
+        }
+
         return (
             <li className={activeConvCss}
                 key={conversationId}
@@ -59,9 +65,9 @@ class Conversations extends Component {
             }).map((conversation) => {
                 const unreadMessagesCount = this.countUnreadMessages(conversation.messages, this.props.session.lastRead[conversation.id])
 
-                for (let i in this.props.userList) {
-                    if (conversation.participant === this.props.userList[i].id) {
-                        return this.eachUser(this.props.userList[i], conversation.id, unreadMessagesCount);
+                for (let i in this.props.userList.users) {
+                    if (conversation.participant === this.props.userList.users[i].id) {
+                        return this.eachUser(this.props.userList.users[i], conversation.id, unreadMessagesCount);
                     }
                 }
             });

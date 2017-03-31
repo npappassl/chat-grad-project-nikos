@@ -20,7 +20,16 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
     var users = db.collection("users");
     var conversations = db.collection("conversations");
     var sessions = {};
-
+    var onlineUsers = [];
+    setInterval(() =>{
+        onlineUsers.length = 0;
+        for (var user in sessions){
+            if (sessions[user].socket) {
+                onlineUsers.push(sessions[user].user);
+            }
+        }
+        notifyAll(sessions);
+    }, 4000);
     app.get("/oauth", function(req, res) {
         githubAuthoriser.authorise(req, function(githubUser, token) {
             if (githubUser) {
@@ -106,15 +115,26 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
         });
     });
     app.get("/api/users", function(req, res) {
+        let retObj = {
+            users: [],
+            onlineUsers: onlineUsers
+        };
         users.find().toArray(function(err, docs) {
             if (!err) {
-                res.status(200).json(docs.map(function(user) {
-                    return {
+                docs.map(function(user) {
+                    retObj.users.push( {
                         id: user._id,
                         name: user.name,
                         avatarUrl: user.avatarUrl,
-                    };
-                }));
+                    });
+                })
+                res.status(200).json(retObj);
+
+                    // return {
+                    //     id: user._id,
+                    //     name: user.name,
+                    //     avatarUrl: user.avatarUrl,
+                    // };
             } else {
                 res.sendStatus(500);
             }

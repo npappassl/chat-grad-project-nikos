@@ -23,9 +23,13 @@ class UserList extends Component {
         this.props.selectUser(user);
     }
     eachUser(user) {
+        let userClass = "";
+        if (this.props.users.onlineUsers.indexOf(user.id) >= 0 ) {
+            userClass = "online";
+        }
         return (
             <li
-                key={user.id}
+                key={user.id} className={userClass}
                 onClick={() => this.selectUserAndUpdateSession(user)}
             >
                 <img width="32" src={user.avatarUrl} />{user.id}
@@ -37,11 +41,11 @@ class UserList extends Component {
             return (
                 <span>Loading...</span>
             );
-        } else if(this.props.users){
-            const tempUsers = this.props.users.sort((a, b) => {
+        } else if(this.props.users.users){
+            const tempUsers = this.props.users.users.sort((a, b) => {
                 return a.id > b.id;
             })
-            return this.props.users.map((user) => {
+            return this.props.users.users.map((user) => {
                 if(this.props.userFilter === ""){
                     return this.eachUser(user);
                 } else if(user.id.match(this.props.userFilter)){

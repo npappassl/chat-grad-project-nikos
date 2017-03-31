@@ -48,17 +48,15 @@ hr{
 	display: block;
 	padding: 1em auto;
 }
-#logo{
-	box-shadow: 0 0 2.5em 1.3em rgba(0, 0, 0, 0.6) inset, 0 0 2em 1em #2b1e1e;
-	max-width: 70%;
-	display: block;
-	margin: 1em 1em;
-}
-ul{
+#userList ul{
+	border-bottom: 2px solid $messageDivBgColor;
 	flex-grow: 2;
 	overflow-y: auto;
 	list-style: none;
 	height: 30vh;
+}
+#userList ul li{
+	min-width: 120px;
 }
 li img{
  vertical-align: middle;
@@ -72,8 +70,10 @@ li img{
 
 	transition: all .5s ease;
 }
+
 li{
-	margin-top: 1em;
+	list-style: none;
+	margin-top: .5em;
 }
 // ----------------------------- Loading ---------------------------------------
 #appPlaceholder{
@@ -147,6 +147,7 @@ li{
 }
 //  user list and conversation list
 #UserList{
+	overflow-x: hidden;
 	box-shadow: 0 0 10px 2px lightgrey;
 	float: left;
 	display: flex;
@@ -161,6 +162,21 @@ li{
 }
 #UserList img{
 	border-radius: 3px;
+}
+.online::after{
+	content: "•";
+	position: relative;
+	margin-left: 4px;
+	font-size: 2em;
+	vertical-align: middle;
+	display: inline-block;
+	width:20px;
+	animation: onlineAnim 2s infinite ease-out;
+}
+@keyframes onlineAnim {
+	0% { color: white;}
+	50% {color: $primary;}
+	100% {color:white;}
 }
 .badge{
 	background-color: $messageDivBgColor;
@@ -195,7 +211,7 @@ button{
 	text-decoration: none;
 }
 button:hover{
-	transform: translate(2px,2px);
+	transform: translate(-2px,-2px);
 }
 #messages{
 	margin-top: 80px;
@@ -298,4 +314,20 @@ button:hover{
 	transform: translateX(5%);
   	opacity: 0.01;
   	transition: all 300ms ease-in;
+}
+#logo{
+	padding: 0.5em;
+	border-style: solid;
+	border-color: $messageDivBgColor;
+	border-width: 3px;
+	border-radius: 1em;
+	box-shadow: 0 0 2em 1.2em rgba(154, 224, 202, 0.2) inset, 0 0 2.5em 0.89em rgba(149, 243, 214, 0.2);
+	// box-shadow: 0 0 2.5em 1.3em rgba(0, 0, 0, 0.6) inset, 0 0 2em 1em #2b1e1e;
+	max-width: 70%;
+	display: block;
+	margin: 1em 1em;
+}
+#logoDiv img{
+	filter: hue-rotate(1deg);
+
 }
