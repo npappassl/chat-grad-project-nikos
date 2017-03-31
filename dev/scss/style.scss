@@ -90,7 +90,7 @@ li{
 	width: 100%;
 	text-align: center;
 	font-size: 2em;
-	margin: 2em;
+	margin: 2em auto;
 }
 #loginWrap a{
 	transition: all 0.4s ease;
@@ -118,7 +118,7 @@ li{
 }
 //  title header
 #userDetailSpan{
-	z-index: 1;
+	z-index: -1;
 	display: inline-block;
 	background-color: #f1f1f1;
 	width: 100%;
@@ -177,25 +177,32 @@ li{
 	vertical-align: middle;
 	display: inline-block;
 	width:20px;
-	animation: onlineAnim 2s infinite linear;
+	animation: scaleAnim 2s infinite linear;
+	animation: colorChange 2s infinite linear;
+
 }
-@keyframes onlineAnim {
+@keyframes colorChange {
 	0% {
-		transform: scale3d(1,1,1);
-		// color: white;
+		color: white;
 	}
 	50% {
-		transform: scale3d(1.3,1.3,1);
-		// color: $primary;
+		color: $primary;
+	}
+	100% {
+		color: white;
+	}
+
+}
+@keyframes scaleAnim {
+	0% {
+		transform: scale3d(1,1,1);
+	}
+	50% {
+		transform: scale3d(1.4,1.4,1);
 	}
 	100% {
 		transform: scale3d(1,1,1);
-		// color: white;
 	}
-
-	// 0% { color: white;}
-	// 50% {color: $primary;}
-	// 100% {color:white;}
 }
 .badge{
 	background-color: $messageDivBgColor;
@@ -339,7 +346,6 @@ button:hover{
 	border-color: $messageDivBgColorHueRot495;
 	border-width: 1px;
 	border-radius: 1em;
-	// box-shadow: 0 0 2.5em 1.3em rgba(0, 0, 0, 0.6) inset, 0 0 2em 1em #2b1e1e;
 	max-width: 70%;
 	display: block;
 	margin: 1em 1em;

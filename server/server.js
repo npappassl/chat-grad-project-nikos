@@ -29,7 +29,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             }
         }
         notifyAll(sessions);
-    }, 4000);
+    }, 10000);
     app.get("/oauth", function(req, res) {
         githubAuthoriser.authorise(req, function(githubUser, token) {
             if (githubUser) {
