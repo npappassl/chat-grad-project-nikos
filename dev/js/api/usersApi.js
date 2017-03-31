@@ -22,6 +22,18 @@ export default class UsersApi{
             return error;
         });
      }
+     static deleteConversationMessages(conversationId) {
+         const request = new Request("/api/conversation/"+conversationId, {
+            method: "DELETE",
+            credentials: "include"
+         });
+
+         return fetch(request).then(response => {
+             return response.json();
+         }).catch(error => {
+            console.log(error); 
+         });
+     }
     static getConversations(user) {
         const request = new Request("/api/conversations/"+user, {
             method: "GET",

@@ -30,6 +30,14 @@ export const sendConversationsRequest = function(user) {
     };
 
 };
+export const sendDeleteConversationMessagesRequest = function(conversationId) {
+    return function(dispatch) {
+        return UsersApi.deleteConversationMessages(conversationId)
+        .then(response => {
+            console.log(response);
+        })
+    }
+}
 export const sendReadConversationRequest = function(conversationId, userId) {
     return function(dispatch) {
         return UsersApi.postReadConversation(conversationId, userId)

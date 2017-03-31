@@ -94,6 +94,10 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             }
         });
     });
+    app.delete("/api/user/:conversationId/:userId", function(req, res) {
+        console.log(req.params);
+    });
+
     app.put("/api/user/:conversationId/:userId", function(req, res) {
         console.log("userId", req.params.userId);
         users.findOne({_id: req.params.userId}, function(err, doc) {
@@ -140,7 +144,33 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             }
         });
     });
+    app.delete("/api/conversation/:conversationId", function(req, res) {
+        console.log("req.params", req.params);
+        if (req.params.conversationId === null ||
+            req.params.conversationId === undefined ||
+            req.params.conversationId === "null" ||
+            req.params.conversationId === "undefined") {
+            return res.sendStatus(404);
+        } else {
+            conversations.findOneAndUpdate({_id: new ObjectID(req.params.conversationId)},
+                {$set: {messages: []}}, function(err, data) {
+                if (!err && data) {
+                    console.log(data);
 
+                    notifyUser(data.value.firstMessageMeta.userFrom, sessions);
+                    if (data.value.firstMessageMeta.userFrom !== data.value.firstMessageMeta.userTo) {
+                        notifyUser(data.value.firstMessageMeta.userTo, sessions);
+                    }
+                    res.sendStatus(200);
+                } else if (err) {
+                    res.sendStatus(500);
+                } else {
+                    res.sendStatus(404);
+                }
+            });
+        }
+
+    });
     app.get("/api/conversation/:conversationId", function(req, res) {
         if (req.params.conversationId === null ||
             req.params.conversationId === undefined ||
@@ -174,15 +204,16 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                             let retVal = [];
                             for (var i in data) {
                                 let participant = "";
-                                if (req.params.userId === data[i].messages[data[i].messages.length - 1].userFrom) {
-                                    participant = data[i].messages[data[i].messages.length - 1].userTo;
+                                if (req.params.userId === data[i].firstMessageMeta.userFrom) {
+                                    participant = data[i].firstMessageMeta.userTo;
                                 } else {
-                                    participant = data[i].messages[data[i].messages.length - 1].userFrom;
+                                    participant = data[i].firstMessageMeta.userFrom;
                                 }
                                 retVal.push({
                                     id: data[i]._id,
                                     participant: participant,
-                                    timestamp: data[i].messages[0].timestamp,
+                                    timestamp: data[i].messages[0] ?
+                                        data[i].messages[0].timestamp : data[i].firstMessageMeta.timestamp,
                                     messages: data[i].messages
                                 });
                             }
@@ -210,7 +241,12 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
         };
         if (!req.body.conversationId) {
             conversations.insertOne({
-                messages: [tempMessage]
+                messages: [tempMessage],
+                firstMessageMeta: {
+                    userFrom: req.body.userFrom,
+                    userTo:   req.body.userTo,
+                    timestamp: tempMessage.timestamp
+                }
             }, function (err, data) {
                 if (!err) {
                     retConversationId = data.insertedId;
