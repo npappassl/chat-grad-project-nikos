@@ -80,18 +80,24 @@ li{
 	margin-top: .5em;
 }
 .deleteMessages{
-	visibility: hidden;
-	height: 100%;
-	width: 2em;
+	opacity: 0;
+	transition: all .25s ease;
+	font-weight: 900;
+	text-align: center;
+	height: 22px;
+	width: 22px;
+	padding: 0 auto;
+	margin-left: 1em;
 	font-size: 2em;
-	background-color: white;
+	vertical-align: middle;
+	background-color: $userListFgColor;
 	padding: 2px auto;
 	border-radius: 3px;
 	color:$userListBgColor;
 	display: inline-block;
 }
 #UserList ul li:hover .deleteMessages{
-	visibility: visible;
+	opacity: .85;
 }
 // ----------------------------- Loading ---------------------------------------
 #appPlaceholder{
