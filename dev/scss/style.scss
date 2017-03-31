@@ -25,7 +25,9 @@ main,body,html,#layout,#root{
 	margin: 0;
 }
 hr{
+	width: 100%;
 	border-style: solid;
+	border-width: 0.5px;
 	border-color: $messageDivBgColor;
 }
 #sessionUser{
@@ -38,7 +40,6 @@ hr{
 	border-bottom: 1px solid $messageDivBgColor;
 }
 #sessionUser img{
-	margin-top: 1em;
 	max-height: 45px;
 	display: inline-block;
 	vertical-align: middle;
@@ -48,15 +49,18 @@ hr{
 	display: block;
 	padding: 1em auto;
 }
-#userList ul{
-	border-bottom: 2px solid $messageDivBgColor;
+#UserList ul{
+	margin-top: 0;
+	border-bottom: 1px solid $messageDivBgColor;
 	flex-grow: 2;
 	overflow-y: auto;
 	list-style: none;
 	height: 30vh;
 }
-#userList ul li{
-	min-width: 120px;
+
+#UserList ul li{
+	font-size: 0.6em;
+	min-width: 100px;
 }
 li img{
  vertical-align: middle;
@@ -157,6 +161,7 @@ li{
 	height: 100%;
 	color: $userListFgColor;
 	width:30%;
+	min-width: 130px;
 	max-width: 300px;
 	background-color: $userListBgColor;
 }
@@ -166,17 +171,31 @@ li{
 .online::after{
 	content: "•";
 	position: relative;
-	margin-left: 4px;
+	margin-left: 10px;
 	font-size: 2em;
+	margin-top: 2px;
 	vertical-align: middle;
 	display: inline-block;
 	width:20px;
-	animation: onlineAnim 2s infinite ease-out;
+	animation: onlineAnim 2s infinite linear;
 }
 @keyframes onlineAnim {
-	0% { color: white;}
-	50% {color: $primary;}
-	100% {color:white;}
+	0% {
+		transform: scale3d(1,1,1);
+		// color: white;
+	}
+	50% {
+		transform: scale3d(1.3,1.3,1);
+		// color: $primary;
+	}
+	100% {
+		transform: scale3d(1,1,1);
+		// color: white;
+	}
+
+	// 0% { color: white;}
+	// 50% {color: $primary;}
+	// 100% {color:white;}
 }
 .badge{
 	background-color: $messageDivBgColor;
@@ -184,12 +203,11 @@ li{
 	vertical-align: super;
 	text-align: center;
 	display: inline-block;
-	width: 1.5em;
-	height: 1.5em;
-	padding: 0.1 0.1 0.1 0.1;
-	font-size:0.6em;
-	transform: translateY(-0.7em);
-	margin-left: -2.5em;
+	width: 1.6em;
+	height: 1.6em;
+	font-size:0.9em;
+	transform: translateY(-1.1em);
+	margin-left: -2em;
 	margin-right: 1em;
 	border-radius: 100%;
 }
@@ -317,17 +335,23 @@ button:hover{
 }
 #logo{
 	padding: 0.5em;
-	border-style: solid;
+	border-style: none;
 	border-color: $messageDivBgColorHueRot495;
-	border-width: 3px;
+	border-width: 1px;
 	border-radius: 1em;
-	box-shadow: 0 0 2em 1.2em rgba(154, 224, 202, 0.2) inset, 0 0 2.5em 0.89em rgba(149, 243, 214, 0.2);
 	// box-shadow: 0 0 2.5em 1.3em rgba(0, 0, 0, 0.6) inset, 0 0 2em 1em #2b1e1e;
 	max-width: 70%;
 	display: block;
 	margin: 1em 1em;
 }
 #logoDiv img{
-	filter: hue-rotate(1deg);
+	filter:
+		drop-shadow(2px 0px $primary)
+		drop-shadow(0px 2px $primary)
+		drop-shadow(2px 2px $primary)
+		drop-shadow(-2px 0px $primary)
+		drop-shadow(0px -2px $primary)
+		drop-shadow(-2px -2px $primary)
+		drop-shadow(0 0 .4em $primary);
 
 }
