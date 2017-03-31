@@ -21,9 +21,9 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
     var conversations = db.collection("conversations");
     var sessions = {};
     var onlineUsers = [];
-    setInterval(() =>{
+    setInterval(function() {
         onlineUsers.length = 0;
-        for (var user in sessions){
+        for (var user in sessions) {
             if (sessions[user].socket) {
                 onlineUsers.push(sessions[user].user);
             }
@@ -122,7 +122,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
         users.find().toArray(function(err, docs) {
             if (!err) {
                 docs.map(function(user) {
-                    retObj.users.push( {
+                    retObj.users.push({
                         id: user._id,
                         name: user.name,
                         avatarUrl: user.avatarUrl,
