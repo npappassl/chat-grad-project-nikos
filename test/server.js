@@ -295,7 +295,7 @@ describe("server", function() {
                     ]);
 
                 request({url: requestUrl, jar: cookieJar}, function(error, response, body) {
-                    assert.deepEqual(JSON.parse(body), [
+                    assert.deepEqual(JSON.parse(body).users, [
                         {
                             id: "bob",
                             name: "Bob Bilson",
