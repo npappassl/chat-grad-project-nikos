@@ -52,7 +52,12 @@ const testConversation = {
     _id: {
         "$oid": "58d52c27983d681738f5449e"
     },
-    messages: testMessages
+    messages: testMessages,
+    firstMessageMeta: {
+        userFrom: "kwstas",
+        userTo:  "nikos",
+        timestamp: 12312542353453
+    }
 };
 describe("server", function() {
     var cookieJar;

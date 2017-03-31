@@ -3,7 +3,7 @@ import {connect} from "react-redux";
 import {bindActionCreators} from "redux";
 import {selectConversation,selectUser} from "../actions/index";
 import {sendConversationsRequest, sendConversationDetailRequest,
-    sendReadConversationRequest} from "../actions/usersActions";
+    sendReadConversationRequest, sendDeleteConversationMessagesRequest} from "../actions/usersActions";
 import Badge from "./badge-container";
 class Conversations extends Component {
     constructor(props){
@@ -41,6 +41,7 @@ class Conversations extends Component {
                 <img width="32" src={user.avatarUrl} />
                 <Badge number={unreadMessagesCount} className={badgeClassCss} />
                 {user.id}
+                <span className="deleteMessages" onClick={()=> this.props.sendDeleteConversationMessagesRequest(conversationId)}>x</span>
             </li>
         );
     }
@@ -100,7 +101,7 @@ function matchDispatchToProps(dispatch){
     return bindActionCreators({
         selectUser: selectUser,
         selectConversation: selectConversation,
-        // sendUsersRequest: sendUsersRequest,
+        sendDeleteConversationMessagesRequest: sendDeleteConversationMessagesRequest,
         sendConversationsRequest: sendConversationsRequest,
         sendConversationDetailRequest: sendConversationDetailRequest,
         sendReadConversationRequest: sendReadConversationRequest      }, dispatch
