@@ -39,13 +39,18 @@ class App extends Component {
         return (
             <div id="layout">
                 <div id="UserList">
+                    <div id="logoDiv">
+                        <img id="logo" src="bitmapLogo.png" />
+                    </div>
+                    <span id="sessionUser">
+                        <img src={this.props.session.avatarUrl} />
+                        {this.props.session._id}
+                    </span>
                     <h2>Conversations</h2>
                     <Conversations />
-                    <hr />
-                    <SearchFilterInput />
                     <h2>User List</h2>
+                    <SearchFilterInput />
                     <UserList />
-                    <hr />
                     <button id="createGroupButton" value="create group" >Create group</button>
                 </div>
                 <div id="rightVerticalLayout">

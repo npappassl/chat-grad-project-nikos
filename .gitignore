@@ -2,3 +2,4 @@ node_modules/
 build_artifacts/
 builds/
 public/build/bundle.js
+imageMaking/
