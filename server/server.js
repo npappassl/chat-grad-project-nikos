@@ -127,7 +127,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                         name: user.name,
                         avatarUrl: user.avatarUrl,
                     });
-                })
+                });
                 res.status(200).json(retObj);
 
                     // return {

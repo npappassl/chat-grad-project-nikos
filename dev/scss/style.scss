@@ -6,7 +6,7 @@ $userListTitle: $messageDivBgColor;
 $primary: $messageDivBgColor;//rgba(136, 194, 194, 0.8);
 $mainFont: "Comfortaa", cursive;
 $buttonFont: "Hind", sans-serif;
-
+$messageDivBgColorHueRot495: #b17a7a;
 h2 {
 	color: $userListTitle;
 	border-bottom: 1px solid $userListTitle;
@@ -318,7 +318,7 @@ button:hover{
 #logo{
 	padding: 0.5em;
 	border-style: solid;
-	border-color: $messageDivBgColor;
+	border-color: $messageDivBgColorHueRot495;
 	border-width: 3px;
 	border-radius: 1em;
 	box-shadow: 0 0 2em 1.2em rgba(154, 224, 202, 0.2) inset, 0 0 2.5em 0.89em rgba(149, 243, 214, 0.2);
