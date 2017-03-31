@@ -41,11 +41,9 @@ class App extends Component {
                 <div id="UserList">
                     <h2>Conversations</h2>
                     <Conversations />
-                    <hr />
-                    <SearchFilterInput />
                     <h2>User List</h2>
+                    <SearchFilterInput />
                     <UserList />
-                    <hr />
                     <button id="createGroupButton" value="create group" >Create group</button>
                 </div>
                 <div id="rightVerticalLayout">

@@ -9,9 +9,13 @@ $buttonFont: "Hind", sans-serif;
 
 h2 {
 	color: $userListTitle;
+	border-bottom: 1px solid $userListTitle;
 	font-size: 1.4em;
+	padding-left: 1em;
 	font-weight: 100;
-	margin-left: 1em;
+	margin-top: 0;
+	padding-top: 1em;
+	// margin-left: 1em;
 	font-variant: small-caps;
 }
 main,body,html,#layout,#root{
@@ -25,6 +29,8 @@ hr{
 	border-color: $messageDivBgColor;
 }
 ul{
+	flex-grow: 2;
+	overflow-y: auto;
 	list-style: none;
 	height: 30vh;
 }
@@ -115,6 +121,7 @@ li{
 }
 //  user list and conversation list
 #UserList{
+	box-shadow: 0 0 10px 2px lightgrey;
 	float: left;
 	display: inline-block;
 	left:0;
