@@ -31,7 +31,7 @@ export default class UsersApi{
          return fetch(request).then(response => {
              return response.json();
          }).catch(error => {
-            console.log(error); 
+            console.log(error);
          });
      }
     static getConversations(user) {
@@ -53,6 +53,25 @@ export default class UsersApi{
             credentials: 'include'
         });
 
+        return fetch(request).then(response => {
+            return response.json();
+        }).catch(error => {
+            return error;
+        });
+    }
+    static sendMakeNewGroupRequest(group, avatarUrl, participants, creator) {
+        const request = new Request("/api/group/"+group, {
+            method: "PUT",
+            credentials: "include",
+            headers:{
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                avatar: avatarUrl,
+                participants: participants,
+                creator: creator,
+            })
+        });
         return fetch(request).then(response => {
             return response.json();
         }).catch(error => {

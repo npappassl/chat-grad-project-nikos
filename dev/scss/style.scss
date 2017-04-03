@@ -381,3 +381,44 @@ button:hover{
 		drop-shadow(0 0 .4em $primary);
 
 }
+#makeGroupDialogue{
+	overflow: hidden;
+	position:absolute;
+	width: 50%;
+	height: 60%;
+	margin: 20% 25%;
+	background-color: rgba(59,136,112,.89);
+	z-index: 1;
+}
+#wrapsUserListinMakeGroup{
+	overflow: auto;
+	height: 20%;
+	margin: .25em .5em;
+}
+#makeGroupDialogue .closeDialogue{
+	cursor: pointer;
+	margin: 0.25em 0.5em;
+	float:right;
+	font-size: 2em;
+}
+#makeGroupDialogue input{
+	display: block;
+}
+#makeGroupDialogue ul li, #makeGroupDialogue ul input{
+	display: inline-block;
+}
+#makeGroupDialogue ul input{
+	float: right;
+}
+#makeGroupDialogue ul li{
+	min-width: 150px;
+}
+.makeGroupDialogueTitle{
+	color: $userListBgColor;
+	border-bottom-color: $userListBgColor;
+}
+#makeGroupDialogue form{
+	width: 80%;
+	height: 60%;
+	margin: 2em auto;
+}

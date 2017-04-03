@@ -24,7 +24,6 @@ class Conversations extends Component {
         }
 
         let activeConvCss = "";
-        console.log(conversationId,this.props.activeConversation)
         if (conversationId===this.props.activeConversation) {
             activeConvCss = "selected";
         }

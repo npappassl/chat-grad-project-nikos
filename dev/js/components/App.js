@@ -7,8 +7,10 @@ import MessagesContainer from '../containers/messages-container';
 import MessageTextArea from '../containers/message-text-area';
 import LoginScreen from "../containers/login-screen";
 import SearchFilterInput from "../containers/searchFilterInput";
+import MakeGroupDialogue from "../containers/make-group-container";
 import * as loginActions from "../actions/loginActions";
 import * as usersActions from "../actions/usersActions";
+import * as groupActions from "../actions/groupActions"
 
 require('../../scss/style.scss');
 class App extends Component {
@@ -17,6 +19,7 @@ class App extends Component {
         const self = this;
         self.props.actions.sendSessionRequest();
         self.props.actions.sendAuthUriRequest();
+
         var host = location.origin.replace(/^http/, 'ws');
         var ws = new WebSocket(host);
         ws.onmessage = function (event) {
@@ -31,6 +34,7 @@ class App extends Component {
             self.props.actions.sendUsersRequest();
             self.props.actions.sendSessionRequest(true);
         };
+
     }
     renderLogin() {
         return (<LoginScreen loginUri={this.props.loginUri} />);
@@ -38,6 +42,7 @@ class App extends Component {
     renderNormal() {
         return (
             <div id="layout">
+                <MakeGroupDialogue />
                 <div id="UserList">
                     <div id="logoDiv">
                         <img id="logo" src="bitmapLogo.png" />
@@ -52,7 +57,7 @@ class App extends Component {
                     <h2>User List</h2>
                     <SearchFilterInput />
                     <UserList />
-                    <button id="createGroupButton" value="create group" >Create group</button>
+                    <button onClick={this.props.actions.openMakeGroupDialogue} id="createGroupButton">Create group</button>
                 </div>
                 <div id="rightVerticalLayout">
                     <MessagesContainer />
@@ -76,7 +81,7 @@ function mapStateToProps(state) {
     return {
         session: state.session,
         loginUri: state.loginUri,
-        activeConversation: state.activeConversation
+        activeConversation: state.activeConversation,
     };
 }
 function mapDispatchToProps(dispatch){
@@ -85,7 +90,8 @@ function mapDispatchToProps(dispatch){
         sendAuthUriRequest:loginActions.sendAuthUriRequest,
         sendUsersRequest: usersActions.sendUsersRequest,
         loadConversationDetail: usersActions.sendConversationDetailRequest,
-        sendConversationsRequest: usersActions.sendConversationsRequest
+        sendConversationsRequest: usersActions.sendConversationsRequest,
+        openMakeGroupDialogue: groupActions.openMakeGroupDialogue,
     }
     return {
         actions: bindActionCreators(allActions, dispatch)

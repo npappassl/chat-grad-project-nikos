@@ -6,7 +6,6 @@ export const sendUsersRequest = function() {
     return function(dispatch){
         return UsersApi.getUsers()
         .then(users => {
-            console.log(users);
             dispatch(loadUsersSuccess(users));
         })
         .catch( function(error) {

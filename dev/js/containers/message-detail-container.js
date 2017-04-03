@@ -25,7 +25,6 @@ class MessageDetail extends Component{
         return time;
     }
     render(){
-        console.log(this.props.index);
         return (
             <li className={this.props.className}>
                 <span className="timestamp">{this.getTime(this.props.msg)}</span>

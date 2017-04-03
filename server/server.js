@@ -126,19 +126,15 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
         users.find().toArray(function(err, docs) {
             if (!err) {
                 docs.map(function(user) {
-                    retObj.users.push({
-                        id: user._id,
-                        name: user.name,
-                        avatarUrl: user.avatarUrl,
-                    });
+                    if (!user.group) {
+                        retObj.users.push({
+                            id: user._id,
+                            name: user.name,
+                            avatarUrl: user.avatarUrl,
+                        });
+                    }
                 });
                 res.status(200).json(retObj);
-
-                    // return {
-                    //     id: user._id,
-                    //     name: user.name,
-                    //     avatarUrl: user.avatarUrl,
-                    // };
             } else {
                 res.sendStatus(500);
             }
@@ -155,8 +151,6 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             conversations.findOneAndUpdate({_id: new ObjectID(req.params.conversationId)},
                 {$set: {messages: []}}, function(err, data) {
                 if (!err && data) {
-                    console.log(data);
-
                     notifyUser(data.value.firstMessageMeta.userFrom, sessions);
                     if (data.value.firstMessageMeta.userFrom !== data.value.firstMessageMeta.userTo) {
                         notifyUser(data.value.firstMessageMeta.userTo, sessions);
@@ -196,10 +190,8 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             res.sendStatus(404);
         } else {
             users.findOne({_id: req.params.userId}, function (err, user) {
-                console.log("err", err);
                 if (!err) {
                     conversations.find({_id: {$in: user.subscribedTo}}).toArray(function(errConv, data) {
-                        console.log("errConv", errConv);
                         if (!errConv) {
                             let retVal = [];
                             for (var i in data) {
@@ -284,6 +276,50 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
         }
     });
 
+    app.put("/api/group/:groupId", function(req, res) {
+        users.findOne({_id: req.params.groupId}, function(err, data) {
+            console.log(req.body);
+            if (!err) {
+                if (!data) {
+                    users.insertOne(
+                        {
+                            _id: req.params.groupId,
+                            group: true,
+                            avatarUrl: req.body.avatar,
+                            subscribedTo : [],
+                            lastRead: {}
+                        },
+                        function(errConv, dataConv) {
+                            if (!errConv) {
+                                conversations.insertOne(
+                                    {
+                                        group: true,
+                                        messages: [],
+                                        firstMessageMeta: {
+                                            participants: req.body.participants,
+                                            creator: req.body.creator,
+                                            timestamp: Date.now()
+                                    }
+                        }, function (err2, data2) {
+                            if (!err2) {
+                                console.log("insertedId", data2.insertedId);
+                                addConversationToUser(req.body.creator, data2.insertedId, Date.now());
+                                for(let i in req.body.participants){addConversationToUser(req.body.participants[i], data2.insertedId, Date.now());}
+                                res.sendStatus(201);
+                            } else {console.log("err2", err2);}
+                        });
+                    }
+
+            });
+            } else {
+                console.log("data", data);
+                res.sendStatus(500);
+            }
+            } else {
+                res.sendStatus(500);
+            }
+        });
+    });
     //------------------------------ web socket server -------------------------
     const server = http.createServer(app);
 
@@ -306,7 +342,6 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
         //
         // ws.send(JSON.stringify())
         var id = setTimeout(function() {
-            // console.log(new Date(), sessions[sesToken].user);
             ws.send(JSON.stringify(new Date()), function() {  });
         }, 2000);
 
