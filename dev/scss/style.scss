@@ -1,5 +1,6 @@
 $userListBgColor: #803c4a;//#773d3d;
 $userListFgColor: #fdfdff;
+$userDetailSpan: rgba(241,243,244,0.9);
 $messageTextAreaFgColor: #011;
 $messageDivBgColor: #3b8a72;
 $userListTitle: $messageDivBgColor;
@@ -99,6 +100,26 @@ li{
 #UserList ul li:hover .deleteMessages{
 	opacity: .85;
 }
+//  user list and conversation list
+#UserList{
+	overflow-x: hidden;
+	box-shadow: 0 0 10px 2px lightgrey;
+	float: left;
+	display: flex;
+	flex-direction: column;
+	left:0;
+	top:0;
+	height: 100%;
+	color: $userListFgColor;
+	width:30%;
+	min-width: 130px;
+	max-width: 300px;
+	background-color: $userListBgColor;
+}
+#UserList img{
+	border-radius: 3px;
+}
+
 // ----------------------------- Loading ---------------------------------------
 #appPlaceholder{
 	font-size: 3em;
@@ -138,12 +159,12 @@ li{
 }
 //  title header
 #userDetailSpan{
-	z-index: -1;
+	z-index: 1;
 	display: inline-block;
-	background-color: #f1f1f1;
+	background-color: $userDetailSpan;
 	width: 100%;
 	max-height: 80px;
-	box-shadow: 1px 1px 12px 1px lightgrey;
+	box-shadow: 6px 1px 12px 1px lightgrey;
 	position: fixed;
 }
 #userThumbSpan{
@@ -168,25 +189,6 @@ li{
 	border-style: solid;
 	border-color: $userListTitle;
 	border-width: 1px;
-}
-//  user list and conversation list
-#UserList{
-	overflow-x: hidden;
-	box-shadow: 0 0 10px 2px lightgrey;
-	float: left;
-	display: flex;
-	flex-direction: column;
-	left:0;
-	top:0;
-	height: 100%;
-	color: $userListFgColor;
-	width:30%;
-	min-width: 130px;
-	max-width: 300px;
-	background-color: $userListBgColor;
-}
-#UserList img{
-	border-radius: 3px;
 }
 .online::after{
 	content: "•";
@@ -288,16 +290,6 @@ button:hover{
 }
 #submit-message{
 	display: none;
-	// font-family: $buttonFont;
-	// font-weight: 100;
-	// background-color: rgba(255,255,255,0.3);
-	// margin:0;
-	// padding: 0;
-	// border-width: 1px;
-	// min-height: 20px;
-	// max-height: 25px;
-	// width:80px;
-	// color: white;
 }
 .sent{
 	text-align: right;
