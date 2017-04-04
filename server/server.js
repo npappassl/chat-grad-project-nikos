@@ -22,7 +22,9 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
     var conversations = db.collection("conversations");
     var sessions = {};
     var onlineUsers = [];
-    setInterval(function() {
+    setTimeout(sendOnlineNotification, 10000);
+
+    function sendOnlineNotification() {
         onlineUsers.length = 0;
         for (var user in sessions) {
             if (sessions[user].socket) {
@@ -30,7 +32,9 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             }
         }
         aux.notifyAll(sessions);
-    }, 30000);
+        setTimeout(sendOnlineNotification, 30000);
+    }
+
     app.get("/oauth", function(req, res) {
         githubAuthoriser.authorise(req, function(githubUser, token) {
             if (githubUser) {
