@@ -15,10 +15,6 @@ class MessagesContainer extends Component {
         console.log(msg);
         return (
             <MessageDetail key={i} msg={msg} className={classNames} />
-            // <li key={i} className={classNames}>
-            //     <span className="timestamp">{this.getTime(msg)}</span>
-            //     <br />{msg.msg}
-            // </li>
         );
     }
     renderMessages() {

@@ -11,8 +11,6 @@ class Conversations extends Component {
     constructor(props){
         super(props);
         this.selectUserAndUpdateSession = this.selectUserAndUpdateSession.bind(this);
-        // console.log(this.props.session._id);
-        // this.props.sendConversationsRequest(this.props.session._id);
     }
     selectUserAndUpdateSession(user,conversationId){
         this.props.selectConversation(conversationId);
@@ -22,18 +20,12 @@ class Conversations extends Component {
     }
     // ----------------------------- USER conversations
     eachUser(user,conversationId, unreadMessagesCount, group) {
-        let userId;
-        if(user) {
-            userId = user.id;
-        } else {
-            userId = group;
-        }
         let activeConvCss = "";
         if (conversationId===this.props.activeConversation) {
             activeConvCss = "selected";
         }
 
-        if (user && this.props.userList.onlineUsers.indexOf(userId) >= 0 ) {
+        if (user && this.props.userList.onlineUsers.indexOf(user.id) >= 0 ) {
             activeConvCss += " online";
         }
         if(user)
