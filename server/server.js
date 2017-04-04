@@ -365,7 +365,6 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
         if (cookie) {
             sesToken = cookie.split("=")[1];
             console.log(sesToken);
-            // console.log(sessions[sesToken]);
         }
         if (!sessions[sesToken]) {
             ws.close();
