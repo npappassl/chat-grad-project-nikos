@@ -244,12 +244,13 @@ li{
 	margin: .3em auto;
 	// vertical-align: top;
 }
-button{
+.button{
 	display: block;
 	margin: 1em auto;
 	text-align: center;
 	transition: all 0.4s ease;
 	background-color: $primary;
+	min-width: 80px;
 	color:white;
 	padding: 1em;
 	border-style: solid;
@@ -257,8 +258,13 @@ button{
 	border-radius: 0.3em;
 	text-decoration: none;
 }
-button:hover{
-	transform: translate(-2px,-2px);
+.button:hover{
+	transform: translate3d(-2px,-2px,1px);
+	box-shadow: (2px 2px 5px 1px rgba(0,0,0,0.3));
+
+}
+#makeGroupSubmit{
+	background-color: $userListBgColor;
 }
 #messages{
 	margin-top: 80px;
@@ -378,7 +384,7 @@ button:hover{
 	position:absolute;
 	width: 50%;
 	height: 60%;
-	margin: 20% 25%;
+	margin: 10% 30%;
 	background-color: rgba(59,136,112,.89);
 	z-index: 1;
 }
