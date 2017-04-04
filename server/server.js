@@ -281,10 +281,10 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                             if (conversation.group) {
                                 for (let i in conversation.firstMessageMeta.participants) {
                                     console.log(conversation.firstMessageMeta.participants[i], "sould be notified");
-                                    aux.notifyUser(conversation.firstMessageMeta.participants[i],sessions);
+                                    aux.notifyUser(conversation.firstMessageMeta.participants[i], sessions);
                                 }
                                 console.log(conversation.firstMessageMeta.creator, "sould be notified");
-                                aux.notifyUser(conversation.firstMessageMeta.creator,sessions);
+                                aux.notifyUser(conversation.firstMessageMeta.creator, sessions);
                             } else {
                                 aux.notifyUser(req.body.userTo, sessions);
                                 aux.notifyUser(req.body.userFrom, sessions);

@@ -20,6 +20,7 @@ class Conversations extends Component {
         this.props.sendConversationDetailRequest(conversationId);
         this.props.selectUser(user);
     }
+    // ----------------------------- USER conversations
     eachUser(user,conversationId, unreadMessagesCount, group) {
         let userId;
         if(user) {
@@ -40,17 +41,9 @@ class Conversations extends Component {
             <UserListItem key={conversationId} className={activeConvCss} user={user}
                 selectUserAndUpdateSession={this.selectUserAndUpdateSession} conversationId={conversationId}
                 unreadMessagesCount={unreadMessagesCount} />
-            // <li className={activeConvCss}
-            //     key={conversationId}
-            //     onClick={() => this.selectUserAndUpdateSession(user, conversationId)}
-            // >
-            //     <img width="32" src={user.avatarUrl} />
-            //     <Badge number={unreadMessagesCount} className={badgeClassCss} />
-            //     {userId}
-            //     <span className="deleteMessages" onClick={()=> this.props.sendDeleteConversationMessagesRequest(conversationId)}>x</span>
-            // </li>
         );
     }
+    // ----------------------------- GROUP conversations
     eachGroup(group,conversationId,unreadMessagesCount) {
         let activeConvCss = "";
         if (conversationId===this.props.activeConversation) {
@@ -61,15 +54,6 @@ class Conversations extends Component {
                 key={conversationId} className={activeConvCss} user={group}
                 selectUserAndUpdateSession={this.selectUserAndUpdateSession} conversationId={conversationId}
                 unreadMessagesCount={unreadMessagesCount}/>
-            // <li className={activeConvCss}
-            //
-            //     onClick={() => this.selectUserAndUpdateSession(group, conversationId)}
-            // >
-            //     <img width="32" src={group.avatarUrl} />
-            //     <Badge number={unreadMessagesCount} className={badgeClassCss} />
-            //     {group.id}
-            //     <span className="deleteMessages" onClick={()=> this.props.sendDeleteConversationMessagesRequest(conversationId)}>x</span>
-            // </li>
         );
     }
     countUnreadMessages(convMessages, lastRead, groupBool) {
