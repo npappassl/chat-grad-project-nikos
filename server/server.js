@@ -30,7 +30,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             }
         }
         aux.notifyAll(sessions);
-    }, 10000);
+    }, 30000);
     app.get("/oauth", function(req, res) {
         githubAuthoriser.authorise(req, function(githubUser, token) {
             if (githubUser) {
@@ -210,7 +210,6 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                                 } else {
                                     participant = data[i].firstMessageMeta.userFrom;
                                 }
-                                console.log(data[i]);
                                 retVal.push({
                                     id: data[i]._id,
                                     group: data[i].group,
@@ -236,6 +235,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
         }
     });
     //  Creates conversation or add messages to a conversation.
+    //  notifies all users related to the conversation (gourp or private)
     //  Conversation can also be created from POST /api/group
     app.post("/api/message", function(req, res) {
         lastTransaction = Date.now();
@@ -277,8 +277,18 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                         {$set: {messages: conversation.messages}}, function(errUpdate, data) {
                         if (!errUpdate) {
                             res.status(200).json(retConversationId);
-                            aux.notifyUser(req.body.userTo, sessions);
-                            aux.notifyUser(req.body.userFrom, sessions);
+                            console.log(conversation.group);
+                            if (conversation.group) {
+                                for (let i in conversation.firstMessageMeta.participants) {
+                                    console.log(conversation.firstMessageMeta.participants[i], "sould be notified");
+                                    aux.notifyUser(conversation.firstMessageMeta.participants[i],sessions);
+                                }
+                                console.log(conversation.firstMessageMeta.creator, "sould be notified");
+                                aux.notifyUser(conversation.firstMessageMeta.creator,sessions);
+                            } else {
+                                aux.notifyUser(req.body.userTo, sessions);
+                                aux.notifyUser(req.body.userFrom, sessions);
+                            }
                         } else {
                             console.log(errUpdate);
                             res.sendStatus(500);
@@ -294,7 +304,6 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
 
     app.put("/api/group/:groupId", function(req, res) {
         users.findOne({_id: req.params.groupId}, function(err, data) {
-            console.log(req.body);
             if (!err) {
                 if (!data) {
                     users.insertOne({

@@ -3,11 +3,13 @@ import {bindActionCreators} from "redux";
 import {connect} from "react-redux";
 import {selectUser,selectConversation} from "../actions/index";
 import {updateUserSeen, sendConversationDetailRequest} from "../actions/usersActions";
+import UserListItem from "./user-list-item";
 
 class UserList extends Component {
     constructor(props){
         super(props);
         const self = this;
+        this.selectUserAndUpdateSession = this.selectUserAndUpdateSession.bind(this);
     }
     selectUserAndUpdateSession(user){
         for( let i in this.props.conversations) {
@@ -27,12 +29,9 @@ class UserList extends Component {
             userClass = "online";
         }
         return (
-            <li
-                key={user.id} className={userClass}
-                onClick={() => this.selectUserAndUpdateSession(user)}
-            >
-                <img width="32" src={user.avatarUrl} />{user.id}
-            </li>
+            <UserListItem
+                key={user.id} className={userClass} user={user} conversationId={null}
+                selectUserAndUpdateSession={this.selectUserAndUpdateSession} />
         );
     }
     renderList() {

@@ -2,14 +2,17 @@ import React, {Component} from "react";
 import {connect} from "react-redux";
 import {bindActionCreators} from "redux";
 import {selectConversation,selectUser} from "../actions/index";
-import {sendConversationsRequest, sendConversationDetailRequest,
+import {sendConversationDetailRequest,
     sendReadConversationRequest, sendDeleteConversationMessagesRequest} from "../actions/usersActions";
+import UserListItem from "./user-list-item";
 import Badge from "./badge-container";
+
 class Conversations extends Component {
     constructor(props){
         super(props);
-        console.log(this.props.session._id);
-        this.props.sendConversationsRequest(this.props.session._id);
+        this.selectUserAndUpdateSession = this.selectUserAndUpdateSession.bind(this);
+        // console.log(this.props.session._id);
+        // this.props.sendConversationsRequest(this.props.session._id);
     }
     selectUserAndUpdateSession(user,conversationId){
         this.props.selectConversation(conversationId);
@@ -24,10 +27,6 @@ class Conversations extends Component {
         } else {
             userId = group;
         }
-        let badgeClassCss = "badge"
-        if (unreadMessagesCount === 0) {
-            badgeClassCss = "hidden";
-        }
         let activeConvCss = "";
         if (conversationId===this.props.activeConversation) {
             activeConvCss = "selected";
@@ -38,37 +37,48 @@ class Conversations extends Component {
         }
         if(user)
         return (
-            <li className={activeConvCss}
-                key={conversationId}
-                onClick={() => this.selectUserAndUpdateSession(user, conversationId)}
-            >
-                <img width="32" src={user.avatarUrl} />
-                <Badge number={unreadMessagesCount} className={badgeClassCss} />
-                {userId}
-                <span className="deleteMessages" onClick={()=> this.props.sendDeleteConversationMessagesRequest(conversationId)}>x</span>
-            </li>
+            <UserListItem key={conversationId} className={activeConvCss} user={user}
+                selectUserAndUpdateSession={this.selectUserAndUpdateSession} conversationId={conversationId}
+                unreadMessagesCount={unreadMessagesCount} />
+            // <li className={activeConvCss}
+            //     key={conversationId}
+            //     onClick={() => this.selectUserAndUpdateSession(user, conversationId)}
+            // >
+            //     <img width="32" src={user.avatarUrl} />
+            //     <Badge number={unreadMessagesCount} className={badgeClassCss} />
+            //     {userId}
+            //     <span className="deleteMessages" onClick={()=> this.props.sendDeleteConversationMessagesRequest(conversationId)}>x</span>
+            // </li>
         );
     }
     eachGroup(group,conversationId,unreadMessagesCount) {
-        const activeConvCss = "";
-        const badgeClassCss = "hidden";
+        let activeConvCss = "";
+        if (conversationId===this.props.activeConversation) {
+            activeConvCss = "selected";
+        }
         return (
-            <li className={activeConvCss}
-                key={conversationId}
-                onClick={() => this.selectUserAndUpdateSession(group, conversationId)}
-            >
-                <img width="32" src={group.avatarUrl} />
-                <Badge number={unreadMessagesCount} className={badgeClassCss} />
-                {group.id}
-                <span className="deleteMessages" onClick={()=> this.props.sendDeleteConversationMessagesRequest(conversationId)}>x</span>
-            </li>
+            <UserListItem
+                key={conversationId} className={activeConvCss} user={group}
+                selectUserAndUpdateSession={this.selectUserAndUpdateSession} conversationId={conversationId}
+                unreadMessagesCount={unreadMessagesCount}/>
+            // <li className={activeConvCss}
+            //
+            //     onClick={() => this.selectUserAndUpdateSession(group, conversationId)}
+            // >
+            //     <img width="32" src={group.avatarUrl} />
+            //     <Badge number={unreadMessagesCount} className={badgeClassCss} />
+            //     {group.id}
+            //     <span className="deleteMessages" onClick={()=> this.props.sendDeleteConversationMessagesRequest(conversationId)}>x</span>
+            // </li>
         );
     }
-    countUnreadMessages(convMessages, lastRead) {
+    countUnreadMessages(convMessages, lastRead, groupBool) {
         let count = 0;
         for (let i in convMessages) {
             const countCondition = convMessages[i].timestamp > lastRead;
-            if(countCondition && convMessages[i].userTo === this.props.session._id) {
+            if(countCondition &&
+                (convMessages[i].userTo === this.props.session._id ||
+                 groupBool)) {
                 count++;
             }
         }
@@ -83,13 +93,16 @@ class Conversations extends Component {
             return this.props.conversations.sort((a, b) => {
                 return a.timestamp < b.timestamp;
             }).map((conversation) => {
-                const unreadMessagesCount = this.countUnreadMessages(conversation.messages, this.props.session.lastRead[conversation.id])
                 if(conversation.group) {
+                    const unreadMessagesCount = this.countUnreadMessages(
+                        conversation.messages, this.props.session.lastRead[conversation.id], true);
                     for(let j in this.props.userList.groups){
                         if(conversation.userAlias === this.props.userList.groups[j].id)
                         return this.eachGroup(this.props.userList.groups[j],conversation.id,unreadMessagesCount);
                     }
                 } else {
+                    const unreadMessagesCount = this.countUnreadMessages(
+                        conversation.messages, this.props.session.lastRead[conversation.id], false);
                     for (let i in this.props.userList.users) {
                         if (conversation.participant === this.props.userList.users[i].id) {
                             return this.eachUser(this.props.userList.users[i], conversation.id, unreadMessagesCount);
@@ -102,9 +115,9 @@ class Conversations extends Component {
 
     render() {
         return (
-                <ul>
-                    {this.renderList()}
-                </ul>
+            <ul>
+                {this.renderList()}
+            </ul>
         );
     }
 
@@ -127,7 +140,6 @@ function matchDispatchToProps(dispatch){
         selectUser: selectUser,
         selectConversation: selectConversation,
         sendDeleteConversationMessagesRequest: sendDeleteConversationMessagesRequest,
-        sendConversationsRequest: sendConversationsRequest,
         sendConversationDetailRequest: sendConversationDetailRequest,
         sendReadConversationRequest: sendReadConversationRequest      }, dispatch
     );
