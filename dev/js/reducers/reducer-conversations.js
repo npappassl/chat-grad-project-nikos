@@ -5,7 +5,7 @@ import {ATypes} from "../actions/types";
  * */
 
 // "state = null" is set so that we don't throw an error when app first boots up
-export default function (state = null, action) {
+export default function (state = "loading", action) {
     switch (action.type) {
         case ATypes.GOT_CONVERSATIONS:
             return action.payload;

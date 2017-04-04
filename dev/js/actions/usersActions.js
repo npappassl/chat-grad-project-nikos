@@ -6,8 +6,18 @@ export const sendUsersRequest = function() {
     return function(dispatch){
         return UsersApi.getUsers()
         .then(users => {
-            console.log(users);
-            dispatch(loadUsersSuccess(users));
+            let userList = [];
+            let groups = [];
+            users.users.map((a) => {
+                if(a.group){
+                    groups.push(a);
+                } else {
+                    userList.push(a);
+                }
+            });
+            dispatch(loadUsersSuccess({
+                users:userList,groups:groups,onlineUsers:users.onlineUsers
+            }));
         })
         .catch( function(error) {
             throw (error);

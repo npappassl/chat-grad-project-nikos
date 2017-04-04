@@ -2,14 +2,17 @@ import React, {Component} from "react";
 import {connect} from "react-redux";
 import {bindActionCreators} from "redux";
 import {selectConversation,selectUser} from "../actions/index";
-import {sendConversationsRequest, sendConversationDetailRequest,
+import {sendConversationDetailRequest,
     sendReadConversationRequest, sendDeleteConversationMessagesRequest} from "../actions/usersActions";
+import UserListItem from "./user-list-item";
 import Badge from "./badge-container";
+
 class Conversations extends Component {
     constructor(props){
         super(props);
-        console.log(this.props.session._id);
-        this.props.sendConversationsRequest(this.props.session._id);
+        this.selectUserAndUpdateSession = this.selectUserAndUpdateSession.bind(this);
+        // console.log(this.props.session._id);
+        // this.props.sendConversationsRequest(this.props.session._id);
     }
     selectUserAndUpdateSession(user,conversationId){
         this.props.selectConversation(conversationId);
@@ -17,39 +20,49 @@ class Conversations extends Component {
         this.props.sendConversationDetailRequest(conversationId);
         this.props.selectUser(user);
     }
-    eachUser(user,conversationId, unreadMessagesCount) {
-        let badgeClassCss = "badge"
-        if (unreadMessagesCount === 0) {
-            badgeClassCss = "hidden";
+    // ----------------------------- USER conversations
+    eachUser(user,conversationId, unreadMessagesCount, group) {
+        let userId;
+        if(user) {
+            userId = user.id;
+        } else {
+            userId = group;
         }
-
         let activeConvCss = "";
-        console.log(conversationId,this.props.activeConversation)
         if (conversationId===this.props.activeConversation) {
             activeConvCss = "selected";
         }
 
-        if (this.props.userList.onlineUsers.indexOf(user.id) >= 0 ) {
+        if (user && this.props.userList.onlineUsers.indexOf(userId) >= 0 ) {
             activeConvCss += " online";
         }
-
+        if(user)
         return (
-            <li className={activeConvCss}
-                key={conversationId}
-                onClick={() => this.selectUserAndUpdateSession(user, conversationId)}
-            >
-                <img width="32" src={user.avatarUrl} />
-                <Badge number={unreadMessagesCount} className={badgeClassCss} />
-                {user.id}
-                <span className="deleteMessages" onClick={()=> this.props.sendDeleteConversationMessagesRequest(conversationId)}>x</span>
-            </li>
+            <UserListItem key={conversationId} className={activeConvCss} user={user}
+                selectUserAndUpdateSession={this.selectUserAndUpdateSession} conversationId={conversationId}
+                unreadMessagesCount={unreadMessagesCount} />
         );
     }
-    countUnreadMessages(convMessages, lastRead) {
+    // ----------------------------- GROUP conversations
+    eachGroup(group,conversationId,unreadMessagesCount) {
+        let activeConvCss = "";
+        if (conversationId===this.props.activeConversation) {
+            activeConvCss = "selected";
+        }
+        return (
+            <UserListItem
+                key={conversationId} className={activeConvCss} user={group}
+                selectUserAndUpdateSession={this.selectUserAndUpdateSession} conversationId={conversationId}
+                unreadMessagesCount={unreadMessagesCount}/>
+        );
+    }
+    countUnreadMessages(convMessages, lastRead, groupBool) {
         let count = 0;
         for (let i in convMessages) {
             const countCondition = convMessages[i].timestamp > lastRead;
-            if(countCondition && convMessages[i].userTo === this.props.session._id) {
+            if(countCondition &&
+                (convMessages[i].userTo === this.props.session._id ||
+                 groupBool)) {
                 count++;
             }
         }
@@ -64,11 +77,20 @@ class Conversations extends Component {
             return this.props.conversations.sort((a, b) => {
                 return a.timestamp < b.timestamp;
             }).map((conversation) => {
-                const unreadMessagesCount = this.countUnreadMessages(conversation.messages, this.props.session.lastRead[conversation.id])
-
-                for (let i in this.props.userList.users) {
-                    if (conversation.participant === this.props.userList.users[i].id) {
-                        return this.eachUser(this.props.userList.users[i], conversation.id, unreadMessagesCount);
+                if(conversation.group) {
+                    const unreadMessagesCount = this.countUnreadMessages(
+                        conversation.messages, this.props.session.lastRead[conversation.id], true);
+                    for(let j in this.props.userList.groups){
+                        if(conversation.userAlias === this.props.userList.groups[j].id)
+                        return this.eachGroup(this.props.userList.groups[j],conversation.id,unreadMessagesCount);
+                    }
+                } else {
+                    const unreadMessagesCount = this.countUnreadMessages(
+                        conversation.messages, this.props.session.lastRead[conversation.id], false);
+                    for (let i in this.props.userList.users) {
+                        if (conversation.participant === this.props.userList.users[i].id) {
+                            return this.eachUser(this.props.userList.users[i], conversation.id, unreadMessagesCount);
+                        }
                     }
                 }
             });
@@ -77,9 +99,9 @@ class Conversations extends Component {
 
     render() {
         return (
-                <ul>
-                    {this.renderList()}
-                </ul>
+            <ul>
+                {this.renderList()}
+            </ul>
         );
     }
 
@@ -102,7 +124,6 @@ function matchDispatchToProps(dispatch){
         selectUser: selectUser,
         selectConversation: selectConversation,
         sendDeleteConversationMessagesRequest: sendDeleteConversationMessagesRequest,
-        sendConversationsRequest: sendConversationsRequest,
         sendConversationDetailRequest: sendConversationDetailRequest,
         sendReadConversationRequest: sendReadConversationRequest      }, dispatch
     );

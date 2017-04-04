@@ -2,13 +2,14 @@ import React, {Component} from "react";
 import {bindActionCreators} from "redux";
 import {connect} from "react-redux";
 import {selectUser,selectConversation} from "../actions/index";
-import {sendUsersRequest, updateUserSeen, sendConversationDetailRequest} from "../actions/usersActions";
+import {updateUserSeen, sendConversationDetailRequest} from "../actions/usersActions";
+import UserListItem from "./user-list-item";
 
 class UserList extends Component {
     constructor(props){
         super(props);
         const self = this;
-        self.props.sendUsersRequest();
+        this.selectUserAndUpdateSession = this.selectUserAndUpdateSession.bind(this);
     }
     selectUserAndUpdateSession(user){
         for( let i in this.props.conversations) {
@@ -28,12 +29,9 @@ class UserList extends Component {
             userClass = "online";
         }
         return (
-            <li
-                key={user.id} className={userClass}
-                onClick={() => this.selectUserAndUpdateSession(user)}
-            >
-                <img width="32" src={user.avatarUrl} />{user.id}
-            </li>
+            <UserListItem
+                key={user.id} className={userClass} user={user} conversationId={null}
+                selectUserAndUpdateSession={this.selectUserAndUpdateSession} />
         );
     }
     renderList() {
@@ -42,9 +40,6 @@ class UserList extends Component {
                 <span>Loading...</span>
             );
         } else if(this.props.users.users){
-            const tempUsers = this.props.users.users.sort((a, b) => {
-                return a.id > b.id;
-            })
             return this.props.users.users.map((user) => {
                 if(this.props.userFilter === ""){
                     return this.eachUser(user);
@@ -79,7 +74,6 @@ function mapStateToProps(state) {
 function matchDispatchToProps(dispatch){
     return bindActionCreators({
         selectUser: selectUser,
-        sendUsersRequest:sendUsersRequest,
         selectConversation: selectConversation,
         sendConversationDetailRequest: sendConversationDetailRequest}, dispatch
     );
