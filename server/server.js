@@ -32,7 +32,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             }
         }
         aux.notifyAll(sessions);
-        setTimeout(sendOnlineNotification, 30000);
+        setTimeout(sendOnlineNotification, 20000);
     }
 
     app.get("/oauth", function(req, res) {
@@ -376,7 +376,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
         // ws.send(JSON.stringify())
         var id = setTimeout(function() {
             ws.send(JSON.stringify(new Date()), function() {  });
-        }, 2000);
+        }, 20000);
 
         console.log("websocket connection open:", sesToken);
 

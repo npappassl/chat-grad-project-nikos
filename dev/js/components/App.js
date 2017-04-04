@@ -57,7 +57,7 @@ class App extends Component {
                     <h2>User List</h2>
                     <SearchFilterInput />
                     <UserList />
-                    <button onClick={this.props.actions.openMakeGroupDialogue} id="createGroupButton">Create group</button>
+                    <button className="button" onClick={this.props.actions.openMakeGroupDialogue} id="createGroupButton">Create group</button>
                 </div>
                 <div id="rightVerticalLayout">
                     <MessagesContainer />

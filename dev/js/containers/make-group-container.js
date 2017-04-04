@@ -75,7 +75,7 @@ class MakeGroupDialogue extends Component{
                             return this.renderParticipantCheckBoxesEach(participant);
                         })}
                         </ul>
-                        <input className="button" type="submit"></input>
+                        <input id="makeGroupSubmit" className="button" type="submit"></input>
                     </form>
                 </div>
             );
