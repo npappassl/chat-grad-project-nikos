@@ -27,7 +27,7 @@ class MessagesContainer extends Component {
             return this.props.messages.messages.map((msg,i) => {
                 if (msg.userFrom === this.props.session._id) {
                     return this.eachMsg(msg,i,"sent");
-                } else if (msg.userFrom === this.props.user.id) {
+                } else if (msg.userFrom === this.props.user.id || this.props.user.group) {
                     return this.eachMsg(msg,i,"recieved");
                 }
             });

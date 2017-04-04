@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const ObjectID = require("mongodb").ObjectID;
 const http = require("http");
 const WebSocketServer = require("ws").Server;
+const aux = require("./helper");
 
 module.exports = function(port, db, githubAuthoriser, middleware) {
     let lastTransaction = Date.now();
@@ -28,7 +29,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                 onlineUsers.push(sessions[user].user);
             }
         }
-        notifyAll(sessions);
+        aux.notifyAll(sessions);
     }, 10000);
     app.get("/oauth", function(req, res) {
         githubAuthoriser.authorise(req, function(githubUser, token) {
@@ -47,7 +48,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                             lastRead: {}
                         });
                         lastTransaction = Date.now();
-                        notifyAll(sessions);
+                        aux.notifyAll(sessions);
                     }
                     sessions[token] = {
                         user: githubUser.login,
@@ -109,7 +110,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                     function(errUpdate, doc) {
                     if (!errUpdate) {
                         res.sendStatus(200);
-                        notifyUser(req.params.userId, sessions);
+                        aux.notifyUser(req.params.userId, sessions);
                     }
                 });
             } else {
@@ -131,6 +132,14 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                             id: user._id,
                             name: user.name,
                             avatarUrl: user.avatarUrl,
+                            group: user.group
+                        });
+                    } else {
+                        retObj.users.push({
+                            id: user._id,
+                            name: user.name,
+                            avatarUrl: user.avatarUrl,
+                            group: user.group
                         });
                     }
                 });
@@ -151,9 +160,9 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             conversations.findOneAndUpdate({_id: new ObjectID(req.params.conversationId)},
                 {$set: {messages: []}}, function(err, data) {
                 if (!err && data) {
-                    notifyUser(data.value.firstMessageMeta.userFrom, sessions);
+                    aux.notifyUser(data.value.firstMessageMeta.userFrom, sessions);
                     if (data.value.firstMessageMeta.userFrom !== data.value.firstMessageMeta.userTo) {
-                        notifyUser(data.value.firstMessageMeta.userTo, sessions);
+                        aux.notifyUser(data.value.firstMessageMeta.userTo, sessions);
                     }
                     res.sendStatus(200);
                 } else if (err) {
@@ -201,11 +210,15 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                                 } else {
                                     participant = data[i].firstMessageMeta.userFrom;
                                 }
+                                console.log(data[i]);
                                 retVal.push({
                                     id: data[i]._id,
+                                    group: data[i].group,
                                     participant: participant,
+                                    participants: data[i].firstMessageMeta.participants,
                                     timestamp: data[i].messages[0] ?
                                         data[i].messages[0].timestamp : data[i].firstMessageMeta.timestamp,
+                                    userAlias: data[i].firstMessageMeta.userAlias,
                                     messages: data[i].messages
                                 });
                             }
@@ -222,6 +235,8 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             });
         }
     });
+    //  Creates conversation or add messages to a conversation.
+    //  Conversation can also be created from POST /api/group
     app.post("/api/message", function(req, res) {
         lastTransaction = Date.now();
         let retConversationId = "";
@@ -233,6 +248,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
         };
         if (!req.body.conversationId) {
             conversations.insertOne({
+                group: false,
                 messages: [tempMessage],
                 firstMessageMeta: {
                     userFrom: req.body.userFrom,
@@ -261,8 +277,8 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                         {$set: {messages: conversation.messages}}, function(errUpdate, data) {
                         if (!errUpdate) {
                             res.status(200).json(retConversationId);
-                            notifyUser(req.body.userTo, sessions);
-                            notifyUser(req.body.userFrom, sessions);
+                            aux.notifyUser(req.body.userTo, sessions);
+                            aux.notifyUser(req.body.userFrom, sessions);
                         } else {
                             console.log(errUpdate);
                             res.sendStatus(500);
@@ -281,40 +297,44 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             console.log(req.body);
             if (!err) {
                 if (!data) {
-                    users.insertOne(
-                        {
-                            _id: req.params.groupId,
-                            group: true,
-                            avatarUrl: req.body.avatar,
-                            subscribedTo : [],
-                            lastRead: {}
-                        },
-                        function(errConv, dataConv) {
-                            if (!errConv) {
-                                conversations.insertOne(
-                                    {
-                                        group: true,
-                                        messages: [],
-                                        firstMessageMeta: {
-                                            participants: req.body.participants,
-                                            creator: req.body.creator,
-                                            timestamp: Date.now()
+                    users.insertOne({
+                        _id: req.params.groupId,
+                        group: true,
+                        avatarUrl: req.body.avatar,
+                        subscribedTo : [],
+                        lastRead: {}
+                    }, function(errConv, dataConv) {
+                        if (!errConv) {
+                            conversations.insertOne({
+                                group: true,
+                                messages: [],
+                                firstMessageMeta: {
+                                    participants: req.body.participants,
+                                    creator: req.body.creator,
+                                    userAlias: req.params.groupId,
+                                    timestamp: Date.now()
+                                }
+                            }, function (err2, data2) {
+                                if (!err2) {
+                                    console.log("insertedId", data2.insertedId);
+                                    addConversationToUser(req.body.creator, data2.insertedId, Date.now());
+                                    for (let i in req.body.participants) {
+                                        addConversationToUser(
+                                            req.body.participants[i], data2.insertedId, Date.now()
+                                        );
                                     }
-                        }, function (err2, data2) {
-                            if (!err2) {
-                                console.log("insertedId", data2.insertedId);
-                                addConversationToUser(req.body.creator, data2.insertedId, Date.now());
-                                for(let i in req.body.participants){addConversationToUser(req.body.participants[i], data2.insertedId, Date.now());}
-                                res.sendStatus(201);
-                            } else {console.log("err2", err2);}
-                        });
-                    }
+                                    res.sendStatus(201);
+                                } else {
+                                    console.log("err2", err2);
+                                }
+                            });
+                        }
 
-            });
-            } else {
-                console.log("data", data);
-                res.sendStatus(500);
-            }
+                    });
+                } else {
+                    console.log("data", data);
+                    res.sendStatus(500);
+                }
             } else {
                 res.sendStatus(500);
             }
@@ -371,7 +391,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                     }},
                     function(err, data) {
                         if (!err) {
-                            notifyUser(userId, sessions);
+                            aux.notifyUser(userId, sessions);
                         } else {
                             console.log(err);
                         }
@@ -380,21 +400,3 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
         });
     }
 };
-//-------------------  My auxiliary functions  GLOBAL --------------------------
-function notifyAll(sessionList) {
-    for (let i in sessionList) {
-        if (sessionList[i].socket) {
-            sessionList[i].socket.send(JSON.stringify(new Date()), function() {  });
-        }
-    }
-}
-function notifyUser(userId, sessionList) {
-    for (let i in sessionList) {
-        if (sessionList[i].user === userId) {
-            if (sessionList[i].socket) {
-                sessionList[i].socket.send(JSON.stringify(new Date()), function() {  });
-                break;
-            }
-        }
-    }
-}

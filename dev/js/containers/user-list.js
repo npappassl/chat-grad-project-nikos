@@ -2,13 +2,12 @@ import React, {Component} from "react";
 import {bindActionCreators} from "redux";
 import {connect} from "react-redux";
 import {selectUser,selectConversation} from "../actions/index";
-import {sendUsersRequest, updateUserSeen, sendConversationDetailRequest} from "../actions/usersActions";
+import {updateUserSeen, sendConversationDetailRequest} from "../actions/usersActions";
 
 class UserList extends Component {
     constructor(props){
         super(props);
         const self = this;
-        self.props.sendUsersRequest();
     }
     selectUserAndUpdateSession(user){
         for( let i in this.props.conversations) {
@@ -76,7 +75,6 @@ function mapStateToProps(state) {
 function matchDispatchToProps(dispatch){
     return bindActionCreators({
         selectUser: selectUser,
-        sendUsersRequest:sendUsersRequest,
         selectConversation: selectConversation,
         sendConversationDetailRequest: sendConversationDetailRequest}, dispatch
     );
