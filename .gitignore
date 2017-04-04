@@ -3,3 +3,4 @@ build_artifacts/
 builds/
 public/build/bundle.js
 imageMaking/
+*.log*
