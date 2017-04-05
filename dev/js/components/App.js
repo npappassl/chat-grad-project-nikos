@@ -19,23 +19,27 @@ class App extends Component {
         const self = this;
         self.props.actions.sendSessionRequest();
         self.props.actions.sendAuthUriRequest();
-
-        if(self.props.session){            
-            var host = location.origin.replace(/^http/, 'ws');
-            var ws = new WebSocket(host);
-            ws.onmessage = function (event) {
-                console.log(event);
-                const data = JSON.parse(event.data);
-                if (self.props.activeConversation) {
-                    self.props.actions.loadConversationDetail(self.props.activeConversation);
-                }
-                if (self.props.session._id) {
-                    self.props.actions.sendConversationsRequest(self.props.session._id);
-                }
-                self.props.actions.sendUsersRequest();
-                self.props.actions.sendSessionRequest(true);
-            };
+        self.connectWS = function(){
+            if(self.props.session){
+                var host = location.origin.replace(/^http/, 'ws');
+                var ws = new WebSocket(host);
+                ws.onmessage = function (event) {
+                    console.log(event);
+                    const data = JSON.parse(event.data);
+                    if (self.props.activeConversation) {
+                        self.props.actions.loadConversationDetail(self.props.activeConversation);
+                    }
+                    if (self.props.session._id) {
+                        self.props.actions.sendConversationsRequest(self.props.session._id);
+                    }
+                    self.props.actions.sendUsersRequest();
+                    self.props.actions.sendSessionRequest(true);
+                };
+            } else {
+                setTimeout(self.connectWS, 3000);
+            }
         }
+        self.connectWS();
 
     }
     renderLogin() {
