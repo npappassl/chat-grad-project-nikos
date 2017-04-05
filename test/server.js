@@ -18,6 +18,13 @@ const testPort = 52684;
 const baseUrl = "http://localhost:" + testPort;
 const oauthClientId = "1234clientId";
 
+const statusCodes = {
+    "OK": 200, "created": 201,
+    "found": 302,
+    "badRequest": 400, "notFound": 404, "Unauthenticated": 401,
+    "intServErr": 500
+};
+
 const testUser = {
     _id: "bob",
     name: "Bob Bilson",
@@ -34,6 +41,13 @@ const testGithubUser = {
     login: "bob",
     name: "Bob Bilson",
     avatar_url: "http://avatar.url.com/u=test"
+};
+const testGroupUser = {
+    "_id": "dikemou",
+    "group": true,
+    "avatarUrl": "https://www.codeproject.com/KB/testing/1002904/Test-URL-Redirects-HttpWebRequest.jpg",
+    "subscribedTo": [],
+    "lastRead": {}
 };
 const testToken = "123123";
 const testExpiredToken = "987978";
@@ -53,12 +67,26 @@ const testConversation = {
         "$oid": "58d52c27983d681738f5449e"
     },
     messages: testMessages,
+    group: false,
     firstMessageMeta: {
         userFrom: "kwstas",
         userTo:  "nikos",
         timestamp: 12312542353453
     }
 };
+const testConversationGroup = {
+    _id: {
+        "$oid": "58d52c27983d681738f5455e"
+    },
+    messages: [testMessages[1]],
+    group: true,
+    firstMessageMeta: {
+        creator: "giannis",
+        pariticipants: ["nikos", "kwstas", "bob"],
+        timestamp: 12312542353453
+    }
+};
+
 describe("server", function() {
     var cookieJar;
     var db;
@@ -96,7 +124,8 @@ describe("server", function() {
                 find: sinon.stub(),
                 findOne: sinon.stub(),
                 insertOne: sinon.stub(),
-                updateOne: sinon.stub()
+                updateOne: sinon.stub(),
+                findOneAndUpdate: sinon.stub()
             }
         };
         db = {
@@ -284,7 +313,7 @@ describe("server", function() {
         });
         it("responds with status code 200 if user is authenticated", function(done) {
             authenticateUser(testUser, testToken, function() {
-                allUsers.toArray.callsArgWith(0, null, [testUser]);
+                allUsers.toArray.callsArgWith(0, null, [testUser, testGroupUser]);
 
                 request({url: requestUrl, jar: cookieJar}, function(error, response) {
                     assert.equal(response.statusCode, 200);
@@ -326,6 +355,82 @@ describe("server", function() {
             });
         });
     });
+    describe("DELETE api/conversation/:conversationId", function() {
+        var requestUrl = baseUrl + "/api/conversation/";
+        beforeEach(function() {
+            dbCollections.conversations.findOneAndUpdate.callsArgWith(2, null, {value: testConversationGroup});
+        });
+        it("responds with statusCode 401 if unauthorized", function(done) {
+            request({url: requestUrl + "null", method: "DELETE"}, function(error, response) {
+                assert.equal(response.statusCode, 401);
+                done();
+            });
+        });
+        it("responds with statusCode 404 if notfound or conversationId === null", function(done) {
+            authenticateUser(testUser, testToken, function() {
+                request({url: requestUrl + "null", jar: cookieJar, method: "DELETE"}, function(error, response) {
+                    assert.equal(response.statusCode, 404);
+                    done();
+                });
+            });
+        });
+        it("responds with statusCode 404 if notfound or conversationId === undefined", function(done) {
+            authenticateUser(testUser, testToken, function() {
+                request({url: requestUrl + "undefined", jar: cookieJar, method: "DELETE"}, function(error, response) {
+                    assert.equal(response.statusCode, 404);
+                    done();
+                });
+            });
+        });
+        it("responds with statusCode 404 if notfound", function(done) {
+            dbCollections.conversations.findOneAndUpdate.callsArgWith(2, null, null);
+            authenticateUser(testUser, testToken, function() {
+                request({
+                    url: requestUrl + "thiswrongIds", jar: cookieJar, method: "DELETE"
+                }, function(error, response) {
+                    assert.equal(response.statusCode, 404);
+                    done();
+                });
+            });
+        });
+        it("responds with statusCode 500 if conversationId is invalid", function(done) {
+            dbCollections.conversations.findOneAndUpdate.callsArgWith(2, {err: "invalid id"}, {value: null});
+            authenticateUser(testUser, testToken, function() {
+                request({
+                    url: requestUrl + "thisAnInvalidId", jar: cookieJar, method: "DELETE"
+                }, function(error, response) {
+                    console.log(error);
+                    assert.equal(response.statusCode, 500);
+                    done();
+                });
+            });
+        });
+        it("responds with statusCode 200 if conversationId is found", function(done) {
+            authenticateUser(testUser, testToken, function() {
+                request({
+                    url: requestUrl + "58d52c27983d681738f5455e", jar: cookieJar, method: "DELETE"
+                }, function(error, response) {
+                    assert.equal(response.statusCode, 200);
+                    done();
+                });
+            });
+        });
+    });
+    describe("DELETE api/conversation/:conversationId nonGourpConversation", function() {
+        var requestUrl = baseUrl + "/api/conversation/";
+        it("responds with statusCode 200 if conversationId is found", function(done) {
+            dbCollections.conversations.findOneAndUpdate.callsArgWith(2, null, {value: testConversation});
+            authenticateUser(testUser, testToken, function() {
+                request({
+                    url: requestUrl + "58d52c27983d681738f5455e", jar: cookieJar, method: "DELETE"
+                }, function(error, response) {
+                    assert.equal(response.statusCode, 200);
+                    done();
+                });
+            });
+        });
+    });
+
     describe("POST api/message", function() {
         var requestUrl = baseUrl + "/api/message/";
 
@@ -404,7 +509,7 @@ describe("server", function() {
                 });
             });
         });
-        it("responds with 200 if message posted -- new conversation", function(done) {
+        it("responds with 201 if message posted -- new conversation", function(done) {
             const objNew = {
                 conversationId: undefined,
                 userFrom: "nikos",
@@ -420,7 +525,7 @@ describe("server", function() {
                     },
                     body: JSON.stringify(objNew)
                 }, function(error, response, body) {
-                    assert.equal(response.statusCode, 200);
+                    assert.equal(response.statusCode, 201);
                     done();
                 });
             });
@@ -508,12 +613,27 @@ describe("server", function() {
         beforeEach(function() {
             conversation = sinon.stub();
             dbCollections.conversations.findOne.returns(conversation);
+
         });
         it("gets the specific conversation", function(done) {
             authenticateUser(testUser, testToken, function() {
                 dbCollections.conversations.findOne.callsArgWith(1, null, JSON.parse(JSON.stringify(testConversation)));
                 request({url: requestUrl, jar: cookieJar, method: "GET"}, function(error, response, body) {
                     assert.equal(2, JSON.parse(body).messages.length);
+                    done();
+                });
+            });
+        });
+        it("gets the specific group conversation", function(done) {
+            authenticateUser(testUser, testToken, function() {
+                dbCollections.conversations.findOne.callsArgWith(
+                    1, null, JSON.parse(JSON.stringify(testConversationGroup))
+                );
+
+                request({
+                    url: baseUrl + "/api/conversation/58d52c27983d681738f5455e", jar: cookieJar, method: "GET"
+                }, function(error, response, body) {
+                    assert.equal(1, JSON.parse(body).messages.length);
                     done();
                 });
             });
@@ -546,6 +666,41 @@ describe("server", function() {
                 });
             });
         });
+    });
+    describe("PUT api/group/:groupId", function () {
+        const requestUrl = baseUrl + "/api/group/";
+        var usersF;
+        var usersI;
+        var conversationI;
+        beforeEach(function() {
+            usersF = sinon.stub();
+            usersI = sinon.stub();
+
+            conversationI = sinon.stub();
+
+            dbCollections.users.findOne.returns(usersF);
+
+            dbCollections.conversations.insertOne.returns(conversationI);
+
+        });
+        it("return 401 when unauthorized", function(done) {
+            request({url: requestUrl + "dikemou", method: "PUT"}, function(error, response, body) {
+                assert(response.statusCode, 401);
+                done();
+            });
+        });
+        // TODO not working test
+        //     it("return 201 when created", function(done) {
+        //         usersF.callsArgWith(1, null, null);
+        //         usersI.callsArgWith(1, null, null);
+        //         authenticateUser(testUser, testToken, function() {
+        //             request({url: requestUrl + "dikemou", jar: cookieJar, method: "PUT"},
+        //             function(error, response, body) {
+        //                 assert(response.statusCode, 201);
+        //                 done();
+        //             });
+        //         });
+        //     });
     });
     describe("establish connection with the web socket", function() {
         const requestUrl = baseUrl.replace("http", "ws");
