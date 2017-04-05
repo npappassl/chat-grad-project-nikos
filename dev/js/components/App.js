@@ -19,27 +19,37 @@ class App extends Component {
         const self = this;
         self.props.actions.sendSessionRequest();
         self.props.actions.sendAuthUriRequest();
-        self.connectWS = function(){
+        self.connectWS = connectWS;
+        self.requests = requests;
+        self.requests();
+        self.connectWS();
+
+        function requests() {
+            if (self.props.activeConversation) {
+                self.props.actions.loadConversationDetail(self.props.activeConversation);
+            }
+            if (self.props.session._id) {
+                self.props.actions.sendConversationsRequest(self.props.session._id);
+            }
+            self.props.actions.sendSessionRequest(true);
+            self.props.actions.sendUsersRequest();
+        }
+        function connectWS() {
+            console.log("trying to connect");
             if(self.props.session){
                 var host = location.origin.replace(/^http/, 'ws');
                 var ws = new WebSocket(host);
                 ws.onmessage = function (event) {
                     console.log(event);
                     const data = JSON.parse(event.data);
-                    if (self.props.activeConversation) {
-                        self.props.actions.loadConversationDetail(self.props.activeConversation);
-                    }
-                    if (self.props.session._id) {
-                        self.props.actions.sendConversationsRequest(self.props.session._id);
-                    }
-                    self.props.actions.sendUsersRequest();
-                    self.props.actions.sendSessionRequest(true);
+                    self.requests();
                 };
+                console.log("connected");
             } else {
-                setTimeout(self.connectWS, 3000);
+                console.log("will try again in 3");
+                setTimeout(self.connectWS, 2000);
             }
         }
-        self.connectWS();
 
     }
     renderLogin() {

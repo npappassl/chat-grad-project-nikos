@@ -22,7 +22,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
     var conversations = db.collection("conversations");
     var sessions = {};
     var onlineUsers = [];
-    setTimeout(sendOnlineNotification, 10000);
+    setTimeout(sendOnlineNotification, 5000);
 
     function sendOnlineNotification() {
         onlineUsers.length = 0;
@@ -375,7 +375,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
         // ws.send(JSON.stringify())
         var id = setTimeout(function() {
             ws.send(JSON.stringify(new Date()), function() {  });
-        }, 20000);
+        }, 2000);
 
         console.log("websocket connection open:", sesToken);
 
