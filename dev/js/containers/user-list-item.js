@@ -19,6 +19,10 @@ class UserListItem extends Component {
                 <img width="32" src={this.props.user.avatarUrl} />
                 <Badge number={props.unreadMessagesCount} className={badgeClassCss} />
                 {this.props.user.id}
+                 <span
+                    className="deleteMessages"
+                    onClick={() => this.props.sendDeleteConversationMessagesRequest(this.props.conversationId)}>
+                        x</span>
             </li>
         );
     }
