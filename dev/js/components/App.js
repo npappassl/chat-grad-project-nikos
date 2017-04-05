@@ -17,11 +17,11 @@ class App extends Component {
     constructor(props){
         super(props);
         const self = this;
+        const host = location.origin.replace(/^http/, 'ws');
         self.props.actions.sendSessionRequest();
         self.props.actions.sendAuthUriRequest();
         self.connectWS = connectWS;
         self.requests = requests;
-        self.requests();
         self.connectWS();
 
         function requests() {
@@ -30,14 +30,13 @@ class App extends Component {
             }
             if (self.props.session._id) {
                 self.props.actions.sendConversationsRequest(self.props.session._id);
+                self.props.actions.sendSessionRequest(true);
             }
-            self.props.actions.sendSessionRequest(true);
             self.props.actions.sendUsersRequest();
         }
         function connectWS() {
             console.log("trying to connect");
-            if(self.props.session){
-                var host = location.origin.replace(/^http/, 'ws');
+            // if(self.props.session){
                 var ws = new WebSocket(host);
                 ws.onmessage = function (event) {
                     console.log(event);
@@ -45,10 +44,10 @@ class App extends Component {
                     self.requests();
                 };
                 console.log("connected");
-            } else {
-                console.log("will try again in 3");
-                setTimeout(self.connectWS, 2000);
-            }
+            // } else {
+                // console.log("will try again in 2");
+                // setTimeout(self.connectWS, 2000);
+            // }
         }
 
     }
