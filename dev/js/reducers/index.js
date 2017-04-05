@@ -8,7 +8,9 @@ import userFilterReducer from "./reducer-users-filter";
 import conversationsReducer from "./reducer-conversations";
 import notificationsReducer from "./reducer-notifications";
 import activeConversationReducer from "./reducer-active-conversations";
-import showMakeGroupReducer from "./reducer-show-make-group";
+import showHideDialoguesMakeGroupReducer from "./dialogueShowHide/reducer-show-hide-dialogues-make-group";
+import showHideDialoguesEditUserReducer from "./dialogueShowHide/reducer-show-hide-dialogues-edit-user";
+
 /*
  * We combine all reducers into a single object before updated data is dispatched (sent) to store
  * Your entire applications state (store) is just whatever gets returned from all your reducers
@@ -24,7 +26,8 @@ const allReducers = combineReducers({
     searchFilter: userFilterReducer,
     conversations: conversationsReducer,
     notifications: notificationsReducer,
-    showMakeGroupDialogue: showMakeGroupReducer
+    showHideDialoguesMakeG: showHideDialoguesMakeGroupReducer,
+    showHideDialoguesEditU: showHideDialoguesEditUserReducer,
 });
 
 export default allReducers;
