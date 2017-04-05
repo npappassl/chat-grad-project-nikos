@@ -8,6 +8,10 @@ import MessageTextArea from '../containers/message-text-area';
 import LoginScreen from "../containers/login-screen";
 import SearchFilterInput from "../containers/searchFilterInput";
 import MakeGroupDialogue from "../containers/make-group-container";
+import EditUserDialogue from "../containers/edit-user-container";
+
+import SessionDetail from "../containers/session-detail-component"
+
 import * as loginActions from "../actions/loginActions";
 import * as usersActions from "../actions/usersActions";
 import * as groupActions from "../actions/groupActions"
@@ -58,15 +62,13 @@ class App extends Component {
         return (
             <div id="layout">
                 <MakeGroupDialogue />
+                <EditUserDialogue />
                 <div id="UserList">
                     <div id="logoDiv">
                         <img id="logo" src="bitmapLogo.png" />
                     </div>
                     <hr />
-                    <span id="sessionUser">
-                        <img src={this.props.session.avatarUrl} />
-                        {this.props.session._id}
-                    </span>
+                    <SessionDetail session={this.props.session} />
                     <h2>Conversations</h2>
                     <Conversations />
                     <h2>User List</h2>

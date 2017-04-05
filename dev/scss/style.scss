@@ -40,7 +40,7 @@ hr{
 	padding-bottom: 1em;
 	border-bottom: 1px solid $messageDivBgColor;
 }
-#sessionUser img{
+#sessionAvatar{
 	max-height: 45px;
 	display: inline-block;
 	vertical-align: middle;
@@ -50,6 +50,16 @@ hr{
 	display: block;
 	padding: 1em auto;
 }
+#cogButtonUser{
+	vertical-align: middle;
+	margin-left: 1em;
+	height: 1.3em;
+	display: none;
+}
+#sessionUser:hover #cogButtonUser{
+	display: inline-block;
+}
+
 #UserList ul{
 	margin-top: 0;
 	border-bottom: 1px solid $messageDivBgColor;
@@ -379,27 +389,37 @@ li{
 		drop-shadow(0 0 .4em $primary);
 
 }
-#makeGroupDialogue{
+.dialogues{
 	overflow: hidden;
 	position:absolute;
+	background-color: rgba(59,136,112,.89);
+	z-index: 1;
+}
+.dialogues .button{
+	margin: 2em auto;
+}
+#editUserDialogue{
+	width: 50%;
+	height: 30%;
+	margin: 10% 30%;
+}
+#makeGroupDialogue{
 	width: 50%;
 	height: 60%;
 	margin: 10% 30%;
-	background-color: rgba(59,136,112,.89);
-	z-index: 1;
 }
 #wrapsUserListinMakeGroup{
 	overflow: auto;
 	height: 20%;
 	margin: .25em .5em;
 }
-#makeGroupDialogue .closeDialogue{
+.dialogues .closeDialogue{
 	cursor: pointer;
 	margin: 0.25em 0.5em;
 	float:right;
 	font-size: 2em;
 }
-#makeGroupDialogue input{
+.dialogues input{
 	display: block;
 }
 #makeGroupDialogue ul li, #makeGroupDialogue ul input{
@@ -411,11 +431,17 @@ li{
 #makeGroupDialogue ul li{
 	min-width: 150px;
 }
-.makeGroupDialogueTitle{
+.DialogueTitle{
 	color: $userListBgColor;
 	border-bottom-color: $userListBgColor;
 }
-#makeGroupDialogue form{
+.avatarInDialogue{
+	border-radius: 3px;
+	float: right;
+	margin-right: 3em;
+	max-height: 42px;
+}
+.dialogues form{
 	width: 80%;
 	height: 60%;
 	margin: 2em auto;

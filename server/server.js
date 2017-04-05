@@ -7,8 +7,14 @@ const http = require("http");
 const WebSocketServer = require("ws").Server;
 const aux = require("./helper");
 
+const statusCodes = {
+    "ok": 200, "created": 201,
+    "found": 302,
+    "badRequest": 400, "notFound": 404, "unauthenticated": 401,
+    "intServErr": 500
+};
+
 module.exports = function(port, db, githubAuthoriser, middleware) {
-    let lastTransaction = Date.now();
     const app = express();
 
     for (let i in middleware) {
@@ -51,7 +57,6 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                             subscribedTo: [],
                             lastRead: {}
                         });
-                        lastTransaction = Date.now();
                         aux.notifyAll(sessions);
                     }
                     sessions[token] = {
@@ -59,11 +64,11 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                     };
                     res.cookie("sessionToken", token);
                     res.header("Location", "/");
-                    res.sendStatus(302);
+                    res.sendStatus(statusCodes.found);
                 });
             }
             else {
-                res.sendStatus(400);
+                res.sendStatus(statusCodes.badRequest);
             }
 
         });
@@ -81,10 +86,10 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             if (req.session) {
                 next();
             } else {
-                res.sendStatus(401);
+                res.sendStatus(statusCodes.unauthenticated);
             }
         } else {
-            res.sendStatus(401);
+            res.sendStatus(statusCodes.unauthenticated);
         }
     });
 
@@ -93,9 +98,9 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             _id: req.session.user
         }, function(err, user) {
             if (!err) {
-                res.status(200).json(user);
+                res.status(statusCodes.ok).json(user);
             } else {
-                res.sendStatus(500);
+                res.sendStatus(statusCodes.intServErr);
             }
         });
     });
@@ -113,13 +118,13 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                     {$set: {lastRead: tempLastRead}},
                     function(errUpdate, doc) {
                     if (!errUpdate) {
-                        res.sendStatus(200);
+                        res.sendStatus(statusCodes.ok);
                         aux.notifyUser(req.params.userId, sessions);
                     }
                 });
             } else {
                 console.log(err);
-                res.sendStatus(500);
+                res.sendStatus(statusCodes.intServErr);
             }
         });
     });
@@ -147,102 +152,108 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                         });
                     }
                 });
-                res.status(200).json(retObj);
+                res.status(statusCodes.ok).json(retObj);
             } else {
-                res.sendStatus(500);
+                res.sendStatus(statusCodes.intServErr);
             }
         });
     });
     app.delete("/api/conversation/:conversationId", function(req, res) {
-        console.log("req.params", req.params);
         if (req.params.conversationId === null ||
             req.params.conversationId === undefined ||
             req.params.conversationId === "null" ||
             req.params.conversationId === "undefined") {
-            return res.sendStatus(404);
+            return res.sendStatus(statusCodes.notFound);
         } else {
             conversations.findOneAndUpdate({_id: new ObjectID(req.params.conversationId)},
-                {$set: {messages: []}}, function(err, data) {
-                if (!err && data) {
-                    aux.notifyUser(data.value.firstMessageMeta.userFrom, sessions);
-                    if (data.value.firstMessageMeta.userFrom !== data.value.firstMessageMeta.userTo) {
-                        aux.notifyUser(data.value.firstMessageMeta.userTo, sessions);
-                    }
-                    res.sendStatus(200);
-                } else if (err) {
-                    res.sendStatus(500);
-                } else {
-                    res.sendStatus(404);
-                }
-            });
+                {$set: {messages: []}}, dccConvFindOneAndUpdateCallback);
         }
-
+        function dccConvFindOneAndUpdateCallback(err, data) {
+            if (!err && data) {
+                aux.notifyUser(data.value.firstMessageMeta.userFrom, sessions);
+                if (data.value.firstMessageMeta.userFrom !== data.value.firstMessageMeta.userTo) {
+                    aux.notifyUser(data.value.firstMessageMeta.userTo, sessions);
+                }
+                res.sendStatus(statusCodes.ok);
+            } else if (err) {
+                console.log(err);
+                res.sendStatus(statusCodes.intServErr);
+            } else {
+                res.sendStatus(statusCodes.notFound);
+            }
+        }
     });
     app.get("/api/conversation/:conversationId", function(req, res) {
         if (req.params.conversationId === null ||
             req.params.conversationId === undefined ||
             req.params.conversationId === "null" ||
             req.params.conversationId === "undefined") {
-            return res.sendStatus(404);
+            return res.sendStatus(statusCodes.notFound);
         }
-        conversations.findOne({_id: new ObjectID(req.params.conversationId)}, function(err, conversation) {
+        conversations.findOne(
+            {_id: new ObjectID(req.params.conversationId)},
+            gccConvFindOneCallback
+        );
+
+        function gccConvFindOneCallback(err, conversation) {
             if (!err) {
-                res.status(200).json(conversation);
+                res.status(statusCodes.ok).json(conversation);
             } else {
                 console.log(err.message);
-                res.sendStatus(500);
+                res.sendStatus(statusCodes.intServErr);
             }
-        });
+        }
     });
+
     app.get("/api/conversations/:userId", function(req, res) {
-        lastTransaction = Date.now();
         if (!req.params.userId ||
             req.params.userId === "null" ||
             req.params.userId === "undefined"
         ) {
-            res.sendStatus(404);
+            res.sendStatus(statusCodes.notFound);
         } else {
-            users.findOne({_id: req.params.userId}, function (err, user) {
-                if (!err) {
-                    conversations.find({_id: {$in: user.subscribedTo}}).toArray(function(errConv, data) {
-                        if (!errConv) {
-                            let retVal = [];
-                            for (var i in data) {
-                                let participant = "";
-                                if (req.params.userId === data[i].firstMessageMeta.userFrom) {
-                                    participant = data[i].firstMessageMeta.userTo;
-                                } else {
-                                    participant = data[i].firstMessageMeta.userFrom;
-                                }
-                                retVal.push({
-                                    id: data[i]._id,
-                                    group: data[i].group,
-                                    participant: participant,
-                                    participants: data[i].firstMessageMeta.participants,
-                                    timestamp: data[i].messages[0] ?
-                                        data[i].messages[0].timestamp : data[i].firstMessageMeta.timestamp,
-                                    userAlias: data[i].firstMessageMeta.userAlias,
-                                    messages: data[i].messages
-                                });
-                            }
-                            res.status(200).json(retVal);
-                        } else {
-                            console.log(errConv);
-                            res.sendStatus(500);
-                        }
+            users.findOne({_id: req.params.userId}, gcuUserFindOneCallback);
+        }
+        function gcuUserFindOneCallback(err, user) {
+            if (!err) {
+                conversations.find({_id: {$in: user.subscribedTo}}).toArray(gcuConvFind);
+            }else {
+                console.log(err);
+                res.sendStatus(statusCodes.intServErr);
+            }
+        }
+        function gcuConvFind(errConv, data) {
+            if (!errConv) {
+                let retVal = [];
+                for (var i in data) {
+                    let participant = "";
+                    if (req.params.userId === data[i].firstMessageMeta.userFrom) {
+                        participant = data[i].firstMessageMeta.userTo;
+                    } else {
+                        participant = data[i].firstMessageMeta.userFrom;
+                    }
+                    retVal.push({
+                        id: data[i]._id,
+                        group: data[i].group,
+                        participant: participant,
+                        participants: data[i].firstMessageMeta.participants,
+                        timestamp: data[i].messages[0] ?
+                            data[i].messages[0].timestamp : data[i].firstMessageMeta.timestamp,
+                        userAlias: data[i].firstMessageMeta.userAlias,
+                        messages: data[i].messages
                     });
-                }else {
-                    console.log(err);
-                    res.sendStatus(500);
                 }
-            });
+                res.status(statusCodes.ok).json(retVal);
+            } else {
+                console.log(errConv);
+                res.sendStatus(statusCodes.intServErr);
+            }
         }
     });
     //  Creates conversation or add messages to a conversation.
     //  notifies all users related to the conversation (gourp or private)
     //  Conversation can also be created from POST /api/group
     app.post("/api/message", function(req, res) {
-        lastTransaction = Date.now();
         let retConversationId = "";
         const tempMessage = {
             userFrom: req.body.userFrom,
@@ -259,51 +270,59 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                     userTo:   req.body.userTo,
                     timestamp: tempMessage.timestamp
                 }
-            }, function (err, data) {
-                if (!err) {
-                    retConversationId = data.insertedId;
-                    addConversationToUser(req.body.userFrom, data.insertedId, Date.now());
-                    if (req.body.userFrom !== req.body.userTo) {
-                        addConversationToUser(req.body.userTo, data.insertedId, 0);
-                    }
-                    res.status(200).json(retConversationId);
-                } else {
-                    console.log(err);
-                    res.sendStatus(500);
-                }
-            });
+            }, pmConversationInsertCallback);
         } else {
             retConversationId = req.body.conversationId;
-            conversations.findOne({_id: new ObjectID(retConversationId)}, function (err, conversation) {
-                if (!err) {
-                    conversation.messages.unshift(tempMessage);
-                    conversations.updateOne({_id: new ObjectID(retConversationId)},
-                        {$set: {messages: conversation.messages}}, function(errUpdate, data) {
-                        if (!errUpdate) {
-                            res.status(200).json(retConversationId);
-                            console.log(conversation.group);
-                            if (conversation.group) {
-                                for (let i in conversation.firstMessageMeta.participants) {
-                                    console.log(conversation.firstMessageMeta.participants[i], "sould be notified");
-                                    aux.notifyUser(conversation.firstMessageMeta.participants[i], sessions);
-                                }
-                                console.log(conversation.firstMessageMeta.creator, "sould be notified");
-                                aux.notifyUser(conversation.firstMessageMeta.creator, sessions);
-                            } else {
-                                aux.notifyUser(req.body.userTo, sessions);
-                                aux.notifyUser(req.body.userFrom, sessions);
-                            }
-                        } else {
-                            console.log(errUpdate);
-                            res.sendStatus(500);
-                        }
-                    });
-                } else {
-                    console.log(err, "is an error");
-                    res.sendStatus(500);
-                }
-            });
+            conversations.findOne({_id: new ObjectID(retConversationId)}, pmConversationFindCallback);
         }
+        // function delarations ________________________________________________
+        function pmConversationInsertCallback(err, data) {
+            if (!err) {
+                retConversationId = data.insertedId;
+                addConversationToUser(req.body.userFrom, data.insertedId, Date.now());
+                if (req.body.userFrom !== req.body.userTo) {
+                    addConversationToUser(req.body.userTo, data.insertedId, 0);
+                }
+                res.status(statusCodes.created).json(retConversationId);
+            } else {
+                console.log(err);
+                res.sendStatus(statusCodes.intServErr);
+            }
+        }
+        function pmConversationFindCallback(err, conversation) {
+            if (!err) {
+                conversation.messages.unshift(tempMessage);
+                conversations.updateOne(
+                    {_id: new ObjectID(retConversationId)},
+                    {$set: {messages: conversation.messages}},
+                    function(errorUpdate, data) {
+                        pmConversationUpdateCallback(errorUpdate, data, conversation);
+                    });
+            } else {
+                console.log(err, "is an error");
+                res.sendStatus(statusCodes.intServErr);
+            }
+        }
+        function pmConversationUpdateCallback(errUpdate, data, conversation) {
+        if (!errUpdate) {
+            res.status(statusCodes.ok).json(retConversationId);
+            console.log(conversation.group);
+            if (conversation.group) {
+                for (let i in conversation.firstMessageMeta.participants) {
+                    console.log(conversation.firstMessageMeta.participants[i], "sould be notified");
+                    aux.notifyUser(conversation.firstMessageMeta.participants[i], sessions);
+                }
+                console.log(conversation.firstMessageMeta.creator, "sould be notified");
+                aux.notifyUser(conversation.firstMessageMeta.creator, sessions);
+            } else {
+                aux.notifyUser(req.body.userTo, sessions);
+                aux.notifyUser(req.body.userFrom, sessions);
+            }
+        } else {
+            console.log(errUpdate);
+            res.sendStatus(statusCodes.intServErr);
+        }
+    }
     });
 
     app.put("/api/group/:groupId", function(req, res) {
@@ -336,7 +355,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                                             req.body.participants[i], data2.insertedId, Date.now()
                                         );
                                     }
-                                    res.sendStatus(201);
+                                    res.sendStatus(statusCodes.created);
                                 } else {
                                     console.log("err2", err2);
                                 }
@@ -346,10 +365,10 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                     });
                 } else {
                     console.log("data", data);
-                    res.sendStatus(500);
+                    res.sendStatus(statusCodes.intServErr);
                 }
             } else {
-                res.sendStatus(500);
+                res.sendStatus(statusCodes.intServErr);
             }
         });
     });

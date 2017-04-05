@@ -32,7 +32,7 @@ class Conversations extends Component {
         return (
             <UserListItem key={conversationId} className={activeConvCss} user={user}
                 selectUserAndUpdateSession={this.selectUserAndUpdateSession} conversationId={conversationId}
-                unreadMessagesCount={unreadMessagesCount} />
+                unreadMessagesCount={unreadMessagesCount} sendDeleteConversationMessagesRequest={this.props.sendDeleteConversationMessagesRequest} />
         );
     }
     // ----------------------------- GROUP conversations
@@ -45,7 +45,7 @@ class Conversations extends Component {
             <UserListItem
                 key={conversationId} className={activeConvCss} user={group}
                 selectUserAndUpdateSession={this.selectUserAndUpdateSession} conversationId={conversationId}
-                unreadMessagesCount={unreadMessagesCount}/>
+                unreadMessagesCount={unreadMessagesCount} sendDeleteConversationMessagesRequest={this.props.sendDeleteConversationMessagesRequest} />
         );
     }
     countUnreadMessages(convMessages, lastRead, groupBool) {

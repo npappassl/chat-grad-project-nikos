@@ -40,6 +40,22 @@ export const sendConversationsRequest = function(user) {
     };
 
 };
+export const sendUpdateUserDetailsRequest = function(user) {
+    return function(dispatch) {
+        return null;
+    }
+}
+export const openEditUserDialogue = function() {
+    return function (dispatch) {
+            dispatch(showEditUserDialogue());
+    }
+}
+export const closeEditUserDialogue = function() {
+    return function (dispatch) {
+            dispatch(hideEditUserDialogue());
+    }
+}
+
 export const sendDeleteConversationMessagesRequest = function(conversationId) {
     return function(dispatch) {
         return UsersApi.deleteConversationMessages(conversationId)
@@ -103,3 +119,15 @@ const loadConversationDetailSuccess = function(conversations) {
             payload: conversations
         };
 };
+const hideEditUserDialogue = function() {
+    return {
+        type: ATypes.HIDE_EDIT_USER_DIALOGUE,
+        payload: false
+    }
+}
+const showEditUserDialogue = function() {
+    return {
+        type: ATypes.SHOW_EDIT_USER_DIALOGUE,
+        payload: true
+    }
+}

@@ -1,0 +1,11 @@
+import {ATypes} from "../../actions/types";
+
+export default function (state = false, action) {
+    switch (action.type) {
+        case ATypes.SHOW_EDIT_USER_DIALOGUE:
+        case ATypes.HIDE_EDIT_USER_DIALOGUE:
+            return action.payload;
+            break;
+    }
+    return state;
+}
