@@ -109,8 +109,8 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
         let avatar = req.body.avatar;
         console.log(name, avatar);
         users.updateOne({_id: req.params.userId},
-            {$set:{name: name, avatarUrl: avatar}}, function(err, data) {
-                if(!err){
+            {$set: {name: name, avatarUrl: avatar}}, function(err, data) {
+                if (!err) {
                     res.sendStatus(statusCodes.ok);
                 } else {
                     res.sendStatus(statusCodes.intServErr);
