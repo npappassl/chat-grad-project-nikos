@@ -381,6 +381,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
     wss.on("connection", function connection(ws) {
         let sesToken;
         let cookie = ws.upgradeReq.headers.cookie;
+        console.log(cookie);
         if (cookie) {
             sesToken = cookie.split("=")[1];
             console.log(sesToken);
