@@ -8,6 +8,9 @@ $primary: $messageDivBgColor;//rgba(136, 194, 194, 0.8);
 $mainFont: "Comfortaa", cursive;
 $buttonFont: "Hind", sans-serif;
 $messageDivBgColorHueRot495: #b17a7a;
+$notificationsColor: #4d90fe;
+$UserListItemHeight: 32px;
+
 h2 {
 	color: $userListTitle;
 	border-bottom: 1px solid $userListTitle;
@@ -61,7 +64,6 @@ hr{
 }
 
 #UserList ul{
-	margin-top: 0;
 	border-bottom: 1px solid $messageDivBgColor;
 	flex-grow: 2;
 	overflow-y: auto;
@@ -70,6 +72,7 @@ hr{
 }
 
 #UserList ul li{
+	margin-top: 10px;
 	font-size: 0.6em;
 	min-width: 100px;
 }
@@ -237,7 +240,7 @@ li{
 	}
 }
 .badge{
-	background-color: $messageDivBgColor;
+	background-color: $notificationsColor;
 	position: relative;
 	vertical-align: super;
 	text-align: center;
@@ -409,7 +412,8 @@ li{
 	cursor: pointer;
 	margin: 0.25em 0.5em;
 	float:right;
-	font-size: 2em;
+	color: $userListBgColor;
+	font-size: 1.7em;
 }
 .dialogues input{
 	display: block;

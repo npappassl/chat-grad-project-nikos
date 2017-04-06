@@ -10,10 +10,11 @@ class EditUserDialogue extends Component{
         this.state = {value: "", avatar:""};
         this.handleChange = this.handleChange.bind(this);
         this.handleChangeAvatar = this.handleChangeAvatar.bind(this);
+        this.submitRequest = this.submitRequest.bind(this);
     }
     componentDidMount() {
         this.setState({
-            value:this.props.session._id,
+            value:this.props.session.name || this.props.session._id,
             avatar: this.props.session.avatarUrl
         });
     }
@@ -21,9 +22,22 @@ class EditUserDialogue extends Component{
         this.setState({value: event.target.value});
     }
     handleChangeAvatar(event){
-        this.setState({avatar: event.target.value});
+        if(event.target.value === ""){
+            this.setState({avatar: this.props.session.avatarUrl});
+        } else {
+            this.setState({avatar: event.target.value});
+        }
     }
-
+    submitRequest(event) {
+        console.log("target", event.target);
+        event.preventDefault();
+        this.props.actions.closeEditUserDialogue();
+        const reqBody = {
+            avatar: this.state.avatar+"",
+            name: this.state.value+""
+        };
+        this.props.actions.sendUpdateUserDetailsRequest(this.props.session,reqBody);
+    }
     render(){
         if(!this.props.showHideDialogue) {
             return (
@@ -32,10 +46,10 @@ class EditUserDialogue extends Component{
         } else{
             return (
                 <DialogueContainer type="editUser" closeDialogue={this.props.actions.closeEditUserDialogue}
-                    avatar={this.state.avatar} value={this.state.value}
+                    avatar={this.state.avatar} value={this.state.value} submiting={this.submitRequest}
                     eventHandlers={{
                         value:this.handleChange,
-                        avatar:this.handleChangeAvatar
+                        avatar:this.handleChangeAvatar,
                     }} />
                 // <div id="editUserDialogue" className="dialogues" >
                 //     <span className="closeDialogue" onClick={this.props.actions.closeEditUserDialogue}>x</span>

@@ -59,6 +59,24 @@ export default class UsersApi{
             return error;
         });
     }
+    static sendUpdateUserDetailsRequest(user, avatarUrl, name) {
+        const request = new Request("/api/user/"+user._id, {
+            method: "PUT",
+            credentials: "include",
+            headers:{
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                avatar: avatarUrl,
+                name: name
+            })
+        });
+        return fetch(request).then(response => {
+
+        }).catch(error => {
+            return error;
+        });
+    }
     static sendMakeNewGroupRequest(group, avatarUrl, participants, creator) {
         const request = new Request("/api/group/"+group, {
             method: "PUT",

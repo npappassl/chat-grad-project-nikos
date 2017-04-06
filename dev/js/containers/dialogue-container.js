@@ -10,7 +10,7 @@ export default class DialogueContainer extends Component{
                 <span className="closeDialogue" onClick={this.props.closeDialogue}>x</span>
                 <form onSubmit={this.props.submiting}>
                     <h2 className="DialogueTitle">User Details</h2>
-                    <img className="avatarInDialogue" src={this.props.avatar} />
+                    <img className="avatarInDialogue" src={this.props.avatar} onerror={this.src="oops.jpg"} alt="this url seems to be broken :("/>
                     <input name="groupName" onChange={this.props.eventHandlers.value} value={this.props.value} placeholder="group name"></input>
                     <input name="avatar" onChange={this.props.eventHandlers.avatar} placeholder="paste an image Url here"></input>
                     <input className="button" type="submit"></input>
