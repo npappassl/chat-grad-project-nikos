@@ -1,8 +1,9 @@
 import React,{Component} from "react";
 import {connect} from "react-redux";
 import {bindActionCreators} from 'redux';
-import UserList from "./user-list"
-import {closeMakeGroupDialogue, sendNewGroupRequest} from "../actions/groupActions"
+import UserList from "./user-list";
+import DialogueContainer from "./dialogue-container";
+import {closeMakeGroupDialogue, sendNewGroupRequest} from "../actions/groupActions";
 
 class MakeGroupDialogue extends Component{
     constructor(props) {
@@ -12,9 +13,9 @@ class MakeGroupDialogue extends Component{
         this.handleChangeAvatar = this.handleChangeAvatar.bind(this);
         this.handleChangeParticipants = this.handleChangeParticipants.bind(this);
 
+        this.renderParticipantCheckBoxesEach = this.renderParticipantCheckBoxesEach.bind(this);
+
         this.makeNewGroup = this.makeNewGroup.bind(this);
-
-
     }
     handleChange(event){
         this.setState({value: event.target.value});
@@ -23,6 +24,7 @@ class MakeGroupDialogue extends Component{
         this.setState({avatar: event.target.value});
     }
     handleChangeParticipants(event){
+        console.log(event);
         let tempParticipants = [];
         let ulParticipants = event.target.parentNode.parentNode.children;
         for(const index in ulParticipants){
@@ -63,22 +65,14 @@ class MakeGroupDialogue extends Component{
             );
         } else {
             return(
-                <div id="makeGroupDialogue" className="dialogues" >
-                    <span className="closeDialogue" onClick={this.props.actions.closeMakeGroupDialogue}>x</span>
-                    <form onSubmit={this.makeNewGroup}>
-                        <h2 className="DialogueTitle">Group Details</h2>
-                        <img className="avatarInDialogue" src={this.state.avatar} />
-                        <input name="groupName" onChange={this.handleChange} value={this.props.value} placeholder="group name"></input>
-                        <input name="avatar" onChange={this.handleChangeAvatar} placeholder="paste an image Url here"></input>
-                        <h2 className="DialogueTitle">Participants</h2>
-                        <ul>
-                        {this.props.userList.map((participant) => {
-                            return this.renderParticipantCheckBoxesEach(participant);
-                        })}
-                        </ul>
-                        <input id="makeGroupSubmit" className="button" type="submit"></input>
-                    </form>
-                </div>
+                <DialogueContainer type="makeGroup" closeDialogue={this.props.actions.closeMakeGroupDialogue}
+                    avatar={this.state.avatar} userList={this.props.userList}
+                    renderParticipantCheckBoxesEach = {this.renderParticipantCheckBoxesEach}
+                    submiting={this.makeNewGroup}
+                    eventHandlers={{
+                        avatar:this.handleChangeAvatar,
+                        value: this.handleChange,
+                    }}    />
             );
         }
     }

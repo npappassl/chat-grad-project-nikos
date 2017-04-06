@@ -7,7 +7,7 @@ module.exports = {
     //     contentBase: './public/build',
     //     port: 8080,
     // },
-    devtool: 'cheap-module-eval-source-map',
+    devtool: 'cheap-module-source-map',
     entry: './dev/js/index.js',
     module: {
         loaders: [
@@ -15,7 +15,9 @@ module.exports = {
                 test: /\.js$/,
                 loader: 'babel-loader',
                 query: {
-                    presets: ["es2015", "stage-0", "react"]
+                    minified: false,
+                    sourceMap: false,
+                    presets: ["es2015", "stage-0", "react"],
                 },
                 exclude: /node_modules/
             },
@@ -28,7 +30,7 @@ module.exports = {
     output: {
         filename: 'bundle.js',
         path:  path.resolve(__dirname, "public/build"),
-        publicPath: "/build/",
+        // publicPath: "/build/",
     },
     plugins: [
         new webpack.optimize.OccurrenceOrderPlugin()
