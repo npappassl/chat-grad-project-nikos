@@ -40,9 +40,14 @@ export const sendConversationsRequest = function(user) {
     };
 
 };
-export const sendUpdateUserDetailsRequest = function(user) {
+export const sendUpdateUserDetailsRequest = function(user, reqBody) {
     return function(dispatch) {
-        return null;
+        console.log("sendUpdateUserDetailsRequest",user, reqBody);
+        return UsersApi.sendUpdateUserDetailsRequest(user, reqBody.avatar, reqBody.name).then(response => {
+            console.log(response);
+        }).catch(function(error) {
+            throw (error);
+        });
     }
 }
 export const openEditUserDialogue = function() {

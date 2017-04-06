@@ -104,6 +104,19 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             }
         });
     });
+    app.put("/api/user/:userId", function(req, res) {
+        let name = req.body.name;
+        let avatar = req.body.avatar;
+        console.log(name, avatar);
+        users.updateOne({_id: req.params.userId},
+            {$set: {name: name, avatarUrl: avatar}}, function(err, data) {
+                if (!err) {
+                    res.sendStatus(statusCodes.ok);
+                } else {
+                    res.sendStatus(statusCodes.intServErr);
+                }
+            });
+    });
     app.delete("/api/user/:conversationId/:userId", function(req, res) {
         console.log(req.params);
     });
@@ -306,7 +319,6 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
         function pmConversationUpdateCallback(errUpdate, data, conversation) {
         if (!errUpdate) {
             res.status(statusCodes.ok).json(retConversationId);
-            console.log(conversation.group);
             if (conversation.group) {
                 for (let i in conversation.firstMessageMeta.participants) {
                     console.log(conversation.firstMessageMeta.participants[i], "sould be notified");
