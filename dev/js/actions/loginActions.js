@@ -1,5 +1,6 @@
 import LoginApi from "../api/LoginApi";
 import {ATypes} from "./types";
+import {sendConversationsRequest} from "./usersActions";
 
 export const sendAuthUriRequest = function() {
     console.log("sendAuthUriRequest");
@@ -17,12 +18,12 @@ export const sendSessionRequest = function(reload) {
     return function (dispatch) {
         if(reload) {
             dispatch(loadSessionReLoading());
-
         }else {
             dispatch(loadSessionLoading());
         }
         return LoginApi.getSession()
         .then(session => {
+            sendConversationsRequest(session._id)(dispatch);
             dispatch(loadSessionSuccess(session));
         }).catch( function(error) {
             throw (error);
