@@ -407,7 +407,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
         // ws.send(JSON.stringify())
         var id = setTimeout(function() {
             ws.send(JSON.stringify(new Date()), function() {  });
-        }, 2000);
+        }, 0);
 
         console.log("websocket connection open:", sesToken);
 

@@ -38,7 +38,7 @@
     "sinon": "^1.17.4"
   },
   "dependencies": {
-    "URIjs": "^1.15.1",
+    "URIjs": "^1.16.1",
     "babel-core": "^6.24.0",
     "babel-loader": "^6.4.0",
     "babel-polyfill": "^6.23.0",

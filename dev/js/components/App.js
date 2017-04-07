@@ -1,20 +1,14 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import UserList from '../containers/user-list';
-import Conversations from '../containers/conversation-list';
-import MessagesContainer from '../containers/messages-container';
-import MessageTextArea from '../containers/message-text-area';
 import LoginScreen from "../containers/login-screen";
-import SearchFilterInput from "../containers/searchFilterInput";
 import MakeGroupDialogue from "../containers/make-group-container";
 import EditUserDialogue from "../containers/edit-user-container";
-
-import SessionDetail from "../containers/session-detail-component"
+import LeftVerticalLayout from "../containers/left-vertical-layout";
+import RightVerticalLayout from "../containers/right-vertical-layout";
 
 import * as loginActions from "../actions/loginActions";
 import * as usersActions from "../actions/usersActions";
-import * as groupActions from "../actions/groupActions"
 
 require('../../scss/style.scss');
 class App extends Component {
@@ -40,18 +34,13 @@ class App extends Component {
         }
         function connectWS() {
             console.log("trying to connect");
-            // if(self.props.session){
-                var ws = new WebSocket(host);
-                ws.onmessage = function (event) {
-                    console.log(event);
-                    const data = JSON.parse(event.data);
-                    self.requests();
-                };
-                console.log("connected");
-            // } else {
-                // console.log("will try again in 2");
-                // setTimeout(self.connectWS, 2000);
-            // }
+            var ws = new WebSocket(host);
+            ws.onmessage = function (event) {
+                console.log(event);
+                const data = JSON.parse(event.data);
+                self.requests();
+            };
+            console.log("connected");
         }
 
     }
@@ -63,23 +52,8 @@ class App extends Component {
             <div id="layout">
                 <MakeGroupDialogue />
                 <EditUserDialogue />
-                <div id="UserList">
-                    <div id="logoDiv">
-                        <img id="logo" src="bitmapLogo.png" />
-                    </div>
-                    <hr />
-                    <SessionDetail session={this.props.session} />
-                    <h2>Conversations</h2>
-                    <Conversations />
-                    <h2>User List</h2>
-                    <SearchFilterInput />
-                    <UserList />
-                    <button className="button" onClick={this.props.actions.openMakeGroupDialogue} id="createGroupButton">Create group</button>
-                </div>
-                <div id="rightVerticalLayout">
-                    <MessagesContainer />
-                    <MessageTextArea />
-                </div>
+                <LeftVerticalLayout />
+                <RightVerticalLayout />
             </div>
         );
     }
@@ -108,7 +82,6 @@ function mapDispatchToProps(dispatch){
         sendUsersRequest: usersActions.sendUsersRequest,
         loadConversationDetail: usersActions.sendConversationDetailRequest,
         sendConversationsRequest: usersActions.sendConversationsRequest,
-        openMakeGroupDialogue: groupActions.openMakeGroupDialogue,
     }
     return {
         actions: bindActionCreators(allActions, dispatch)
