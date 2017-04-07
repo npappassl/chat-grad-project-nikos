@@ -1,12 +1,11 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import MessagesContainer from '../containers/messages-container';
-import MessageTextArea from '../containers/message-text-area';
 import LoginScreen from "../containers/login-screen";
 import MakeGroupDialogue from "../containers/make-group-container";
 import EditUserDialogue from "../containers/edit-user-container";
 import LeftVerticalLayout from "../containers/left-vertical-layout";
+import RightVerticalLayout from "../containers/right-vertical-layout";
 
 import * as loginActions from "../actions/loginActions";
 import * as usersActions from "../actions/usersActions";
@@ -35,18 +34,13 @@ class App extends Component {
         }
         function connectWS() {
             console.log("trying to connect");
-            // if(self.props.session){
-                var ws = new WebSocket(host);
-                ws.onmessage = function (event) {
-                    console.log(event);
-                    const data = JSON.parse(event.data);
-                    self.requests();
-                };
-                console.log("connected");
-            // } else {
-                // console.log("will try again in 2");
-                // setTimeout(self.connectWS, 2000);
-            // }
+            var ws = new WebSocket(host);
+            ws.onmessage = function (event) {
+                console.log(event);
+                const data = JSON.parse(event.data);
+                self.requests();
+            };
+            console.log("connected");
         }
 
     }
@@ -59,10 +53,7 @@ class App extends Component {
                 <MakeGroupDialogue />
                 <EditUserDialogue />
                 <LeftVerticalLayout />
-                <div id="rightVerticalLayout">
-                    <MessagesContainer />
-                    <MessageTextArea />
-                </div>
+                <RightVerticalLayout />
             </div>
         );
     }
