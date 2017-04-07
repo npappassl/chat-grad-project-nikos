@@ -4,6 +4,8 @@ import {bindActionCreators} from 'redux';
 import LoginScreen from "../containers/login-screen";
 import MakeGroupDialogue from "../containers/make-group-container";
 import EditUserDialogue from "../containers/edit-user-container";
+import EditGroupDialogue from "../containers/edit-group-container";
+
 import LeftVerticalLayout from "../containers/left-vertical-layout";
 import RightVerticalLayout from "../containers/right-vertical-layout";
 
@@ -38,6 +40,8 @@ class App extends Component {
             ws.onmessage = function (event) {
                 console.log(event);
                 const data = JSON.parse(event.data);
+                console.log(data);
+
                 self.requests();
             };
             console.log("connected");
@@ -50,6 +54,7 @@ class App extends Component {
     renderNormal() {
         return (
             <div id="layout">
+                // <EditGroupDialogue />
                 <MakeGroupDialogue />
                 <EditUserDialogue />
                 <LeftVerticalLayout />

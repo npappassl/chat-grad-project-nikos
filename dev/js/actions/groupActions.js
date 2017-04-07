@@ -27,6 +27,13 @@ export const sendNewGroupRequest = function(group, avatar, participants, creator
         return UsersApi.sendMakeNewGroupRequest(group, avatar, participants, creator);
     }
 }
+
+export const sendEditGroupRequest = function(group, avatar, participants, creator) {
+    return function (dispatch) {
+        return UsersApi.sendEditGroupRequest(group, avatar, participants, creator);
+    }
+}
+
 const hideMakeGroupDialogue = function() {
     return {
         type: ATypes.HIDE_MAKE_GROUP_DIALOGUE,

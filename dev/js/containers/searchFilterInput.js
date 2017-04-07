@@ -1,5 +1,4 @@
 import React, {Component} from "react";
-import {connect} from "react-redux";
 import {ATypes} from "../actions/types";
 
 class SearchFilterInput extends Component {
@@ -21,10 +20,14 @@ class SearchFilterInput extends Component {
     }
     render(){
         return(
-                <input id="searchFilterInput" type="text" value={this.state.value} onChange={this.handleChange} placeholder="search for a friend" />
+                <div className="searchFilterInput">
+                    <input id="searchFilterInput" type="text"
+                        value={this.state.value} onChange={this.handleChange}
+                        placeholder="search for a friend" />
+                </div>
         );
     }
 
 }
 
-export default connect()(SearchFilterInput);
+export default (SearchFilterInput);

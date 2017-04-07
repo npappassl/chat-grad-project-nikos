@@ -79,6 +79,26 @@ export default class UsersApi{
     }
     static sendMakeNewGroupRequest(group, avatarUrl, participants, creator) {
         const request = new Request("/api/group/"+group, {
+            method: "POST",
+            credentials: "include",
+            headers:{
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                avatar: avatarUrl,
+                participants: participants,
+                creator: creator,
+            })
+        });
+        return fetch(request).then(response => {
+            return response.json();
+        }).catch(error => {
+            return error;
+        });
+    }
+    // TODO
+    static sendEditNewGroupRequest(group, avatarUrl, participants, creator) {
+        const request = new Request("/api/group/"+group, {
             method: "PUT",
             credentials: "include",
             headers:{
@@ -96,4 +116,5 @@ export default class UsersApi{
             return error;
         });
     }
+
 }
