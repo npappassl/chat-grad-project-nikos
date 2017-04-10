@@ -28,9 +28,9 @@ export const sendNewGroupRequest = function(group, avatar, participants, creator
     }
 }
 
-export const sendEditGroupRequest = function(group, avatar, participants, creator) {
+export const sendEditGroupRequest = function(group, avatar, name) {
     return function (dispatch) {
-        return UsersApi.sendEditGroupRequest(group, avatar, participants, creator);
+        return UsersApi.sendEditGroupRequest(group, avatar, name);
     }
 }
 

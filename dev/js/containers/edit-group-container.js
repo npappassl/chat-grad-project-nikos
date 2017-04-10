@@ -8,12 +8,9 @@ import {closeEditGroupDialogue, sendEditGroupRequest} from "../actions/groupActi
 class EditGroupDialogue extends Component{
     constructor(props) {
         super(props);
-        this.state = {value: "", avatar:"", participants:[]};
+        this.state = {value: "", avatar:""};
         this.handleChange = this.handleChange.bind(this);
         this.handleChangeAvatar = this.handleChangeAvatar.bind(this);
-        this.handleChangeParticipants = this.handleChangeParticipants.bind(this);
-
-        this.renderParticipantCheckBoxesEach = this.renderParticipantCheckBoxesEach.bind(this);
 
         this.editGroup = this.editGroup.bind(this);
     }
@@ -23,29 +20,22 @@ class EditGroupDialogue extends Component{
     handleChangeAvatar(event){
         this.setState({avatar: event.target.value});
     }
-    handleChangeParticipants(event){
-        console.log(event);
-        let tempParticipants = [];
-        let ulParticipants = event.target.parentNode.parentNode.children;
-        for(const index in ulParticipants){
-            const li = ulParticipants[index];
-            if(li.children) {
-                const input = li.getElementsByTagName("input")[0];
-                if(input.checked) {
-                    tempParticipants.push(input.value);
-                }
-                console.log("li",input.value, input.checked);
-            }
-        }
-        console.log(tempParticipants);
-        this.setState({participants: tempParticipants});
-    }
     editGroup(event) {
         console.log(event);
         event.preventDefault();
         this.props.actions.closeEditGroupDialogue();
+        const conversationGroup = this.props.conversations.filter((conversation) => {
+            return this.props.activeConversation === conversation.id;
+        })[0];
+        const userAlias = conversationGroup.userAlias;
+        const group = this.props.groups.filter((user) => {
+            console.log(user.id,userAlias);
+            return user.id === userAlias;
+        })[0];
+        console.log(group);
+        const groupAvatar = group.avatarUrl;
         this.props.actions.sendEditGroupRequest(
-            this.state.value, this.state.avatar, this.state.participants, this.props.sessionId
+            userAlias, this.state.avatar || groupAvatar, this.state.value || group.name
         );
 
     }
@@ -66,8 +56,7 @@ class EditGroupDialogue extends Component{
         } else {
             return(
                 <DialogueContainer type="editGroup" closeDialogue={this.props.actions.closeEditGroupDialogue}
-                    avatar={this.state.avatar} userList={this.props.userList}
-                    renderParticipantCheckBoxesEach = {this.renderParticipantCheckBoxesEach}
+                    avatar={this.state.avatar}
                     submiting={this.editGroup}
                     eventHandlers={{
                         avatar:this.handleChangeAvatar,
@@ -80,11 +69,12 @@ class EditGroupDialogue extends Component{
 function mapStateToProps(state) {
     return {
         showHideDialogue: state.showHideDialoguesEditG,
+        conversations: state.conversations,
         userList: state.users.users,
-        sessionId: state.session._id
+        groups:state.users.groups,
+        activeConversation: state.activeConversation
     };
 }
-
 function mapDispatchToProps(dispatch){
     return {
       actions: bindActionCreators({

@@ -97,7 +97,7 @@ export default class UsersApi{
         });
     }
     // TODO
-    static sendEditNewGroupRequest(group, avatarUrl, participants, creator) {
+    static sendEditGroupRequest(group, avatarUrl, name) {
         const request = new Request("/api/group/"+group, {
             method: "PUT",
             credentials: "include",
@@ -105,9 +105,8 @@ export default class UsersApi{
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
+                name: name,
                 avatar: avatarUrl,
-                participants: participants,
-                creator: creator,
             })
         });
         return fetch(request).then(response => {

@@ -48,12 +48,6 @@ export default class DialogueContainer extends Component{
                 <img className="avatarInDialogue" src={this.props.avatar} />
                 <input name="groupName" onChange={this.props.eventHandlers.value} value={this.props.value} placeholder="group name"></input>
                 <input name="avatar" onChange={this.props.eventHandlers.avatar} placeholder="paste an image Url here"></input>
-                <h2 className="DialogueTitle">Participants</h2>
-                <ul>
-                {this.props.userList.map((participant) => {
-                    return this.props.renderParticipantCheckBoxesEach(participant);
-                })}
-                </ul>
                 <input id="makeGroupSubmit" className="button" type="submit"></input>
             </form>
         </div>

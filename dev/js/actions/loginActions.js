@@ -23,7 +23,9 @@ export const sendSessionRequest = function(reload) {
         }
         return LoginApi.getSession()
         .then(session => {
-            sendConversationsRequest(session._id)(dispatch);
+            if(session._id) {
+                sendConversationsRequest(session._id)(dispatch);
+            }
             dispatch(loadSessionSuccess(session));
         }).catch( function(error) {
             throw (error);
