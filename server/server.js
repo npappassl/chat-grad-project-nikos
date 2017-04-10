@@ -343,7 +343,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                     users.insertOne({
                         _id: req.params.groupId,
                         group: true,
-                        name:null,
+                        name: null,
                         avatarUrl: req.body.avatar,
                         subscribedTo : [],
                         lastRead: {}
@@ -390,16 +390,16 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             name: req.body.name || null
         };
         users.updateOne({_id: req.params.groupId},
-            {$set: updateObject}
-            , function(err, data) {
+            {$set: updateObject},
+            function(err, data) {
                 if (!err) {
                     console.log(data);
                     res.sendStatus(statusCodes.ok);
                 } else {
-                    console.log(err,"dikemou");
+                    console.log(err, "dikemou");
                     res.sendStatus(statusCodes.intServErr);
                 }
-        });
+            });
     });
     //------------------------------ web socket server -------------------------
     const server = http.createServer(app);
