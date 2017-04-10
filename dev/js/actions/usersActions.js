@@ -66,7 +66,7 @@ export const sendDeleteConversationMessagesRequest = function(conversationId) {
         return UsersApi.deleteConversationMessages(conversationId)
         .then(response => {
             console.log(response);
-        })
+        });
     }
 }
 export const sendReadConversationRequest = function(conversationId, userId) {
