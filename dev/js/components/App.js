@@ -54,7 +54,7 @@ class App extends Component {
     renderNormal() {
         return (
             <div id="layout">
-                // <EditGroupDialogue />
+                <EditGroupDialogue />
                 <MakeGroupDialogue />
                 <EditUserDialogue />
                 <LeftVerticalLayout />

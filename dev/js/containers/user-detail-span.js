@@ -22,7 +22,7 @@ export default class UserDetailSpan extends Component{
                     <span id="userDescription">Description: {this.props.user.description}</span>
                 </span>
                 <button className={this.editGroupButtonClass}
-                    // onClick={this.props.openEditGroupDialogue}
+                    onClick={this.props.openEditGroupDialogue}
                     id="editGroupButton">
                     Edit group
                 </button>
