@@ -10,6 +10,7 @@ import notificationsReducer from "./reducer-notifications";
 import activeConversationReducer from "./reducer-active-conversations";
 import showHideDialoguesMakeGroupReducer from "./dialogueShowHide/reducer-show-hide-dialogues-make-group";
 import showHideDialoguesEditUserReducer from "./dialogueShowHide/reducer-show-hide-dialogues-edit-user";
+import showHideDialoguesEditGroupReducer from "./dialogueShowHide/reducer-show-hide-dialogues-edit-group";
 
 /*
  * We combine all reducers into a single object before updated data is dispatched (sent) to store
@@ -28,6 +29,7 @@ const allReducers = combineReducers({
     notifications: notificationsReducer,
     showHideDialoguesMakeG: showHideDialoguesMakeGroupReducer,
     showHideDialoguesEditU: showHideDialoguesEditUserReducer,
+    showHideDialoguesEditG: showHideDialoguesEditGroupReducer
 });
 
 export default allReducers;

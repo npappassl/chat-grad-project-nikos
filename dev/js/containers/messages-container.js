@@ -2,7 +2,9 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import {bindActionCreators} from 'redux';
+import UserDetailSpan from "./user-detail-span.js"
 import MessageDetail from "./message-detail-container";
+import {openEditGroupDialogue} from "../actions/groupActions"
 /*
  * We need "if(!this.props.user)" because we set state to null by default
  * */
@@ -10,6 +12,7 @@ import MessageDetail from "./message-detail-container";
 class MessagesContainer extends Component {
     constructor(props){
         super(props);
+        this.props.actions.openEditGroupDialogue
     }
     eachMsg(msg,i,classNames,sender) {
         console.log(msg);
@@ -40,15 +43,7 @@ class MessagesContainer extends Component {
         return (
             <div id="userDetailWrap">
                 <div>
-                    <span id="userDetailSpan">
-                        <span id="userThumbSpan">
-                            <img id="userThumb" height="64" src={user.avatarUrl} />
-                        </span>
-                        <span id="userName">
-                            <span >{user.id} {user.last}</span>
-                            <span id="userDescription">Description: {user.description}</span>
-                        </span>
-                    </span>
+                    <UserDetailSpan user={user} openEditGroupDialogue={this.props.actions.openEditGroupDialogue} />
                 </div>
                 <ul id="messages">
                     <ReactCSSTransitionGroup
@@ -79,9 +74,11 @@ function mapStateToProps(state) {
 }
 function mapDispatchToProps(dispatch) {
     return {
-      actions: bindActionCreators(messageActions, dispatch)
+      actions: bindActionCreators({
+          openEditGroupDialogue: openEditGroupDialogue
+      }, dispatch)
     };
 }
 
-export default connect(mapStateToProps)(MessagesContainer);
-// export default connect(mapStateToProps, mapDispatchToProps)(MessagesContainer);
+// export default connect(mapStateToProps)(MessagesContainer);
+export default connect(mapStateToProps, mapDispatchToProps)(MessagesContainer);

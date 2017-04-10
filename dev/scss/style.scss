@@ -1,8 +1,8 @@
-$userListBgColor: #803c4a;//#773d3d;
+$userListBgColor: #803c4a;				//#773d3d;
+$messageDivBgColor: #3b8a72;
 $userListFgColor: #fdfdff;
 $userDetailSpan: rgba(241,243,244,0.9);
 $messageTextAreaFgColor: #011;
-$messageDivBgColor: #3b8a72;
 $userListTitle: $messageDivBgColor;
 $primary: $messageDivBgColor;//rgba(136, 194, 194, 0.8);
 $mainFont: "Comfortaa", cursive;
@@ -18,9 +18,13 @@ h2 {
 	padding-left: 1em;
 	font-weight: 100;
 	margin-top: 0;
+	margin-bottom: 0;
 	padding-top: 1em;
 	// margin-left: 1em;
 	font-variant: small-caps;
+}
+form h2{
+	margin-bottom: 1em;
 }
 main,body,html,#layout,#root{
 	font-family: $mainFont;
@@ -33,15 +37,19 @@ hr{
 	border-style: solid;
 	border-width: 0.5px;
 	border-color: $messageDivBgColor;
+	margin-bottom: 0;
 }
 #sessionUser{
+	background-color: $primary;
 	flex-grow: 0;
 	flex-shrink: 10;
 	flex-basis: 40px;
 	display: block;
+	margin:0;
 	padding-left: 1em;
-	padding-bottom: 1em;
-	border-bottom: 1px solid $messageDivBgColor;
+	padding-bottom: .5em;
+	padding-top: .5em;
+	border-bottom: 1px solid $notificationsColor;
 }
 #sessionAvatar{
 	max-height: 45px;
@@ -68,10 +76,10 @@ hr{
 	flex-grow: 2;
 	overflow-y: auto;
 	list-style: none;
+	margin: 0;
 	height: 30vh;
 	min-height: 75px;
 }
-
 #UserList ul li{
 	margin-top: 10px;
 	font-size: 0.6em;
@@ -129,6 +137,10 @@ li{
 	min-width: 130px;
 	max-width: 300px;
 	background-color: $userListBgColor;
+	border-right-style: solid;
+	border-right-color: $userListBgColor;
+	border-width: 1px;
+
 }
 #UserList img{
 	border-radius: 3px;
@@ -179,7 +191,7 @@ li{
 	width: 100%;
 	max-height: 80px;
 	box-shadow: 6px 1px 12px 1px lightgrey;
-	position: fixed;
+	// position: fixed;
 }
 #userThumbSpan{
 	vertical-align: middle;
@@ -195,10 +207,19 @@ li{
 	font-size: 0.75em;
 }
 // left SideBar (nav list)
+.searchFilterInput{
+	background-color: $primary;
+	padding: 3px;
+	margin: 0;
+	border-bottom: 1px solid $notificationsColor;
+}
 #searchFilterInput{
-	width: 90%;
+	width: 99%;
+	height: 100%;
+	min-height: 1.5em;
 	display: block;
-	margin: 1em auto;
+	margin: .1em auto;
+	line-height: 1.3em;
 	border-radius: 3px;
 	border-style: solid;
 	border-color: $userListTitle;
@@ -280,9 +301,16 @@ li{
 #makeGroupSubmit{
 	background-color: $userListBgColor;
 }
+#editGroupButton{
+	position: absolute;
+	top:0;
+	right: 3em;
+}
 #messages{
-	margin-top: 80px;
+	margin-top: 10px;
 	width: 94%;
+	height: 84vh;
+	overflow-y: scroll;
 }
 .timestamp{
 	opacity: 0.6;
@@ -374,13 +402,15 @@ li{
 }
 #logo{
 	padding: 0.5em;
+	padding-bottom: 0.1em;
+	margin-bottom: 0;
 	border-style: none;
 	border-color: $messageDivBgColorHueRot495;
 	border-width: 1px;
 	border-radius: 1em;
 	max-width: 70%;
 	display: block;
-	margin: 1em 1em;
+	margin: 0;
 }
 #logoDiv img{
 	filter:
@@ -391,7 +421,7 @@ li{
 		drop-shadow(0px -2px $primary)
 		drop-shadow(-2px -2px $primary)
 		drop-shadow(0 0 .4em $primary);
-
+		margin: 1em 1em 0.1em;
 }
 .dialogues{
 	overflow: hidden;

@@ -7,12 +7,13 @@ module.exports  =  {
             }
         }
     },
-    notifyUser: function (userId, sessionList) {
+    notifyUser: function (userId, sessionList, type) {
+        const message = type;
         for (let i in sessionList) {
             if (sessionList[i].user === userId) {
                 if (sessionList[i].socket) {
                     console.log(userId, "notified");
-                    sessionList[i].socket.send(JSON.stringify(new Date()), function() {  });
+                    sessionList[i].socket.send(JSON.stringify(message || "all"), function() {  });
                     break;
                 }
             }

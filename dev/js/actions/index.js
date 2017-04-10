@@ -1,4 +1,3 @@
-import {parseJSON} from "../util/serverAux";
 import {ATypes} from "./types";
 
 export const selectUser = (user) => {

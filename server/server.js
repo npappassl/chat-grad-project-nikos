@@ -28,7 +28,6 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
     var conversations = db.collection("conversations");
     var sessions = {};
     var onlineUsers = [];
-    setTimeout(sendOnlineNotification, 5000);
 
     function sendOnlineNotification() {
         onlineUsers.length = 0;
@@ -38,7 +37,6 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             }
         }
         aux.notifyAll(sessions);
-        setTimeout(sendOnlineNotification, 20000);
     }
 
     app.get("/oauth", function(req, res) {
@@ -112,6 +110,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             {$set: {name: name, avatarUrl: avatar}}, function(err, data) {
                 if (!err) {
                     res.sendStatus(statusCodes.ok);
+                    aux.notifyAll(sessions, "users");
                 } else {
                     res.sendStatus(statusCodes.intServErr);
                 }
@@ -337,13 +336,14 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
     }
     });
 
-    app.put("/api/group/:groupId", function(req, res) {
+    app.post("/api/group/:groupId", function(req, res) {
         users.findOne({_id: req.params.groupId}, function(err, data) {
             if (!err) {
                 if (!data) {
                     users.insertOne({
                         _id: req.params.groupId,
                         group: true,
+                        name: null,
                         avatarUrl: req.body.avatar,
                         subscribedTo : [],
                         lastRead: {}
@@ -384,6 +384,23 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             }
         });
     });
+    app.put("/api/group/:groupId", function(req, res) {
+        const updateObject = {
+            avatarUrl: req.body.avatar,
+            name: req.body.name || null
+        };
+        users.updateOne({_id: req.params.groupId},
+            {$set: updateObject},
+            function(err, data) {
+                if (!err) {
+                    console.log(data);
+                    res.sendStatus(statusCodes.ok);
+                } else {
+                    console.log(err, "dikemou");
+                    res.sendStatus(statusCodes.intServErr);
+                }
+            });
+    });
     //------------------------------ web socket server -------------------------
     const server = http.createServer(app);
 
@@ -403,6 +420,8 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
         } else {
             sessions[sesToken].socket = ws;
         }
+        sendOnlineNotification();
+
         //
         // ws.send(JSON.stringify())
         var id = setTimeout(function() {
@@ -416,6 +435,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             if (sessions[sesToken]) {
                 sessions[sesToken].socket = null;
             }
+            sendOnlineNotification();
             console.log("websocket connection close:", sesToken);
             clearInterval(id);
         });

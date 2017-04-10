@@ -7,10 +7,11 @@ import {closeEditUserDialogue, sendUpdateUserDetailsRequest} from "../actions/us
 class EditUserDialogue extends Component{
     constructor(props){
         super(props);
-        this.state = {value: "", avatar:""};
+        this.state = {value: "", avatar:"", imgErrorMessage: ""};
         this.handleChange = this.handleChange.bind(this);
         this.handleChangeAvatar = this.handleChangeAvatar.bind(this);
         this.submitRequest = this.submitRequest.bind(this);
+        this.handleDeadimgLink = this.handleDeadimgLink.bind(this);
     }
     componentDidMount() {
         this.setState({
@@ -27,6 +28,9 @@ class EditUserDialogue extends Component{
         } else {
             this.setState({avatar: event.target.value});
         }
+    }
+    handleDeadimgLink(event){
+        event.target.src="oops.jpg";
     }
     submitRequest(event) {
         console.log("target", event.target);
@@ -50,18 +54,8 @@ class EditUserDialogue extends Component{
                     eventHandlers={{
                         value:this.handleChange,
                         avatar:this.handleChangeAvatar,
+                        handleDeadimgLink: this.handleDeadimgLink
                     }} />
-                // <div id="editUserDialogue" className="dialogues" >
-                //     <span className="closeDialogue" onClick={this.props.actions.closeEditUserDialogue}>x</span>
-                //     <form>
-                //         <h2 className="DialogueTitle">User Details</h2>
-                //         <img className="avatarInDialogue" src={this.state.avatar} />
-                //         <input name="groupName" onChange={this.handleChange} value={this.state.value} placeholder="group name"></input>
-                //         <input name="avatar" onChange={this.handleChangeAvatar} placeholder="paste an image Url here"></input>
-                //         <input className="button" type="submit"></input>
-                //     </form>
-                // </div>
-
             );
         }
     }

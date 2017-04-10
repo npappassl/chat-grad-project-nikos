@@ -7,9 +7,6 @@ class SessionDetail extends Component{
     constructor(props) {
         super(props);
     }
-    editUser(){
-        console.log("edituserdialogue should open");
-    }
     showButton(event){
         if(event.target.id === "sessionUser"){
             event.target.children[1].children[0].style.display = "inline-block";
