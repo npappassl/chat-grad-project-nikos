@@ -80,5 +80,5 @@ function mapDispatchToProps(dispatch) {
     };
 }
 
-export default connect(mapStateToProps)(MessagesContainer);
-// export default connect(mapStateToProps, mapDispatchToProps)(MessagesContainer);
+// export default connect(mapStateToProps)(MessagesContainer);
+export default connect(mapStateToProps, mapDispatchToProps)(MessagesContainer);
