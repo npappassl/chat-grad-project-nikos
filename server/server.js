@@ -118,6 +118,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
     });
     app.delete("/api/user/:conversationId/:userId", function(req, res) {
         console.log(req.params);
+        res.sendStatus(statusCodes.ok);
     });
 
     app.put("/api/user/:conversationId/:userId", function(req, res) {
@@ -337,37 +338,34 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
     });
 
     app.post("/api/group/:groupId", function(req, res) {
+        const preparedUserObj = {
+            _id: req.params.groupId,
+            group: true,
+            name: null,
+            avatarUrl: req.body.avatar,
+            subscribedTo : [],
+            lastRead: {}
+        };
+        const preparedGroupObj = {
+            group: true,
+            messages: [],
+            firstMessageMeta: {
+                participants: req.body.participants,
+                creator: req.body.creator,
+                userAlias: req.params.groupId,
+                timestamp: Date.now()
+            }
+        };
         users.findOne({_id: req.params.groupId}, function(err, data) {
             if (!err) {
                 console.log("data", data);
                 if (!data) {
-                    users.insertOne({
-                        _id: req.params.groupId,
-                        group: true,
-                        name: null,
-                        avatarUrl: req.body.avatar,
-                        subscribedTo : [],
-                        lastRead: {}
-                    }, function(errConv, dataConv) {
+                    users.insertOne(preparedUserObj, function(errConv, dataConv) {
                         if (!errConv) {
-                            conversations.insertOne({
-                                group: true,
-                                messages: [],
-                                firstMessageMeta: {
-                                    participants: req.body.participants,
-                                    creator: req.body.creator,
-                                    userAlias: req.params.groupId,
-                                    timestamp: Date.now()
-                                }
-                            }, function (err2, data2) {
+                            conversations.insertOne(preparedGroupObj, function (err2, data2) {
                                 if (!err2) {
                                     console.log("insertedId", data2.insertedId);
-                                    addConversationToUser(req.body.creator, data2.insertedId, Date.now());
-                                    for (let i in req.body.participants) {
-                                        addConversationToUser(
-                                            req.body.participants[i], data2.insertedId, Date.now()
-                                        );
-                                    }
+                                    addConversationToAllParticipants(req.body, data2.insertedId, Date.now());
                                     res.sendStatus(statusCodes.created);
                                 } else {
                                     console.log("err2", err2);
@@ -384,6 +382,14 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                 res.sendStatus(statusCodes.intServErr);
             }
         });
+        function addConversationToAllParticipants(reqBody, d2insertedId, timestamp) {
+            addConversationToUser(reqBody.creator, d2insertedId, timestamp);
+            for (let i in reqBody.participants) {
+                addConversationToUser(
+                    reqBody.participants[i], d2insertedId, timestamp
+                );
+            }
+        }
     });
     app.put("/api/group/:groupId", function(req, res) {
         const updateObject = {
@@ -423,10 +429,6 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
         }
         sendOnlineNotification();
 
-        var id = setTimeout(function() {
-            ws.send(JSON.stringify(new Date()), function() {  });
-        }, 0);
-
         console.log("websocket connection open:", sesToken);
 
         // -------------- close connection -------------------------------------
@@ -436,7 +438,6 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             }
             sendOnlineNotification();
             console.log("websocket connection close:", sesToken);
-            clearInterval(id);
         });
     });
 

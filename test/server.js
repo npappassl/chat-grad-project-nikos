@@ -313,6 +313,27 @@ describe("server", function() {
                 });
             });
         });
+        it("responds with sattus coe 500 if mongo trouble", function(done) {
+            authenticateUser(testUser, testToken, function() {
+                dbCollections.users.updateOne.callsArgWith(2, {err: "thisisErrr"}, null);
+
+                request({url: requestUrl, jar: cookieJar, method: "PUT"}, function(error, response) {
+                    assert.equal(response.statusCode, 500);
+                    done();
+                });
+            });
+        });
+    });
+    describe("DELETE /api/user/:conversationId/:userId", function() {
+        var requestUrl = baseUrl + "/api/user/" + testConversation.id + "/" + testUser._id;
+        it("finds route, does nothing", function(done) {
+            authenticateUser(testUser, testToken, function() {
+                request({url: requestUrl, jar: cookieJar, method: "DELETE"}, function(error, response) {
+                    assert.equal(response.statusCode, 200);
+                    done();
+                });
+            });
+        });
     });
     describe("PUT /api/user/:conversationId/:userId", function() {
         var requestUrl = baseUrl + "/api/user/" + testConversation.id + "/" + testUser._id;
@@ -596,6 +617,30 @@ describe("server", function() {
             });
 
         });
+        //     it("notifies everyone in the conversation if GROUP", function(done) {
+        //         const objNew = {
+        //             conversationId: "58d52c27983d681738f5449e",
+        //             userFrom: "nikos",
+        //             userTo: "bob",
+        //             msg: "ela re twra"
+        //         };
+        //
+        //         authenticateUser(testUser, testToken, function() {
+        //             dbCollections.conversations.findOne.callsArgWith(1, null, testConversationGroup);
+        //             dbCollections.conversations.updateOne.callsArgWith(
+        //                      2, null, {insertedId: "58d52c27983d681738f5449e"});
+        //             dbCollections.users.findOne.callsArgWith(1, null, testUser2);
+        //             dbCollections.users.updateOne.callsArgWith(2, null, testUser2);
+        //             request({url: requestUrl, jar: cookieJar,
+        //                 method: "POST", headers: {
+        //                     "Content-type": "application/json"
+        //                 },
+        //                 body: JSON.stringify(objNew)
+        //             }, function(error, response, body) {
+        //                 assert.equal(response.statusCode, 200);
+        //             });
+        //         });
+        //     });
     });
     describe("GET api/conversations/:userId", function() {
         var requestUrl = baseUrl + "/api/conversations/" + testUser._id;
@@ -750,21 +795,31 @@ describe("server", function() {
     });
     describe("PUT api/group/:groupId", function () {
         const requestUrl = baseUrl + "/api/group/";
-        beforeEach(function() {
-            dbCollections.users.updateOne.callsArgWith(2, null, null);
-        });
         it("return 401 when unauthorized", function(done) {
+            dbCollections.users.updateOne.callsArgWith(2, null, null);
             request({url: requestUrl + "dikemou", method: "PUT"}, function(error, response, body) {
                 assert(response.statusCode, 401);
                 done();
             });
         });
         it("return 200 when updated", function(done) {
+            dbCollections.users.updateOne.callsArgWith(2, null, null);
             authenticateUser(testUser, testToken, function() {
                 request({url: requestUrl + "dikemou", jar: cookieJar, method: "PUT",
                             body: JSON.stringify({name: "adada"})},
                 function(error, response, body) {
                     assert(response.statusCode, statusCodes.ok);
+                    done();
+                });
+            });
+        });
+        it("return 500 when mongo trouble", function(done) {
+            dbCollections.users.updateOne.callsArgWith(2, {err: "dikemou lathos"}, null);
+            authenticateUser(testUser, testToken, function() {
+                request({url: requestUrl + "dikemou", jar: cookieJar, method: "PUT",
+                            body: JSON.stringify({name: "adada"})},
+                function(error, response, body) {
+                    assert(response.statusCode, statusCodes.intServErr);
                     done();
                 });
             });
