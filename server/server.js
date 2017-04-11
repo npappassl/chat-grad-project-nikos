@@ -423,8 +423,6 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
         }
         sendOnlineNotification();
 
-        //
-        // ws.send(JSON.stringify())
         var id = setTimeout(function() {
             ws.send(JSON.stringify(new Date()), function() {  });
         }, 0);

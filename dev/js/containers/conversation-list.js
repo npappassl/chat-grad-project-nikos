@@ -18,32 +18,17 @@ class Conversations extends Component {
         this.props.sendConversationDetailRequest(conversationId);
         this.props.selectUser(user);
     }
-    // ----------------------------- USER conversations
-    eachUser(user,conversationId, unreadMessagesCount, group) {
+    eachItem(user,conversationId, unreadMessagesCount) {
         let activeConvCss = "";
         if (conversationId===this.props.activeConversation) {
             activeConvCss = "selected";
         }
-
-        if (user && this.props.userList.onlineUsers.indexOf(user.id) >= 0 ) {
+        if (!user.group && this.props.userList.onlineUsers.indexOf(user.id) >= 0 ) {
             activeConvCss += " online";
         }
-        if(user)
+
         return (
             <UserListItem key={conversationId} className={activeConvCss} user={user}
-                selectUserAndUpdateSession={this.selectUserAndUpdateSession} conversationId={conversationId}
-                unreadMessagesCount={unreadMessagesCount} sendDeleteConversationMessagesRequest={this.props.sendDeleteConversationMessagesRequest} />
-        );
-    }
-    // ----------------------------- GROUP conversations
-    eachGroup(group,conversationId,unreadMessagesCount) {
-        let activeConvCss = "";
-        if (conversationId===this.props.activeConversation) {
-            activeConvCss = "selected";
-        }
-        return (
-            <UserListItem
-                key={conversationId} className={activeConvCss} user={group}
                 selectUserAndUpdateSession={this.selectUserAndUpdateSession} conversationId={conversationId}
                 unreadMessagesCount={unreadMessagesCount} sendDeleteConversationMessagesRequest={this.props.sendDeleteConversationMessagesRequest} />
         );
@@ -69,19 +54,17 @@ class Conversations extends Component {
             return this.props.conversations.sort((a, b) => {
                 return a.timestamp < b.timestamp;
             }).map((conversation) => {
+                const unreadMessagesCount = this.countUnreadMessages(
+                    conversation.messages, this.props.session.lastRead[conversation.id], conversation.group);
                 if(conversation.group) {
-                    const unreadMessagesCount = this.countUnreadMessages(
-                        conversation.messages, this.props.session.lastRead[conversation.id], true);
                     for(let j in this.props.userList.groups){
                         if(conversation.userAlias === this.props.userList.groups[j].id)
-                        return this.eachGroup(this.props.userList.groups[j],conversation.id,unreadMessagesCount);
+                        return this.eachItem(this.props.userList.groups[j],conversation.id,unreadMessagesCount);
                     }
                 } else {
-                    const unreadMessagesCount = this.countUnreadMessages(
-                        conversation.messages, this.props.session.lastRead[conversation.id], false);
                     for (let i in this.props.userList.users) {
                         if (conversation.participant === this.props.userList.users[i].id) {
-                            return this.eachUser(this.props.userList.users[i], conversation.id, unreadMessagesCount);
+                            return this.eachItem(this.props.userList.users[i], conversation.id, unreadMessagesCount);
                         }
                     }
                 }
