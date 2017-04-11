@@ -339,6 +339,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
     app.post("/api/group/:groupId", function(req, res) {
         users.findOne({_id: req.params.groupId}, function(err, data) {
             if (!err) {
+                console.log("data", data);
                 if (!data) {
                     users.insertOne({
                         _id: req.params.groupId,
