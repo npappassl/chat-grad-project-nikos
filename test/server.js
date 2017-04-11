@@ -32,6 +32,7 @@ const testUser = {
     subscribedTo: [],
     lastRead: {}
 };
+const testToken = "123123";
 const testUser2 = {
     _id: "charlie",
     name: "Charlie Colinson",
@@ -49,7 +50,6 @@ const testGroupUser = {
     "subscribedTo": [],
     "lastRead": {}
 };
-const testToken = "123123";
 const testExpiredToken = "987978";
 const testMessage1 = {
     userTo: "bob",
@@ -117,7 +117,7 @@ describe("server", function() {
             users: {
                 find: sinon.stub(),
                 findOne: sinon.stub(),
-                insertOne: sinon.spy(),
+                insertOne: sinon.stub(),
                 updateOne: sinon.stub()
             },
             conversations: {
@@ -141,6 +141,11 @@ describe("server", function() {
         serverInstance = server(testPort, db, githubAuthoriser, middleware);
     });
     afterEach(function() {
+        for (let prop in dbCollections) {
+            for (let stb in dbCollections[prop]) {
+                dbCollections[prop][stb].resetBehavior();
+            }
+        }
         serverInstance.close();
     });
     function authenticateUser(user, token, callback) {
@@ -284,6 +289,46 @@ describe("server", function() {
 
                 request({url: requestUrl, jar: cookieJar}, function(error, response) {
                     assert.equal(response.statusCode, 500);
+                    done();
+                });
+            });
+        });
+    });
+    describe("PUT /api/user/:userId", function() {
+        var requestUrl = baseUrl + "/api/user/" + testUser._id;
+        it("responds with status code 401 if user not authenticated", function(done) {
+            request({url: requestUrl, method: "PUT"}, function(error, response) {
+                assert.equal(response.statusCode, 401);
+                done();
+            });
+        });
+        it("responds with status code 200 if user is authenticated", function(done) {
+            authenticateUser(testUser, testToken, function() {
+
+                dbCollections.users.updateOne.callsArgWith(2, null, testUser);
+
+                request({url: requestUrl, jar: cookieJar, method: "PUT"}, function(error, response) {
+                    assert.equal(response.statusCode, 200);
+                    done();
+                });
+            });
+        });
+    });
+    describe("PUT /api/user/:conversationId/:userId", function() {
+        var requestUrl = baseUrl + "/api/user/" + testConversation.id + "/" + testUser._id;
+        it("responds with status code 401 if user not authenticated", function(done) {
+            request({url: requestUrl, method: "PUT"}, function(error, response) {
+                assert.equal(response.statusCode, 401);
+                done();
+            });
+        });
+        it("responds with status code 200 if user is authenticated", function(done) {
+            authenticateUser(testUser, testToken, function() {
+                dbCollections.users.findOne.callsArgWith(1, null, testUser);
+                dbCollections.users.updateOne.callsArgWith(2, null, testUser);
+
+                request({url: requestUrl, jar: cookieJar, method: "PUT"}, function(error, response) {
+                    assert.equal(response.statusCode, 200);
                     done();
                 });
             });
@@ -667,21 +712,46 @@ describe("server", function() {
             });
         });
     });
+    describe("POST api/group/:groupId", function () {
+        const requestUrl = baseUrl + "/api/group/";
+        // beforeEach(function() {
+        //     dbCollections.users.findOne.reset();
+        //     dbCollections.users.insertOne = sinon.stub();
+        //     dbCollections.conversations.insertOne = sinon.stub();
+        // });
+        it("return 401 when unauthorized", function(done) {
+            request({url: requestUrl + "dikemou", method: "POST"}, function(error, response, body) {
+                assert(response.statusCode, 401);
+                done();
+            });
+        });
+        it("return 201 when created", function(done) {
+            dbCollections.users.findOne.callsArgWith(1, null, null);
+            dbCollections.users.insertOne.callsArgWith(1, null, null);
+            authenticateUser(testUser, testToken, function() {
+                request({url: requestUrl + "dikemou", jar: cookieJar, method: "POST"},
+                function(error, response, body) {
+                    assert(response.statusCode, 201);
+                    done();
+                });
+            });
+        });
+        it("return 201 when created", function(done) {
+            // dbCollections.users.findOne.callsArgWith(1, null, testUser);
+            // dbCollections.users.insertOne.callsArgWith(1, null, null);
+            authenticateUser(testUser, testToken, function() {
+                request({url: requestUrl + "dikemou", jar: cookieJar, method: "POST"},
+                function(error, response, body) {
+                    assert(response.statusCode, 201);
+                    done();
+                });
+            });
+        });
+    });
     describe("PUT api/group/:groupId", function () {
         const requestUrl = baseUrl + "/api/group/";
-        var usersF;
-        var usersI;
-        var conversationI;
         beforeEach(function() {
-            usersF = sinon.stub();
-            usersI = sinon.stub();
-
-            conversationI = sinon.stub();
-
-            dbCollections.users.findOne.returns(usersF);
-
-            dbCollections.conversations.insertOne.returns(conversationI);
-
+            dbCollections.users.updateOne.callsArgWith(2, null, null);
         });
         it("return 401 when unauthorized", function(done) {
             request({url: requestUrl + "dikemou", method: "PUT"}, function(error, response, body) {
@@ -689,18 +759,16 @@ describe("server", function() {
                 done();
             });
         });
-        // TODO not working test
-        //     it("return 201 when created", function(done) {
-        //         usersF.callsArgWith(1, null, null);
-        //         usersI.callsArgWith(1, null, null);
-        //         authenticateUser(testUser, testToken, function() {
-        //             request({url: requestUrl + "dikemou", jar: cookieJar, method: "PUT"},
-        //             function(error, response, body) {
-        //                 assert(response.statusCode, 201);
-        //                 done();
-        //             });
-        //         });
-        //     });
+        it("return 200 when updated", function(done) {
+            authenticateUser(testUser, testToken, function() {
+                request({url: requestUrl + "dikemou", jar: cookieJar, method: "PUT",
+                            body: JSON.stringify({name: "adada"})},
+                function(error, response, body) {
+                    assert(response.statusCode, statusCodes.ok);
+                    done();
+                });
+            });
+        });
     });
     describe("establish connection with the web socket", function() {
         const requestUrl = baseUrl.replace("http", "ws");
