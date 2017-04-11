@@ -6,7 +6,6 @@ const sinon = require("sinon");
 const ObjectID = require("mongodb").ObjectID;
 const WebSocket = require("ws");
 
-const apiUser = require("./testModules/apiUser");
 //------- I added this so that webpack is instantiated -------------------------
 const isDeveloping = process.env.NODE_ENV !== "production";
 const webpack = require("webpack");
