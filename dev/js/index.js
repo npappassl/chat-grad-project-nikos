@@ -9,6 +9,7 @@ import createLogger from "redux-logger";
 import allReducers from "./reducers";
 import App from "./components/App";
 
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import {sendAuthUriRequest} from "./actions/index";
 
@@ -18,10 +19,14 @@ const store = createStore(
     allReducers,
     applyMiddleware(thunk, promise, logger)
 );
-
+const AppStyled = () => (
+  <MuiThemeProvider>
+    <App />
+  </MuiThemeProvider>
+);
 ReactDOM.render(
     <Provider store={store}>
-        <App />
+        <AppStyled />
     </Provider>,
     document.getElementById("root")
 );

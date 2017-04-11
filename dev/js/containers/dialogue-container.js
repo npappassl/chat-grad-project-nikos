@@ -1,4 +1,5 @@
 import React,{Component} from "react";
+import RaisedButton from 'material-ui/RaisedButton';
 
 export default class DialogueContainer extends Component{
     constructor(props) {
@@ -34,7 +35,7 @@ export default class DialogueContainer extends Component{
                     return this.props.renderParticipantCheckBoxesEach(participant);
                 })}
                 </ul>
-                <input id="makeGroupSubmit" className="button" type="submit"></input>
+                <RaisedButton id="makeGroupSubmit" className="button" type="submit" label="submit" />
             </form>
         </div>
         );
