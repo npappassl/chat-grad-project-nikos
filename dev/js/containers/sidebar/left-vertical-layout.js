@@ -2,11 +2,11 @@ import React,{Component} from "react";
 import {connect} from "react-redux";
 import {bindActionCreators} from 'redux';
 
-import SessionDetail from "../containers/session-detail-component";
-import UserList from '../containers/user-list';
-import Conversations from '../containers/conversation-list';
-import SearchFilterInput from "../containers/searchFilterInput";
-import * as groupActions from "../actions/groupActions";
+import SessionDetail from "./session-detail-component";
+import UserList from './user-list';
+import Conversations from './conversation-list';
+import SearchFilterInput from "./searchFilterInput";
+import * as groupActions from "../../actions/groupActions";
 
 class LeftVerticalLayout extends Component{
     constructor(props){
@@ -22,8 +22,8 @@ class LeftVerticalLayout extends Component{
                 <h2>Conversations</h2>
                 <Conversations />
                 <h2>User List</h2>
-                <SearchFilterInput dispatch={myEditUserDispatch}/>
-                <UserList />
+                <SearchFilterInput users={this.props.users} dispatch={myEditUserDispatch}/>
+                <UserList users={this.props.users} session={this.props.session} />
                 <button className="button"
                     onClick={this.props.actions.openMakeGroupDialogue}
                     id="createGroupButton">
@@ -35,6 +35,7 @@ class LeftVerticalLayout extends Component{
 }
 function mapStateToProps(state) {
     return {
+        users: state.users,
         session: state.session,
     };
 }

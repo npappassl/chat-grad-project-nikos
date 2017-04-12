@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
-import {sendMessageRequest} from "../actions/messageActions";
-import {sendConversationDetailRequest} from "../actions/usersActions";
+import {sendMessageRequest} from "../../actions/messageActions";
+import {sendConversationDetailRequest} from "../../actions/usersActions";
 import {bindActionCreators} from "redux";
 
 class MessageTextArea extends Component {

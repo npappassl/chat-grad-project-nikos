@@ -1,9 +1,9 @@
 import React, {Component} from "react";
 import {connect} from "react-redux";
 import {bindActionCreators} from "redux";
-import {selectConversation,selectUser} from "../actions/index";
+import {selectConversation,selectUser} from "../../actions/index";
 import {sendConversationDetailRequest,
-    sendReadConversationRequest, sendDeleteConversationMessagesRequest} from "../actions/usersActions";
+    sendReadConversationRequest, sendDeleteConversationMessagesRequest} from "../../actions/usersActions";
 import UserListItem from "./user-list-item";
 import Badge from "./badge-container";
 

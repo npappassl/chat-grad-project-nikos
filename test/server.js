@@ -30,7 +30,9 @@ const testUser = {
     name: "Bob Bilson",
     avatarUrl: "http://avatar.url.com/u=test",
     subscribedTo: [],
-    lastRead: {}
+    lastRead: {
+        "58d52c27983d681738f5455e": 23123
+    }
 };
 const testToken = "123123";
 const testUser2 = {
@@ -82,7 +84,7 @@ const testConversationGroup = {
     group: true,
     firstMessageMeta: {
         creator: "giannis",
-        pariticipants: ["nikos", "kwstas", "bob"],
+        participants: ["nikos", "kwstas", "bob"],
         timestamp: 12312542353453
     }
 };
@@ -157,6 +159,7 @@ describe("server", function() {
 
         request(baseUrl + "/oauth", function(error, response) {
             cookieJar.setCookie(request.cookie("sessionToken=" + token), baseUrl);
+            dbCollections.users.findOne = sinon.stub(); // TODO
             callback();
         });
     }
@@ -225,6 +228,7 @@ describe("server", function() {
     describe("GET /api/oauth/uri", function() {
         var requestUrl = baseUrl + "/api/oauth/uri";
         it("responds with status code 200", function(done) {
+            // dbCollections.users.findOne.callsArgWith(1, null, user); TODO
             request(requestUrl, function(error, response) {
                 assert.equal(response.statusCode, 200);
                 done();
@@ -262,6 +266,7 @@ describe("server", function() {
         });
         it("responds with status code 200 if user is authenticated", function(done) {
             authenticateUser(testUser, testToken, function() {
+                dbCollections.users.findOne.callsArgWith(1, null, testUser);
                 request({url: requestUrl, jar: cookieJar}, function(error, response) {
                     assert.equal(response.statusCode, 200);
                     done();
@@ -270,13 +275,16 @@ describe("server", function() {
         });
         it("responds with a body that is a JSON object if user is authenticated", function(done) {
             authenticateUser(testUser, testToken, function() {
+                dbCollections.users.findOne.callsArgWith(1, null, testUser);
                 request({url: requestUrl, jar: cookieJar}, function(error, response, body) {
                     assert.deepEqual(JSON.parse(body), {
                         _id: "bob",
                         name: "Bob Bilson",
                         avatarUrl: "http://avatar.url.com/u=test",
                         subscribedTo: [],
-                        lastRead: {}
+                        lastRead: {
+                            "58d52c27983d681738f5455e": 23123
+                        }
                     });
                     done();
                 });
@@ -284,9 +292,7 @@ describe("server", function() {
         });
         it("responds with status code 500 if database error", function(done) {
             authenticateUser(testUser, testToken, function() {
-
                 dbCollections.users.findOne.callsArgWith(1, {err: "Database error"}, null);
-
                 request({url: requestUrl, jar: cookieJar}, function(error, response) {
                     assert.equal(response.statusCode, 500);
                     done();
@@ -313,7 +319,7 @@ describe("server", function() {
                 });
             });
         });
-        it("responds with sattus coe 500 if mongo trouble", function(done) {
+        it("responds with sattus code 500 if mongo trouble", function(done) {
             authenticateUser(testUser, testToken, function() {
                 dbCollections.users.updateOne.callsArgWith(2, {err: "thisisErrr"}, null);
 
@@ -350,6 +356,28 @@ describe("server", function() {
 
                 request({url: requestUrl, jar: cookieJar, method: "PUT"}, function(error, response) {
                     assert.equal(response.statusCode, 200);
+                    done();
+                });
+            });
+        });
+        it("responds with status code 500 if users findOne errors", function(done) {
+            authenticateUser(testUser, testToken, function() {
+                dbCollections.users.findOne.callsArgWith(1, {err: "this errored allright"}, null);
+                dbCollections.users.updateOne.callsArgWith(2, null, testUser);
+
+                request({url: requestUrl, jar: cookieJar, method: "PUT"}, function(error, response) {
+                    assert.equal(response.statusCode, 500);
+                    done();
+                });
+            });
+        });
+        it("responds with status code 500 if users updateOne errors", function(done) {
+            authenticateUser(testUser, testToken, function() {
+                dbCollections.users.findOne.callsArgWith(1, null, testUser);
+                dbCollections.users.updateOne.callsArgWith(2, {err: "this errored allright"}, null);
+
+                request({url: requestUrl, jar: cookieJar, method: "PUT"}, function(error, response) {
+                    assert.equal(response.statusCode, 500);
                     done();
                 });
             });
@@ -435,7 +463,7 @@ describe("server", function() {
         it("responds with statusCode 404 if notfound or conversationId === null", function(done) {
             authenticateUser(testUser, testToken, function() {
                 request({url: requestUrl + "null", jar: cookieJar, method: "DELETE"}, function(error, response) {
-                    assert.equal(response.statusCode, 404);
+                    assert.equal(response.statusCode, 406);
                     done();
                 });
             });
@@ -443,7 +471,7 @@ describe("server", function() {
         it("responds with statusCode 404 if notfound or conversationId === undefined", function(done) {
             authenticateUser(testUser, testToken, function() {
                 request({url: requestUrl + "undefined", jar: cookieJar, method: "DELETE"}, function(error, response) {
-                    assert.equal(response.statusCode, 404);
+                    assert.equal(response.statusCode, 406);
                     done();
                 });
             });
@@ -464,6 +492,18 @@ describe("server", function() {
             authenticateUser(testUser, testToken, function() {
                 request({
                     url: requestUrl + "thisAnInvalidId", jar: cookieJar, method: "DELETE"
+                }, function(error, response) {
+                    console.log(error);
+                    assert.equal(response.statusCode, 500);
+                    done();
+                });
+            });
+        });
+        it("responds with statusCode 500 if findOneAndUpdate errors", function(done) {
+            dbCollections.conversations.findOneAndUpdate.callsArgWith(2, {err: "findOneAndUpdateerrored"}, null);
+            authenticateUser(testUser, testToken, function() {
+                request({
+                    url: requestUrl + "thiswrongIds", jar: cookieJar, method: "DELETE"
                 }, function(error, response) {
                     console.log(error);
                     assert.equal(response.statusCode, 500);
@@ -529,6 +569,31 @@ describe("server", function() {
                 });
             });
         });
+        it("responds with 200 if message posted -- old group conversation", function(done) {
+            const objOld = {
+                conversationId: "58d52c27983d681738f5449e",
+                userFrom: "nikos",
+                userTo: "bob",
+                msg: "ela re twra"
+            };
+            authenticateUser(testUser, testToken, function() {
+                dbCollections.conversations.findOne.callsArgWith(
+                    1, null, JSON.parse(JSON.stringify(testConversationGroup)));
+                dbCollections.conversations.updateOne.callsArgWith(2, null, null);
+                request({
+                    url: requestUrl, jar: cookieJar,
+                    method: "POST",
+                    headers: {
+                        "Content-type": "application/json"
+                    },
+                    body: JSON.stringify(objOld)
+                }, function(error, response, body) {
+                    assert.equal(response.statusCode, 200);
+                    done();
+                });
+            });
+        });
+
         // ___________------ I have no Idea what provokes this ------___________
         it("responds with 500 if findOne fails", function(done) {
             const objOld = {
@@ -596,6 +661,28 @@ describe("server", function() {
                 });
             });
         });
+        it("responds with 201 if message posted -- new conversation no errors is userTo===userFrom", function(done) {
+            const objNew = {
+                conversationId: undefined,
+                userFrom: "bob",
+                userTo: "bob",
+                msg: "ela re twra"
+            };
+            authenticateUser(testUser, testToken, function() {
+                dbCollections.conversations.insertOne.callsArgWith(1, null, {insertedId: "58d52c27983d681738f5449e"});
+                dbCollections.users.findOne.callsArgWith(1, null, testUser);
+                request({url: requestUrl, jar: cookieJar,
+                    method: "POST", headers: {
+                        "Content-type": "application/json"
+                    },
+                    body: JSON.stringify(objNew)
+                }, function(error, response, body) {
+                    assert.equal(response.statusCode, 201);
+                    done();
+                });
+            });
+        });
+
         it("responds with 500 when insertOne Conversation fails -- new conversation", function(done) {
             const objNew = {
                 conversationId: undefined,
@@ -646,18 +733,15 @@ describe("server", function() {
         var requestUrl = baseUrl + "/api/conversations/" + testUser._id;
 
         var conversation;
-        var bobUser;
         beforeEach(function() {
-            bobUser = sinon.stub();
             conversation = {
                 toArray: sinon.stub()
             };
-            dbCollections.users.findOne.returns(bobUser);
             dbCollections.conversations.find.returns(conversation);
         });
         it("returns all conversation from specific user",  function (done) {
             authenticateUser(testUser, testToken, function() {
-                bobUser.callsArgWith(1, null, testUser);
+                dbCollections.users.findOne.callsArgWith(1, null, testUser);
                 conversation.toArray.callsArgWith(0, null, [testConversation]);
                 request({url: requestUrl, jar: cookieJar, method: "GET"}, function(error, response, body) {
                     assert.equal(1, JSON.parse(body).length);
@@ -667,7 +751,7 @@ describe("server", function() {
         });
         it("returns 500 when conversations find errors ",  function (done) {
             authenticateUser(testUser, testToken, function() {
-                bobUser.callsArgWith(1, null, testUser);
+                dbCollections.users.findOne.callsArgWith(1, null, testUser);
                 conversation.toArray.callsArgWith(0, {err: "Database error"}, null);
                 request({url: requestUrl, jar: cookieJar, method: "GET"}, function(error, response, body) {
                     assert.equal(500, response.statusCode);
@@ -677,10 +761,10 @@ describe("server", function() {
         });
         it("returns 500 when users findOne errors ",  function (done) {
             authenticateUser(testUser, testToken, function() {
-                bobUser.callsArgWith(1, "Database error -- cannot find user", null);
+                dbCollections.users.findOne.callsArgWith(1, "Database error -- cannot find user", null);
                 conversation.toArray.callsArgWith(0, null, [testConversation]);
                 request({url: requestUrl, jar: cookieJar, method: "GET"}, function(error, response, body) {
-                    assert.equal(200, response.statusCode);
+                    assert.equal(response.statusCode, 500);
                     done();
                 });
             });
@@ -688,7 +772,7 @@ describe("server", function() {
         it("returns 404 when userId is undefined",  function (done) {
             requestUrl = baseUrl + "/api/conversations/undefined";
             authenticateUser(testUser, testToken, function() {
-                bobUser.callsArgWith(1, null, testUser);
+                dbCollections.users.findOne.callsArgWith(1, null, testUser);
                 conversation.toArray.callsArgWith(0, null, [testConversation]);
                 request({url: requestUrl, jar: cookieJar, method: "GET"}, function(error, response, body) {
                     assert.equal(404, response.statusCode);
@@ -759,21 +843,51 @@ describe("server", function() {
     });
     describe("POST api/group/:groupId", function () {
         const requestUrl = baseUrl + "/api/group/";
-        // beforeEach(function() {
-        //     dbCollections.users.findOne.reset();
-        //     dbCollections.users.insertOne = sinon.stub();
-        //     dbCollections.conversations.insertOne = sinon.stub();
-        // });
         it("return 401 when unauthorized", function(done) {
             request({url: requestUrl + "dikemou", method: "POST"}, function(error, response, body) {
                 assert(response.statusCode, 401);
                 done();
             });
         });
-        it("return 201 when created", function(done) {
-            dbCollections.users.findOne.callsArgWith(1, null, null);
-            dbCollections.users.insertOne.callsArgWith(1, null, null);
+        it("return 500 when findOne Errorrs", function(done) {
             authenticateUser(testUser, testToken, function() {
+                dbCollections.users.findOne.callsArgWith(1, {err: "findoone errored"}, null);
+                dbCollections.users.insertOne.callsArgWith(1, null, null);
+                request({url: requestUrl + "dikemou", jar: cookieJar, method: "POST"},
+                function(error, response, body) {
+                    assert(response.statusCode, 500);
+                    done();
+                });
+            });
+        });
+        it("return 500 when insertOne Errorrs", function(done) {
+            authenticateUser(testUser, testToken, function() {
+                dbCollections.users.findOne.callsArgWith(1, null, null);
+                dbCollections.users.insertOne.callsArgWith(1, {err: "insertone errored"}, null);
+                request({url: requestUrl + "dikemou", jar: cookieJar, method: "POST"},
+                function(error, response, body) {
+                    assert(response.statusCode, 500);
+                    done();
+                });
+            });
+        });
+        it("return 500 when convInsertone Errorrs", function(done) {
+            authenticateUser(testUser, testToken, function() {
+                dbCollections.users.findOne.callsArgWith(1, null, null);
+                dbCollections.users.insertOne.callsArgWith(1, null, null);
+                dbCollections.conversations.insertOne.callsArgWith(1, {err: "ERROR3sf9wdhf928g92fygf"}, null);
+                request({url: requestUrl + "dikemou", jar: cookieJar, method: "POST"},
+                function(error, response, body) {
+                    assert(response.statusCode, 500);
+                    done();
+                });
+            });
+        });
+
+        it("return 201 when created", function(done) {
+            authenticateUser(testUser, testToken, function() {
+                dbCollections.users.findOne.callsArgWith(1, null, testUser);
+                dbCollections.users.insertOne.callsArgWith(1, null, null);
                 request({url: requestUrl + "dikemou", jar: cookieJar, method: "POST"},
                 function(error, response, body) {
                     assert(response.statusCode, 201);
@@ -781,10 +895,12 @@ describe("server", function() {
                 });
             });
         });
-        it("return 201 when created", function(done) {
-            // dbCollections.users.findOne.callsArgWith(1, null, testUser);
-            // dbCollections.users.insertOne.callsArgWith(1, null, null);
+
+        it("return 201 when created userGroup", function(done) {
             authenticateUser(testUser, testToken, function() {
+                dbCollections.users.findOne.callsArgWith(1, null, null);
+                dbCollections.users.insertOne.callsArgWith(1, null, null);
+                dbCollections.conversations.insertOne.callsArgWith(1, null, {insertedId: "3sf9wdhf928g92fygf"});
                 request({url: requestUrl + "dikemou", jar: cookieJar, method: "POST"},
                 function(error, response, body) {
                     assert(response.statusCode, 201);
@@ -792,6 +908,19 @@ describe("server", function() {
                 });
             });
         });
+        it("does not add conversations to usr when userfrom === userTo", function(done) {
+            authenticateUser(testUser, testToken, function() {
+                dbCollections.users.findOne.callsArgWith(1, null, testUser);
+                dbCollections.users.insertOne.callsArgWith(1, null, null);
+                request({url: requestUrl + "dikemou", jar: cookieJar, method: "POST",
+                    body: JSON.stringify({participants: ["bob", "nikos"]})},
+                function(error, response, body) {
+                    assert(response.statusCode, 201);
+                    done();
+                });
+            });
+        });
+
     });
     describe("PUT api/group/:groupId", function () {
         const requestUrl = baseUrl + "/api/group/";
@@ -826,7 +955,8 @@ describe("server", function() {
         });
     });
     describe("establish connection with the web socket", function() {
-        const requestUrl = baseUrl.replace("http", "ws");
+        const requestUrl = baseUrl;
+        const wsUrl      = baseUrl.replace("http", "ws");
         beforeEach(function() {
             var ws = new WebSocket(requestUrl);
             ws.on("message", function(event) {
@@ -835,10 +965,17 @@ describe("server", function() {
         });
         it("ping pong", function(done) {
             authenticateUser(testUser, testToken, function() {
-                request({url: baseUrl, method: "GET", jar: cookieJar},
-                            function(error, response, body) {
-                    done();
-
+                dbCollections.users.findOne.callsArgWith(1, null, null);
+                dbCollections.users.updateOne.callsArgWith(2, null, null);
+                var ws = new WebSocket(wsUrl, {
+                    headers: {"Cookie": "sessionToken=" + testToken}
+                });
+                ws.on("message", function(event) {
+                    request({url: requestUrl + "/api/user/undefined/bob",
+                        jar: cookieJar, method: "PUT"}, function(error, response2) {
+                        ws.close();
+                        done();
+                    });
                 });
             });
         });

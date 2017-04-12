@@ -1,7 +1,7 @@
 import React,{Component} from "react";
 import {connect} from "react-redux";
 import {bindActionCreators} from "redux";
-import {openEditUserDialogue} from "../actions/usersActions";
+import {openEditUserDialogue} from "../../actions/usersActions";
 
 class SessionDetail extends Component{
     constructor(props) {

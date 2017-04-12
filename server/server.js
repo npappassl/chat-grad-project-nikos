@@ -10,7 +10,7 @@ const aux = require("./helper");
 const statusCodes = {
     "ok": 200, "created": 201,
     "found": 302,
-    "badRequest": 400, "notFound": 404, "unauthenticated": 401,
+    "badRequest": 400, "notFound": 404, "unauthenticated": 401, "notAcceptable": 406,
     "intServErr": 500
 };
 
@@ -105,7 +105,6 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
     app.put("/api/user/:userId", function(req, res) {
         let name = req.body.name;
         let avatar = req.body.avatar;
-        console.log(name, avatar);
         users.updateOne({_id: req.params.userId},
             {$set: {name: name, avatarUrl: avatar}}, function(err, data) {
                 if (!err) {
@@ -131,8 +130,10 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                     {$set: {lastRead: tempLastRead}},
                     function(errUpdate, doc) {
                     if (!errUpdate) {
-                        res.sendStatus(statusCodes.ok);
                         aux.notifyUser(req.params.userId, sessions);
+                        res.sendStatus(statusCodes.ok);
+                    } else {
+                        res.sendStatus(statusCodes.intServErr);
                     }
                 });
             } else {
@@ -176,7 +177,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             req.params.conversationId === undefined ||
             req.params.conversationId === "null" ||
             req.params.conversationId === "undefined") {
-            return res.sendStatus(statusCodes.notFound);
+            return res.sendStatus(statusCodes.notAcceptable);
         } else {
             conversations.findOneAndUpdate({_id: new ObjectID(req.params.conversationId)},
                 {$set: {messages: []}}, dccConvFindOneAndUpdateCallback);
@@ -293,6 +294,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             if (!err) {
                 retConversationId = data.insertedId;
                 addConversationToUser(req.body.userFrom, data.insertedId, Date.now());
+                console.log(req.body.userFrom, req.body.userTo);
                 if (req.body.userFrom !== req.body.userTo) {
                     addConversationToUser(req.body.userTo, data.insertedId, 0);
                 }
@@ -358,7 +360,6 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
         };
         users.findOne({_id: req.params.groupId}, function(err, data) {
             if (!err) {
-                console.log("data", data);
                 if (!data) {
                     users.insertOne(preparedUserObj, function(errConv, dataConv) {
                         if (!errConv) {
@@ -369,13 +370,14 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                                     res.sendStatus(statusCodes.created);
                                 } else {
                                     console.log("err2", err2);
+                                    res.sendStatus(statusCodes.intServErr);
                                 }
                             });
+                        } else {
+                            res.sendStatus(statusCodes.intServErr);
                         }
-
                     });
                 } else {
-                    console.log("data", data);
                     res.sendStatus(statusCodes.intServErr);
                 }
             } else {
@@ -400,10 +402,8 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             {$set: updateObject},
             function(err, data) {
                 if (!err) {
-                    console.log(data);
                     res.sendStatus(statusCodes.ok);
                 } else {
-                    console.log(err, "dikemou");
                     res.sendStatus(statusCodes.intServErr);
                 }
             });
@@ -415,13 +415,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
     console.log("websocket server created");
     // -------------- connection------------------------------------------------
     wss.on("connection", function connection(ws) {
-        let sesToken;
-        let cookie = ws.upgradeReq.headers.cookie;
-        console.log(cookie);
-        if (cookie) {
-            sesToken = cookie.split("=")[1];
-            console.log(sesToken);
-        }
+        let sesToken = aux.parseCookie(ws.upgradeReq.headers.cookie);
         if (!sessions[sesToken]) {
             ws.close();
         } else {

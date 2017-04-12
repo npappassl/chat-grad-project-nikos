@@ -1,7 +1,7 @@
 import React,{Component} from "react";
 import {connect} from "react-redux";
 import {bindActionCreators} from 'redux';
-import UserList from "./user-list";
+import UserList from "./sidebar/user-list";
 import DialogueContainer from "./dialogue-container";
 import {closeMakeGroupDialogue, sendNewGroupRequest} from "../actions/groupActions";
 

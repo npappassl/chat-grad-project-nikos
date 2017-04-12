@@ -1,14 +1,13 @@
 import React,{Component} from "react";
 import {connect} from "react-redux";
 import {bindActionCreators} from 'redux';
-import UserList from "./user-list";
 import DialogueContainer from "./dialogue-container";
 import {closeEditGroupDialogue, sendEditGroupRequest} from "../actions/groupActions";
 
 class EditGroupDialogue extends Component{
     constructor(props) {
         super(props);
-        this.state = {value: "", avatar:""};
+        this.state = {value: "", avatar: ""};
         this.handleChange = this.handleChange.bind(this);
         this.handleChangeAvatar = this.handleChangeAvatar.bind(this);
 
@@ -70,7 +69,6 @@ function mapStateToProps(state) {
     return {
         showHideDialogue: state.showHideDialoguesEditG,
         conversations: state.conversations,
-        userList: state.users.users,
         groups:state.users.groups,
         activeConversation: state.activeConversation
     };
