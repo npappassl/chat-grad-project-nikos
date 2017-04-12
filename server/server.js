@@ -176,7 +176,8 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
         if (req.params.conversationId === null ||
             req.params.conversationId === undefined ||
             req.params.conversationId === "null" ||
-            req.params.conversationId === "undefined") {
+            req.params.conversationId === "undefined" ||
+            (req.params.conversationId.length !== 12 && req.params.conversationId.length !== 24)) {
             return res.sendStatus(statusCodes.notAcceptable);
         } else {
             conversations.findOneAndUpdate({_id: new ObjectID(req.params.conversationId)},
@@ -184,14 +185,14 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
         }
         function dccConvFindOneAndUpdateCallback(err, data) {
             if (!err && data) {
+                console.log(data);
                 aux.notifyUser(data.value.firstMessageMeta.userFrom, sessions);
                 if (data.value.firstMessageMeta.userFrom !== data.value.firstMessageMeta.userTo) {
                     aux.notifyUser(data.value.firstMessageMeta.userTo, sessions);
                 }
                 res.sendStatus(statusCodes.ok);
             } else if (err) {
-                console.log(err);
-                res.sendStatus(statusCodes.intServErr);
+                res.status(statusCodes.intServErr).send(err.message);
             } else {
                 res.sendStatus(statusCodes.notFound);
             }
