@@ -402,6 +402,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             {$set: updateObject},
             function(err, data) {
                 if (!err) {
+                    aux.notifyAll(sessions);
                     res.sendStatus(statusCodes.ok);
                 } else {
                     res.sendStatus(statusCodes.intServErr);
