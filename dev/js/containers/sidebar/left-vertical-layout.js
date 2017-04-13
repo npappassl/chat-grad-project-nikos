@@ -23,7 +23,7 @@ class LeftVerticalLayout extends Component{
                 <Conversations />
                 <h2>User List</h2>
                 <SearchFilterInput users={this.props.users} dispatch={myEditUserDispatch}/>
-                <UserList users={this.props.users} session={this.props.session} />
+                <UserList givenUlId="UserUserListUl" users={this.props.users} session={this.props.session} />
                 <button className="button"
                     onClick={this.props.actions.openMakeGroupDialogue}
                     id="createGroupButton">

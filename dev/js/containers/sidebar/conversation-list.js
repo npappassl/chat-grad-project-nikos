@@ -74,7 +74,7 @@ class Conversations extends Component {
 
     render() {
         return (
-            <ul>
+            <ul id="ConvUserListUl">
                 {this.renderList()}
             </ul>
         );
