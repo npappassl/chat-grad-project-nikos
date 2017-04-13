@@ -6,8 +6,8 @@ import MakeGroupDialogue from "../containers/make-group-container";
 import EditUserDialogue from "../containers/edit-user-container";
 import EditGroupDialogue from "../containers/edit-group-container";
 
-import LeftVerticalLayout from "../containers/left-vertical-layout";
-import RightVerticalLayout from "../containers/right-vertical-layout";
+import LeftVerticalLayout from "../containers/sidebar/left-vertical-layout";
+import RightVerticalLayout from "../containers/main/right-vertical-layout";
 
 import * as loginActions from "../actions/loginActions";
 import * as usersActions from "../actions/usersActions";

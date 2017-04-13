@@ -18,5 +18,18 @@ module.exports  =  {
                 }
             }
         }
+    },
+    parseCookie: function(cookie) {
+        if (cookie) {
+            let cookies = {};
+            cookie.split(";").map(function(coockieLine) {
+                const parsedCoockie = coockieLine.trim().split("=");
+                cookies[parsedCoockie[0]] = parsedCoockie[1];
+            });
+            console.log(cookies.sessionToken);
+            return cookies.sessionToken;
+        } else {
+            return null;
+        }
     }
 };

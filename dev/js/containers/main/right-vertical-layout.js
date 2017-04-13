@@ -1,6 +1,6 @@
 import React,{Component} from "react";
-import MessagesContainer from '../containers/messages-container';
-import MessageTextArea from '../containers/message-text-area';
+import MessagesContainer from './messages-container';
+import MessageTextArea from './message-text-area';
 
 class RightVerticalLayout extends Component{
     render(){

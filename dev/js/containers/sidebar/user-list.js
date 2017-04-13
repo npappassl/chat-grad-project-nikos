@@ -1,8 +1,8 @@
 import React, {Component} from "react";
 import {bindActionCreators} from "redux";
 import {connect} from "react-redux";
-import {selectUser,selectConversation} from "../actions/index";
-import {updateUserSeen, sendConversationDetailRequest} from "../actions/usersActions";
+import {selectUser,selectConversation} from "../../actions/index";
+import {updateUserSeen, sendConversationDetailRequest} from "../../actions/usersActions";
 import UserListItem from "./user-list-item";
 
 class UserList extends Component {
@@ -73,9 +73,7 @@ class UserList extends Component {
 
 function mapStateToProps(state) {
     return {
-        users: state.users,
         userFilter: state.searchFilter,
-        session: state.session,
         conversations: state.conversations
     };
 }

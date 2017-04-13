@@ -4,7 +4,7 @@ import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import {bindActionCreators} from 'redux';
 import UserDetailSpan from "./user-detail-span.js"
 import MessageDetail from "./message-detail-container";
-import {openEditGroupDialogue} from "../actions/groupActions"
+import {openEditGroupDialogue} from "../../actions/groupActions"
 /*
  * We need "if(!this.props.user)" because we set state to null by default
  * */

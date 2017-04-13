@@ -10,7 +10,7 @@ const aux = require("./helper");
 const statusCodes = {
     "ok": 200, "created": 201,
     "found": 302,
-    "badRequest": 400, "notFound": 404, "unauthenticated": 401,
+    "badRequest": 400, "notFound": 404, "unauthenticated": 401, "notAcceptable": 406,
     "intServErr": 500
 };
 
@@ -105,7 +105,6 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
     app.put("/api/user/:userId", function(req, res) {
         let name = req.body.name;
         let avatar = req.body.avatar;
-        console.log(name, avatar);
         users.updateOne({_id: req.params.userId},
             {$set: {name: name, avatarUrl: avatar}}, function(err, data) {
                 if (!err) {
@@ -118,6 +117,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
     });
     app.delete("/api/user/:conversationId/:userId", function(req, res) {
         console.log(req.params);
+        res.sendStatus(statusCodes.ok);
     });
 
     app.put("/api/user/:conversationId/:userId", function(req, res) {
@@ -130,8 +130,10 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                     {$set: {lastRead: tempLastRead}},
                     function(errUpdate, doc) {
                     if (!errUpdate) {
-                        res.sendStatus(statusCodes.ok);
                         aux.notifyUser(req.params.userId, sessions);
+                        res.sendStatus(statusCodes.ok);
+                    } else {
+                        res.sendStatus(statusCodes.intServErr);
                     }
                 });
             } else {
@@ -174,8 +176,9 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
         if (req.params.conversationId === null ||
             req.params.conversationId === undefined ||
             req.params.conversationId === "null" ||
-            req.params.conversationId === "undefined") {
-            return res.sendStatus(statusCodes.notFound);
+            req.params.conversationId === "undefined" ||
+            (req.params.conversationId.length !== 12 && req.params.conversationId.length !== 24)) {
+            return res.sendStatus(statusCodes.notAcceptable);
         } else {
             conversations.findOneAndUpdate({_id: new ObjectID(req.params.conversationId)},
                 {$set: {messages: []}}, dccConvFindOneAndUpdateCallback);
@@ -188,8 +191,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
                 }
                 res.sendStatus(statusCodes.ok);
             } else if (err) {
-                console.log(err);
-                res.sendStatus(statusCodes.intServErr);
+                res.status(statusCodes.intServErr).send(err.message);
             } else {
                 res.sendStatus(statusCodes.notFound);
             }
@@ -200,7 +202,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             req.params.conversationId === undefined ||
             req.params.conversationId === "null" ||
             req.params.conversationId === "undefined") {
-            return res.sendStatus(statusCodes.notFound);
+            return res.sendStatus(statusCodes.notAcceptable);
         }
         conversations.findOne(
             {_id: new ObjectID(req.params.conversationId)},
@@ -222,7 +224,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             req.params.userId === "null" ||
             req.params.userId === "undefined"
         ) {
-            res.sendStatus(statusCodes.notFound);
+            res.sendStatus(statusCodes.notAcceptable);
         } else {
             users.findOne({_id: req.params.userId}, gcuUserFindOneCallback);
         }
@@ -292,6 +294,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             if (!err) {
                 retConversationId = data.insertedId;
                 addConversationToUser(req.body.userFrom, data.insertedId, Date.now());
+                console.log(req.body.userFrom, req.body.userTo);
                 if (req.body.userFrom !== req.body.userTo) {
                     addConversationToUser(req.body.userTo, data.insertedId, 0);
                 }
@@ -337,53 +340,58 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
     });
 
     app.post("/api/group/:groupId", function(req, res) {
+        const preparedUserObj = {
+            _id: req.params.groupId,
+            group: true,
+            name: null,
+            avatarUrl: req.body.avatar,
+            subscribedTo : [],
+            lastRead: {}
+        };
+        const preparedGroupObj = {
+            group: true,
+            messages: [],
+            firstMessageMeta: {
+                participants: req.body.participants,
+                creator: req.body.creator,
+                userAlias: req.params.groupId,
+                timestamp: Date.now()
+            }
+        };
         users.findOne({_id: req.params.groupId}, function(err, data) {
             if (!err) {
-                console.log("data", data);
                 if (!data) {
-                    users.insertOne({
-                        _id: req.params.groupId,
-                        group: true,
-                        name: null,
-                        avatarUrl: req.body.avatar,
-                        subscribedTo : [],
-                        lastRead: {}
-                    }, function(errConv, dataConv) {
+                    users.insertOne(preparedUserObj, function(errConv, dataConv) {
                         if (!errConv) {
-                            conversations.insertOne({
-                                group: true,
-                                messages: [],
-                                firstMessageMeta: {
-                                    participants: req.body.participants,
-                                    creator: req.body.creator,
-                                    userAlias: req.params.groupId,
-                                    timestamp: Date.now()
-                                }
-                            }, function (err2, data2) {
+                            conversations.insertOne(preparedGroupObj, function (err2, data2) {
                                 if (!err2) {
                                     console.log("insertedId", data2.insertedId);
-                                    addConversationToUser(req.body.creator, data2.insertedId, Date.now());
-                                    for (let i in req.body.participants) {
-                                        addConversationToUser(
-                                            req.body.participants[i], data2.insertedId, Date.now()
-                                        );
-                                    }
+                                    addConversationToAllParticipants(req.body, data2.insertedId, Date.now());
                                     res.sendStatus(statusCodes.created);
                                 } else {
                                     console.log("err2", err2);
+                                    res.sendStatus(statusCodes.intServErr);
                                 }
                             });
+                        } else {
+                            res.sendStatus(statusCodes.intServErr);
                         }
-
                     });
                 } else {
-                    console.log("data", data);
                     res.sendStatus(statusCodes.intServErr);
                 }
             } else {
                 res.sendStatus(statusCodes.intServErr);
             }
         });
+        function addConversationToAllParticipants(reqBody, d2insertedId, timestamp) {
+            addConversationToUser(reqBody.creator, d2insertedId, timestamp);
+            for (let i in reqBody.participants) {
+                addConversationToUser(
+                    reqBody.participants[i], d2insertedId, timestamp
+                );
+            }
+        }
     });
     app.put("/api/group/:groupId", function(req, res) {
         const updateObject = {
@@ -394,10 +402,9 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             {$set: updateObject},
             function(err, data) {
                 if (!err) {
-                    console.log(data);
+                    aux.notifyAll(sessions);
                     res.sendStatus(statusCodes.ok);
                 } else {
-                    console.log(err, "dikemou");
                     res.sendStatus(statusCodes.intServErr);
                 }
             });
@@ -406,28 +413,15 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
     const server = http.createServer(app);
 
     let wss = new WebSocketServer({server: server});
-    console.log("websocket server created");
     // -------------- connection------------------------------------------------
     wss.on("connection", function connection(ws) {
-        let sesToken;
-        let cookie = ws.upgradeReq.headers.cookie;
-        console.log(cookie);
-        if (cookie) {
-            sesToken = cookie.split("=")[1];
-            console.log(sesToken);
-        }
+        let sesToken = aux.parseCookie(ws.upgradeReq.headers.cookie);
         if (!sessions[sesToken]) {
             ws.close();
         } else {
             sessions[sesToken].socket = ws;
         }
         sendOnlineNotification();
-
-        //
-        // ws.send(JSON.stringify())
-        var id = setTimeout(function() {
-            ws.send(JSON.stringify(new Date()), function() {  });
-        }, 0);
 
         console.log("websocket connection open:", sesToken);
 
@@ -438,7 +432,6 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             }
             sendOnlineNotification();
             console.log("websocket connection close:", sesToken);
-            clearInterval(id);
         });
     });
 
