@@ -185,7 +185,6 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
         }
         function dccConvFindOneAndUpdateCallback(err, data) {
             if (!err && data) {
-                console.log(data);
                 aux.notifyUser(data.value.firstMessageMeta.userFrom, sessions);
                 if (data.value.firstMessageMeta.userFrom !== data.value.firstMessageMeta.userTo) {
                     aux.notifyUser(data.value.firstMessageMeta.userTo, sessions);
@@ -203,7 +202,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             req.params.conversationId === undefined ||
             req.params.conversationId === "null" ||
             req.params.conversationId === "undefined") {
-            return res.sendStatus(statusCodes.notFound);
+            return res.sendStatus(statusCodes.notAcceptable);
         }
         conversations.findOne(
             {_id: new ObjectID(req.params.conversationId)},
@@ -225,7 +224,7 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
             req.params.userId === "null" ||
             req.params.userId === "undefined"
         ) {
-            res.sendStatus(statusCodes.notFound);
+            res.sendStatus(statusCodes.notAcceptable);
         } else {
             users.findOne({_id: req.params.userId}, gcuUserFindOneCallback);
         }
@@ -413,7 +412,6 @@ module.exports = function(port, db, githubAuthoriser, middleware) {
     const server = http.createServer(app);
 
     let wss = new WebSocketServer({server: server});
-    console.log("websocket server created");
     // -------------- connection------------------------------------------------
     wss.on("connection", function connection(ws) {
         let sesToken = aux.parseCookie(ws.upgradeReq.headers.cookie);
