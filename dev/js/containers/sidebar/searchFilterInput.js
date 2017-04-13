@@ -1,46 +1,28 @@
 import React, {Component} from "react";
 import {ATypes} from "../../actions/types";
-// import Typeahead from "typeahead";
+import TypeaheadDiv from "./typeahead-div-container";
 
 class SearchFilterInput extends Component {
     constructor(props){
         super(props);
-        this.state = {value: ""};
+        this.state = {value: "", typeahead: false};
         this.handleChange = this.handleChange.bind(this);
-        // this.userArray = [];
-        // this.textInput;
+        this.handleBlur = this.handleBlur.bind(this);
+
     }
-    // componentDidMount(){
-    //     const self = this;
-    //     self.userArray = [];
-    //     self.ta = Typeahead(self.textInput,
-    //         {
-    //             source: self.userArray
-    //         });
-    //
-    // }
-    // -----------------------------------------------------------
-//     componentDidUpdate(){
-//         const userObj = this.props.users.users;
-//         console.log(userObj);
-//         this.userArray.length = 0;
-//         if(userObj){
-//             Object.keys(userObj).map((key) => {
-//                 console.log(userObj[key]);
-//                 this.userArray.push(userObj[key].id);
-//             });
-//         }
-//         console.log(this.userArray);
-// // -------------------------------------------------------------------------
-//         // this.userArray = this.props.users.users.map((key) => {
-//         //     return obj[key];
-//         // });
-//         // console.log(this.userArray);
-//         console.log(this.textInput);
-//     }
     handleChange(event){
-        this.setState({value: event.target.value});
+        if (event.target.value === "") {
+            this.setState({value: event.target.value, typeahead:false});
+        } else {
+            this.setState({value: event.target.value, typeahead:true});
+        }
         this.props.dispatch(this.propagateChange(event.target.value));
+    }
+    handleBlur(event){
+        console.log(event.target);
+        setTimeout(() =>{
+            this.setState({typeahead: false});
+        },300);
     }
     propagateChange(value){
         return {
@@ -55,7 +37,9 @@ class SearchFilterInput extends Component {
                         ref={(input) => { this.textInput = input; }}
                         id="searchFilterInput" type="text"
                         value={this.state.value} onChange={this.handleChange}
+                        onBlur={this.handleBlur}
                         placeholder="search for a friend" />
+                        <TypeaheadDiv filter={this.state.value} show={this.state.typeahead} />
                 </div>
         );
     }

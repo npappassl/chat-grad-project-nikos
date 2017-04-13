@@ -63,7 +63,7 @@ class UserList extends Component {
 
     render() {
         return (
-            <ul>
+            <ul id={this.props.givenUlId}>
                 {this.renderList()}
             </ul>
         );

@@ -71,7 +71,7 @@ hr{
 	display: inline-block;
 }
 
-#UserList ul{
+#ConvUserListUl,#UserUserListUl{
 	border-bottom: 1px solid $messageDivBgColor;
 	flex-grow: 2;
 	overflow-y: auto;
@@ -80,9 +80,9 @@ hr{
 	height: 30vh;
 	min-height: 75px;
 }
-#UserList ul li{
+#ConvUserListUl li,#UserUserListUl li{
 	margin-top: 10px;
-	font-size: 0.6em;
+	font-size: 0.7em;
 	min-width: 100px;
 }
 li img{
@@ -100,7 +100,6 @@ li img{
 
 li{
 	list-style: none;
-	margin-top: .5em;
 }
 .deleteMessages{
 	opacity: 0;
@@ -213,6 +212,28 @@ li{
 	margin: 0;
 	border-bottom: 1px solid $notificationsColor;
 }
+#typeaheadUl{
+	padding: 0;
+	position: absolute;
+	background-color: $userDetailSpan;
+	margin-top: 0;
+	height: auto;
+	color: $userListTitle;
+	z-index: 3;
+}
+#typeaheadUl li{
+	min-width: 293px;
+	width: 100%;
+	transition: all .3s ease;
+	border-radius: 3px;
+}
+#typeaheadUl li:hover{
+	background-color: $primary;
+	color: white;
+}
+#typeaheadUl li img{
+	margin-left: 3em;
+}
 #searchFilterInput{
 	width: 99%;
 	height: 100%;
@@ -312,6 +333,9 @@ li{
 	height: 84vh;
 	overflow-y: scroll;
 }
+#messages li{
+	padding-top: .3em;
+}
 .timestamp{
 	opacity: 0.6;
 	font-size: 0.8em;
@@ -353,7 +377,7 @@ li{
 	font-weight: 600;
 }
 .messageText{
-	padding: .1em .3em;
+	padding: .3em;
 	display: inline-block;
 	border-radius: 3px;
 }
