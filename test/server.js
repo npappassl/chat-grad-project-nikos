@@ -976,13 +976,7 @@ describe("server", function() {
     describe("establish connection with the web socket", function() {
         const requestUrl = baseUrl;
         const wsUrl      = baseUrl.replace("http", "ws");
-        beforeEach(function() {
-            var ws = new WebSocket(requestUrl);
-            ws.on("message", function(event) {
-                ws.close();
-            });
-        });
-        it("ping pong", function(done) {
+        it("ping pong authenticated", function(done) {
             authenticateUser(testGithubUser, testToken, function() {
                 dbCollections.users.findOne.callsArgWith(1, null, testUser);
                 dbCollections.users.updateOne.callsArgWith(2, null, null);
@@ -990,12 +984,25 @@ describe("server", function() {
                     headers: {"Cookie": "sessionToken=" + testToken}
                 });
                 ws.on("message", function(event) {
+                    console.log(event);
                     request({url: requestUrl + "/api/user/undefined/bob",
                         jar: cookieJar, method: "PUT"}, function(error, response2) {
                         ws.close();
-                        done();
+                        assert(ws, null);
+                        if (event === "\"all\"") {
+                            done();
+                        }
                     });
                 });
+            });
+        });
+        it("ping pong UNauthenticated", function(done) {
+            var ws = new WebSocket(wsUrl);
+            ws.on("message", function(event) {
+                console.log(event);
+            });
+            ws.on("close", function(event) {
+                done();
             });
         });
     });
